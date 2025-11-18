@@ -1,0 +1,48 @@
+name: Deploy Batch to MiniPC
+
+on:
+  push:
+    paths:
+      - '2joping-batch/**'
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build & Deploy Batch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package --file 2joping-batch/pom.xml
+
+      - name: Deploy via SSH to MiniPC
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.MINIPC_HOST }}
+          username: ${{ secrets.MINIPC_USER }}
+          key: ${{ secrets.MINIPC_SSH_KEY }}
+          script: |
+            docker stop batch || true
+            docker rm batch || true
+            docker rmi batch:latest || true
+            mkdir -p ~/ejoping/deploy/batch
+            rm -rf ~/ejoping/deploy/batch/*
+            cp ~/some-path/2joping-batch/target/*.jar ~/ejoping/deploy/batch/app.jar
+            docker run -d \
+            --name batch \
+            --memory="500m" \
+            -v ~/ejoping/deploy/batch:/app \
+            -w /app \
+            openjdk:21 \
+            java -jar app.jar

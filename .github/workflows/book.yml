@@ -1,0 +1,48 @@
+name: Deploy Book to MiniPC
+
+on:
+  push:
+    paths:
+      - '2joping-book/**'
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build & Deploy Book
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package --file 2joping-book/pom.xml
+
+      - name: Deploy via SSH to MiniPC
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.MINIPC_HOST }}
+          username: ${{ secrets.MINIPC_USER }}
+          key: ${{ secrets.MINIPC_SSH_KEY }}
+          script: |
+            docker stop book || true
+            docker rm book || true
+            docker rmi book:latest || true
+            mkdir -p ~/ejoping/deploy/book
+            rm -rf ~/ejoping/deploy/book/*
+            cp ~/some-path/2joping-book/target/*.jar ~/ejoping/deploy/book/app.jar
+            docker run -d \
+            --name book \
+            --memory="500m" \
+            -v ~/ejoping/deploy/book:/app \
+            -w /app \
+            openjdk:21 \
+            java -jar app.jar
