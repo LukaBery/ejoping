@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberAddressController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.controller</a> &gt; <span class="el_source">MemberAddressController.java</span></div><h1>MemberAddressController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.controller;
+
+import com.nhnacademy.bookstore.common.error.exception.user.address.AddressLimitToTenException;
+import com.nhnacademy.bookstore.common.error.exception.user.member.MemberNotFoundException;
+import com.nhnacademy.bookstore.user.member.dto.request.AddressUpdateRequestDto;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberAddressRequestDto;
+import com.nhnacademy.bookstore.user.member.dto.response.address.AddressDeleteResponseDto;
+import com.nhnacademy.bookstore.user.member.dto.response.address.AddressUpdateResponseDto;
+import com.nhnacademy.bookstore.user.member.dto.response.address.MemberAddressResponseDto;
+import com.nhnacademy.bookstore.user.member.service.MemberAddressService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 회원 정보 Crud 컨트롤러
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@Tag(name = &quot;회원 주소 관리 API&quot;, description = &quot;회원의 주소를 관리하는 API&quot;)
+@RestController
+@RequiredArgsConstructor
+<span class="fc" id="L31">@Slf4j</span>
+@RequestMapping(&quot;/api/v1/members&quot;)
+public class MemberAddressController {
+
+    private final MemberAddressService memberAddressService;
+
+    /**
+     * 새로운 주소를 추가하는 기능
+     * @author Luha
+     * @since 1.0
+     *
+     * @param requestDto 회원 주소 정보 DTO
+     * @return 회원의 전체 주소 목록이 포함된 ResponseEntity
+     * @throws AddressLimitToTenException 주소 개수가 10개 이상일 경우 발생
+     * @throws MemberNotFoundException 회원이 존재하지 않을 경우 발생
+     */
+    @Operation(summary = &quot;새 주소 추가&quot;, description = &quot;특정 회원의 새 주소를 추가합니다. 주소는 최대 10개까지 저장할 수 있습니다.&quot;)
+    @PostMapping(&quot;/addresses&quot;)
+    public ResponseEntity&lt;List&lt;MemberAddressResponseDto&gt;&gt; addMemberAddress(
+            @RequestHeader(&quot;X-Customer-Id&quot;) String customerId,
+            @Parameter(description = &quot;회원 주소 정보&quot;, required = true)
+            @Valid
+            @RequestBody MemberAddressRequestDto requestDto) {
+
+<span class="fc" id="L55">        List&lt;MemberAddressResponseDto&gt; addresses = memberAddressService.addMemberAddress(Long.parseLong(customerId), requestDto);</span>
+
+<span class="fc" id="L57">        return ResponseEntity.ok(addresses);</span>
+    }
+
+    /**
+     * 특정 회원의 모든 주소를 조회
+     * @author Luha
+     * @since 1.0
+     *
+     * @return 회원 주소 목록이 포함된 ResponseEntity
+     * @throws MemberNotFoundException 회원이 존재하지 않을 경우 발생
+     */
+    @GetMapping(&quot;/addresses&quot;)
+    public ResponseEntity&lt;List&lt;MemberAddressResponseDto&gt;&gt; getAllMemberAddress(
+            @RequestHeader(&quot;X-Customer-Id&quot;) String customerId ) {
+
+
+<span class="fc" id="L73">        List&lt;MemberAddressResponseDto&gt; addresses = memberAddressService.getMemberAddresses(Long.parseLong(customerId));</span>
+
+<span class="fc" id="L75">        return ResponseEntity.ok(addresses);</span>
+    }
+
+    @DeleteMapping(&quot;/addresses/{member-address-id}&quot;)
+    public ResponseEntity&lt;AddressDeleteResponseDto&gt; deleteMemberAddress(
+            @RequestHeader(&quot;X-Customer-Id&quot;) String customerId,
+            @PathVariable(name = &quot;member-address-id&quot;) Long memberAddressId) {
+
+
+<span class="fc" id="L84">        AddressDeleteResponseDto response = memberAddressService.deleteMemberAddress(Long.parseLong(customerId), memberAddressId);</span>
+
+<span class="fc" id="L86">        return ResponseEntity.ok(response);</span>
+    }
+
+    @PutMapping(&quot;/addresses/{member-address-id}&quot;)
+    public ResponseEntity&lt;AddressUpdateResponseDto&gt; updateMemberAddress(
+            @RequestHeader(&quot;X-Customer-Id&quot;) String customerId,
+            @PathVariable(name = &quot;member-address-id&quot;) Long memberAddressId,
+            @RequestBody @Valid AddressUpdateRequestDto requestDto) {
+
+<span class="fc" id="L95">        AddressUpdateResponseDto response = memberAddressService.updateMemberAddress(Long.parseLong(customerId), memberAddressId, requestDto);</span>
+
+<span class="fc" id="L97">        return ResponseEntity.ok(response);</span>
+    }
+
+
+
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

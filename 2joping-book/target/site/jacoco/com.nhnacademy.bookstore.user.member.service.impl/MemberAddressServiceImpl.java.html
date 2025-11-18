@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberAddressServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.service.impl</a> &gt; <span class="el_source">MemberAddressServiceImpl.java</span></div><h1>MemberAddressServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.service.impl;
+
+import com.nhnacademy.bookstore.common.error.enums.RedirectType;
+import com.nhnacademy.bookstore.common.error.exception.user.address.AddressLimitToTenException;
+import com.nhnacademy.bookstore.common.error.exception.user.address.AddressNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.user.member.MemberNotFoundException;
+import com.nhnacademy.bookstore.user.member.dto.request.AddressUpdateRequestDto;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberAddressRequestDto;
+import com.nhnacademy.bookstore.user.member.dto.response.address.AddressDeleteResponseDto;
+import com.nhnacademy.bookstore.user.member.dto.response.address.AddressUpdateResponseDto;
+import com.nhnacademy.bookstore.user.member.dto.response.address.MemberAddressResponseDto;
+import com.nhnacademy.bookstore.user.member.entity.Member;
+import com.nhnacademy.bookstore.user.member.entity.MemberAddress;
+import com.nhnacademy.bookstore.user.member.repository.MemberAddressRepository;
+import com.nhnacademy.bookstore.user.member.repository.MemberRepository;
+import com.nhnacademy.bookstore.user.member.service.MemberAddressService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * MemberAddressServiceImpl
+ * 이 클래스는 회원의 주소 정보를 관리하는 서비스 구현체입니다.
+ * 회원 주소 추가와 조회 기능을 제공하며, 주소 개수 제한과 기본 배송지 설정 등 특수한 로직을 처리합니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@Service
+@RequiredArgsConstructor
+public class MemberAddressServiceImpl implements MemberAddressService {
+
+    private final MemberRepository memberRepository;
+    private final MemberAddressRepository memberAddressRepository ;
+    private static final String MEMBER_MYPAGE_ADDRESS_URL = &quot;/mypage/address-list&quot;;
+
+
+    /**
+     * 회원의 주소를 추가하는 메서드입니다.
+     *
+     * @param customerId               회원의 고유 ID
+     * @param memberAddressRequestDto   추가할 주소의 정보가 담긴 DTO
+     * @return 회원의 모든 주소 정보를 담은 응답 DTO 리스트
+     * @throws MemberNotFoundException 회원을 찾을 수 없는 경우 발생
+     * @throws AddressLimitToTenException 주소 개수가 10개를 초과할 때 발생
+     * @since 1.0
+     */
+    @Override
+    @Transactional
+    public List&lt;MemberAddressResponseDto&gt; addMemberAddress(long customerId, MemberAddressRequestDto memberAddressRequestDto) {
+
+<span class="fc" id="L54">        Member member = memberRepository.findById(customerId)</span>
+<span class="fc" id="L55">                .orElseThrow(() -&gt; new MemberNotFoundException(</span>
+                        &quot;멤버&quot; + customerId + &quot;를 찾을 수 없습니다.&quot;,
+                        RedirectType.REDIRECT,
+                        MEMBER_MYPAGE_ADDRESS_URL,
+                        memberAddressRequestDto)
+                );
+
+        //주소 개수 조회 10개 제한 /
+<span class="fc" id="L63">        int addressCnt = memberAddressRepository.countByMemberIdAndAvailableTrue(customerId);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if(addressCnt &gt;= 10) {</span>
+<span class="fc" id="L65">            throw new AddressLimitToTenException(</span>
+                    &quot;주소는 10개까지 저장할 수 있습니다.&quot;,
+                    RedirectType.REDIRECT,
+                    MEMBER_MYPAGE_ADDRESS_URL,
+                    memberAddressRequestDto
+            );
+        }
+
+        //기본 배송지 선택시
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (memberAddressRequestDto.defaultAddress()) {</span>
+
+            // 기존에 기본 주소가 설정된 경우 해제
+<span class="fc" id="L77">            MemberAddress existingDefaultAddress = memberAddressRepository.findByMemberIdAndDefaultAddressTrue(customerId);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            if (existingDefaultAddress != null) {</span>
+<span class="fc" id="L79">                existingDefaultAddress.setDefaultAddress(false); //defaultAddress  기존에 있던 기본 배송지 해제</span>
+            }
+        }
+
+<span class="fc" id="L83">        MemberAddress address = new MemberAddress();</span>
+<span class="fc" id="L84">        address.toEntity(memberAddressRequestDto, member);</span>
+
+        //주소 저장
+<span class="fc" id="L87">        memberAddressRepository.save(address);</span>
+        //변경 후 주소 조회
+
+<span class="fc" id="L90">        return memberAddressRepository.findAddressesByMemberId(customerId);</span>
+    }
+
+    /**
+     * 회원의 모든 주소를 조회하는 메서드입니다.
+     *
+     * @param customerId 회원의 고유 ID
+     * @return 회원의 모든 주소 정보를 담은 응답 DTO 리스트
+     * @throws MemberNotFoundException 회원을 찾을 수 없는 경우 발생
+     * @since 1.0
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;MemberAddressResponseDto&gt; getMemberAddresses(long customerId) {
+
+<span class="fc" id="L105">        Member member = memberRepository.findById(customerId).orElseThrow(() -&gt; new MemberNotFoundException(</span>
+                &quot;멤버&quot; + customerId + &quot;를 찾을 수 없습니다.&quot;, RedirectType.REDIRECT, MEMBER_MYPAGE_ADDRESS_URL));
+
+<span class="fc" id="L108">        return memberAddressRepository.findAddressesByMemberId(member.getId());</span>
+    }
+
+    @Override
+    @Transactional
+    public AddressDeleteResponseDto deleteMemberAddress(long customerId, long addressId) {
+
+<span class="fc" id="L115">        MemberAddress memberAddress = memberAddressRepository.findByMemberIdAndIdAndAvailableTrue(customerId, addressId)</span>
+<span class="fc" id="L116">                .orElseThrow(() -&gt; new AddressNotFoundException(&quot;해당 회원 주소를 찾을 수 없습니다.&quot;, RedirectType.REDIRECT, MEMBER_MYPAGE_ADDRESS_URL));</span>
+
+<span class="fc" id="L118">        memberAddress.setAvailable(false);</span>
+
+<span class="fc" id="L120">        return new AddressDeleteResponseDto(addressId, &quot;주소가 성공적으로 삭제되었습니다.&quot;);    }</span>
+
+    @Override
+    @Transactional
+    public AddressUpdateResponseDto updateMemberAddress(long customerId, long addressId, AddressUpdateRequestDto requestDto) {
+
+<span class="fc" id="L126">        MemberAddress memberAddress = memberAddressRepository.findByMemberIdAndIdAndAvailableTrue(customerId, addressId)</span>
+<span class="fc" id="L127">                .orElseThrow(() -&gt; new AddressNotFoundException(&quot;해당 회원 주소를 찾을 수 없습니다.&quot;, RedirectType.REDIRECT, MEMBER_MYPAGE_ADDRESS_URL));</span>
+<span class="fc" id="L128">        memberAddress.updateAddress(requestDto);</span>
+
+<span class="fc" id="L130">        return new AddressUpdateResponseDto(addressId, &quot;주소가 성공적으로 수정되었습니다.&quot;);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

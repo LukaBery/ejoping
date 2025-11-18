@@ -1,0 +1,896 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.nhnacademy.bookstore.coupon.respository.CouponPolicyRepositoryImplTest" time="0.931" tests="1" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="MS949"/>
+    <property name="java.class.path" value="C:\fork\ejoping\2joping-book\target\test-classes;C:\fork\ejoping\2joping-book\target\classes;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter\3.3.4\spring-boot-starter-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot\3.3.4\spring-boot-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-context\6.1.13\spring-context-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.3.4\spring-boot-autoconfigure-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.3.4\spring-boot-starter-logging-3.3.4.jar;C:\Users\dlgks\.m2\repository\ch\qos\logback\logback-classic\1.5.8\logback-classic-1.5.8.jar;C:\Users\dlgks\.m2\repository\ch\qos\logback\logback-core\1.5.8\logback-core-1.5.8.jar;C:\Users\dlgks\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.23.1\log4j-to-slf4j-2.23.1.jar;C:\Users\dlgks\.m2\repository\org\apache\logging\log4j\log4j-api\2.23.1\log4j-api-2.23.1.jar;C:\Users\dlgks\.m2\repository\org\slf4j\jul-to-slf4j\2.0.16\jul-to-slf4j-2.0.16.jar;C:\Users\dlgks\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-core\6.1.13\spring-core-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-jcl\6.1.13\spring-jcl-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\3.3.4\spring-boot-starter-actuator-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\3.3.4\spring-boot-actuator-autoconfigure-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-actuator\3.3.4\spring-boot-actuator-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.17.2\jackson-databind-2.17.2.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.17.2\jackson-datatype-jsr310-2.17.2.jar;C:\Users\dlgks\.m2\repository\io\micrometer\micrometer-observation\1.13.4\micrometer-observation-1.13.4.jar;C:\Users\dlgks\.m2\repository\io\micrometer\micrometer-commons\1.13.4\micrometer-commons-1.13.4.jar;C:\Users\dlgks\.m2\repository\io\micrometer\micrometer-jakarta9\1.13.4\micrometer-jakarta9-1.13.4.jar;C:\Users\dlgks\.m2\repository\io\micrometer\micrometer-core\1.13.4\micrometer-core-1.13.4.jar;C:\Users\dlgks\.m2\repository\org\hdrhistogram\HdrHistogram\2.2.2\HdrHistogram-2.2.2.jar;C:\Users\dlgks\.m2\repository\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\3.3.4\spring-boot-starter-data-jpa-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\3.3.4\spring-boot-starter-jdbc-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\zaxxer\HikariCP\5.1.0\HikariCP-5.1.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-jdbc\6.1.13\spring-jdbc-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\hibernate\orm\hibernate-core\6.5.3.Final\hibernate-core-6.5.3.Final.jar;C:\Users\dlgks\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\dlgks\.m2\repository\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;C:\Users\dlgks\.m2\repository\org\hibernate\common\hibernate-commons-annotations\6.0.6.Final\hibernate-commons-annotations-6.0.6.Final.jar;C:\Users\dlgks\.m2\repository\io\smallrye\jandex\3.1.2\jandex-3.1.2.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;C:\Users\dlgks\.m2\repository\net\bytebuddy\byte-buddy\1.14.19\byte-buddy-1.14.19.jar;C:\Users\dlgks\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.5\jaxb-runtime-4.0.5.jar;C:\Users\dlgks\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.5\jaxb-core-4.0.5.jar;C:\Users\dlgks\.m2\repository\org\eclipse\angus\angus-activation\2.0.2\angus-activation-2.0.2.jar;C:\Users\dlgks\.m2\repository\org\glassfish\jaxb\txw2\4.0.5\txw2-4.0.5.jar;C:\Users\dlgks\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\dlgks\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\dlgks\.m2\repository\org\antlr\antlr4-runtime\4.13.0\antlr4-runtime-4.13.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\data\spring-data-jpa\3.3.4\spring-data-jpa-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\data\spring-data-commons\3.3.4\spring-data-commons-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-orm\6.1.13\spring-orm-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-beans\6.1.13\spring-beans-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-aspects\6.1.13\spring-aspects-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-data-redis\3.3.4\spring-boot-starter-data-redis-3.3.4.jar;C:\Users\dlgks\.m2\repository\io\lettuce\lettuce-core\6.3.2.RELEASE\lettuce-core-6.3.2.RELEASE.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-common\4.1.113.Final\netty-common-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-handler\4.1.113.Final\netty-handler-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-resolver\4.1.113.Final\netty-resolver-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-buffer\4.1.113.Final\netty-buffer-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-transport-native-unix-common\4.1.113.Final\netty-transport-native-unix-common-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-codec\4.1.113.Final\netty-codec-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-transport\4.1.113.Final\netty-transport-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\projectreactor\reactor-core\3.6.10\reactor-core-3.6.10.jar;C:\Users\dlgks\.m2\repository\org\reactivestreams\reactive-streams\1.0.4\reactive-streams-1.0.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\data\spring-data-redis\3.0.0\spring-data-redis-3.0.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\data\spring-data-keyvalue\3.3.4\spring-data-keyvalue-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-tx\6.1.13\spring-tx-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-oxm\6.1.13\spring-oxm-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-aop\6.1.13\spring-aop-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-context-support\6.1.13\spring-context-support-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\slf4j\slf4j-api\2.0.16\slf4j-api-2.0.16.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.3.4\spring-boot-starter-validation-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.30\tomcat-embed-el-10.1.30.jar;C:\Users\dlgks\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.1.Final\hibernate-validator-8.0.1.Final.jar;C:\Users\dlgks\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.3.4\spring-boot-starter-web-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.3.4\spring-boot-starter-json-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.17.2\jackson-datatype-jdk8-2.17.2.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.17.2\jackson-module-parameter-names-2.17.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.3.4\spring-boot-starter-tomcat-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.30\tomcat-embed-core-10.1.30.jar;C:\Users\dlgks\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.30\tomcat-embed-websocket-10.1.30.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-web\6.1.13\spring-web-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-webmvc\6.1.13\spring-webmvc-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-expression\6.1.13\spring-expression-6.1.13.jar;C:\Users\dlgks\.m2\repository\com\h2database\h2\2.2.224\h2-2.2.224.jar;C:\Users\dlgks\.m2\repository\com\mysql\mysql-connector-j\8.3.0\mysql-connector-j-8.3.0.jar;C:\Users\dlgks\.m2\repository\org\projectlombok\lombok\1.18.34\lombok-1.18.34.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.3.4\spring-boot-starter-test-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-test\3.3.4\spring-boot-test-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.3.4\spring-boot-test-autoconfigure-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\dlgks\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.2\jakarta.xml.bind-api-4.0.2.jar;C:\Users\dlgks\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.3\jakarta.activation-api-2.1.3.jar;C:\Users\dlgks\.m2\repository\net\minidev\json-smart\2.5.1\json-smart-2.5.1.jar;C:\Users\dlgks\.m2\repository\net\minidev\accessors-smart\2.5.1\accessors-smart-2.5.1.jar;C:\Users\dlgks\.m2\repository\org\ow2\asm\asm\9.6\asm-9.6.jar;C:\Users\dlgks\.m2\repository\org\assertj\assertj-core\3.25.3\assertj-core-3.25.3.jar;C:\Users\dlgks\.m2\repository\org\awaitility\awaitility\4.2.2\awaitility-4.2.2.jar;C:\Users\dlgks\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;C:\Users\dlgks\.m2\repository\org\junit\jupiter\junit-jupiter\5.10.3\junit-jupiter-5.10.3.jar;C:\Users\dlgks\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.3\junit-jupiter-api-5.10.3.jar;C:\Users\dlgks\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\dlgks\.m2\repository\org\junit\platform\junit-platform-commons\1.10.3\junit-platform-commons-1.10.3.jar;C:\Users\dlgks\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\dlgks\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.3\junit-jupiter-params-5.10.3.jar;C:\Users\dlgks\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.3\junit-jupiter-engine-5.10.3.jar;C:\Users\dlgks\.m2\repository\org\junit\platform\junit-platform-engine\1.10.3\junit-platform-engine-1.10.3.jar;C:\Users\dlgks\.m2\repository\org\mockito\mockito-core\5.11.0\mockito-core-5.11.0.jar;C:\Users\dlgks\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.19\byte-buddy-agent-1.14.19.jar;C:\Users\dlgks\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\dlgks\.m2\repository\org\mockito\mockito-junit-jupiter\5.11.0\mockito-junit-jupiter-5.11.0.jar;C:\Users\dlgks\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\dlgks\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-test\6.1.13\spring-test-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\xmlunit\xmlunit-core\2.9.1\xmlunit-core-2.9.1.jar;C:\Users\dlgks\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-ui\2.1.0\springdoc-openapi-starter-webmvc-ui-2.1.0.jar;C:\Users\dlgks\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-api\2.1.0\springdoc-openapi-starter-webmvc-api-2.1.0.jar;C:\Users\dlgks\.m2\repository\org\springdoc\springdoc-openapi-starter-common\2.1.0\springdoc-openapi-starter-common-2.1.0.jar;C:\Users\dlgks\.m2\repository\io\swagger\core\v3\swagger-core-jakarta\2.2.9\swagger-core-jakarta-2.2.9.jar;C:\Users\dlgks\.m2\repository\org\apache\commons\commons-lang3\3.14.0\commons-lang3-3.14.0.jar;C:\Users\dlgks\.m2\repository\io\swagger\core\v3\swagger-annotations-jakarta\2.2.9\swagger-annotations-jakarta-2.2.9.jar;C:\Users\dlgks\.m2\repository\io\swagger\core\v3\swagger-models-jakarta\2.2.9\swagger-models-jakarta-2.2.9.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\dataformat\jackson-dataformat-yaml\2.17.2\jackson-dataformat-yaml-2.17.2.jar;C:\Users\dlgks\.m2\repository\org\webjars\swagger-ui\4.18.2\swagger-ui-4.18.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\security\spring-security-crypto\6.3.3\spring-security-crypto-6.3.3.jar;C:\Users\dlgks\.m2\repository\org\mapstruct\mapstruct\1.5.2.Final\mapstruct-1.5.2.Final.jar;C:\Users\dlgks\.m2\repository\org\mapstruct\mapstruct-processor\1.5.2.Final\mapstruct-processor-1.5.2.Final.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-starter-openfeign\4.1.3\spring-cloud-starter-openfeign-4.1.3.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-starter\4.1.4\spring-cloud-starter-4.1.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-context\4.1.4\spring-cloud-context-4.1.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\security\spring-security-rsa\1.1.3\spring-security-rsa-1.1.3.jar;C:\Users\dlgks\.m2\repository\org\bouncycastle\bcprov-jdk18on\1.78\bcprov-jdk18on-1.78.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-openfeign-core\4.1.3\spring-cloud-openfeign-core-4.1.3.jar;C:\Users\dlgks\.m2\repository\io\github\openfeign\form\feign-form-spring\3.8.0\feign-form-spring-3.8.0.jar;C:\Users\dlgks\.m2\repository\io\github\openfeign\form\feign-form\3.8.0\feign-form-3.8.0.jar;C:\Users\dlgks\.m2\repository\commons-fileupload\commons-fileupload\1.5\commons-fileupload-1.5.jar;C:\Users\dlgks\.m2\repository\commons-io\commons-io\2.11.0\commons-io-2.11.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-commons\4.1.4\spring-cloud-commons-4.1.4.jar;C:\Users\dlgks\.m2\repository\io\github\openfeign\feign-core\13.3\feign-core-13.3.jar;C:\Users\dlgks\.m2\repository\io\github\openfeign\feign-slf4j\13.3\feign-slf4j-13.3.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-starter-netflix-eureka-client\4.1.3\spring-cloud-starter-netflix-eureka-client-4.1.3.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-netflix-eureka-client\4.1.3\spring-cloud-netflix-eureka-client-4.1.3.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\client5\httpclient5\5.3.1\httpclient5-5.3.1.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\core5\httpcore5\5.2.5\httpcore5-5.2.5.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\core5\httpcore5-h2\5.2.5\httpcore5-h2-5.2.5.jar;C:\Users\dlgks\.m2\repository\com\netflix\eureka\eureka-client\2.0.3\eureka-client-2.0.3.jar;C:\Users\dlgks\.m2\repository\com\thoughtworks\xstream\xstream\1.4.20\xstream-1.4.20.jar;C:\Users\dlgks\.m2\repository\io\github\x-stream\mxparser\1.2.2\mxparser-1.2.2.jar;C:\Users\dlgks\.m2\repository\xmlpull\xmlpull\1.1.3.1\xmlpull-1.1.3.1.jar;C:\Users\dlgks\.m2\repository\jakarta\ws\rs\jakarta.ws.rs-api\3.1.0\jakarta.ws.rs-api-3.1.0.jar;C:\Users\dlgks\.m2\repository\com\netflix\spectator\spectator-api\1.7.3\spectator-api-1.7.3.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\httpclient\4.5.3\httpclient-4.5.3.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\httpcore\4.4.16\httpcore-4.4.16.jar;C:\Users\dlgks\.m2\repository\commons-codec\commons-codec\1.16.1\commons-codec-1.16.1.jar;C:\Users\dlgks\.m2\repository\commons-configuration\commons-configuration\1.10\commons-configuration-1.10.jar;C:\Users\dlgks\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.17.2\jackson-annotations-2.17.2.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.17.2\jackson-core-2.17.2.jar;C:\Users\dlgks\.m2\repository\com\netflix\netflix-commons\netflix-eventbus\0.3.0\netflix-eventbus-0.3.0.jar;C:\Users\dlgks\.m2\repository\com\netflix\netflix-commons\netflix-infix\0.3.0\netflix-infix-0.3.0.jar;C:\Users\dlgks\.m2\repository\commons-jxpath\commons-jxpath\1.3\commons-jxpath-1.3.jar;C:\Users\dlgks\.m2\repository\joda-time\joda-time\2.3\joda-time-2.3.jar;C:\Users\dlgks\.m2\repository\org\antlr\antlr-runtime\3.4\antlr-runtime-3.4.jar;C:\Users\dlgks\.m2\repository\org\antlr\stringtemplate\3.2.1\stringtemplate-3.2.1.jar;C:\Users\dlgks\.m2\repository\antlr\antlr\2.7.7\antlr-2.7.7.jar;C:\Users\dlgks\.m2\repository\com\google\code\gson\gson\2.10.1\gson-2.10.1.jar;C:\Users\dlgks\.m2\repository\com\netflix\servo\servo-core\0.5.3\servo-core-0.5.3.jar;C:\Users\dlgks\.m2\repository\org\apache\commons\commons-math\2.2\commons-math-2.2.jar;C:\Users\dlgks\.m2\repository\javax\annotation\javax.annotation-api\1.2\javax.annotation-api-1.2.jar;C:\Users\dlgks\.m2\repository\org\codehaus\jettison\jettison\1.5.4\jettison-1.5.4.jar;C:\Users\dlgks\.m2\repository\com\netflix\eureka\eureka-core\2.0.3\eureka-core-2.0.3.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\woodstox\woodstox-core\6.2.1\woodstox-core-6.2.1.jar;C:\Users\dlgks\.m2\repository\org\codehaus\woodstox\stax2-api\4.2.1\stax2-api-4.2.1.jar;C:\Users\dlgks\.m2\repository\com\google\guava\guava\33.0.0-jre\guava-33.0.0-jre.jar;C:\Users\dlgks\.m2\repository\com\google\guava\failureaccess\1.0.2\failureaccess-1.0.2.jar;C:\Users\dlgks\.m2\repository\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;C:\Users\dlgks\.m2\repository\org\checkerframework\checker-qual\3.41.0\checker-qual-3.41.0.jar;C:\Users\dlgks\.m2\repository\com\google\errorprone\error_prone_annotations\2.23.0\error_prone_annotations-2.23.0.jar;C:\Users\dlgks\.m2\repository\com\google\j2objc\j2objc-annotations\2.8\j2objc-annotations-2.8.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-starter-loadbalancer\4.1.4\spring-cloud-starter-loadbalancer-4.1.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-loadbalancer\4.1.4\spring-cloud-loadbalancer-4.1.4.jar;C:\Users\dlgks\.m2\repository\io\projectreactor\addons\reactor-extra\3.5.2\reactor-extra-3.5.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-cache\3.3.4\spring-boot-starter-cache-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\stoyanr\evictor\1.0.0\evictor-1.0.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-aop\3.3.4\spring-boot-starter-aop-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\aspectj\aspectjweaver\1.9.22.1\aspectjweaver-1.9.22.1.jar;C:\Users\dlgks\.m2\repository\com\querydsl\querydsl-jpa\5.1.0\querydsl-jpa-5.1.0-jakarta.jar;C:\Users\dlgks\.m2\repository\com\querydsl\querydsl-core\5.1.0\querydsl-core-5.1.0.jar;C:\Users\dlgks\.m2\repository\com\mysema\commons\mysema-commons-lang\0.2.4\mysema-commons-lang-0.2.4.jar;C:\Users\dlgks\.m2\repository\com\querydsl\querydsl-apt\5.1.0\querydsl-apt-5.1.0-jakarta.jar;C:\Users\dlgks\.m2\repository\com\querydsl\querydsl-codegen\5.1.0\querydsl-codegen-5.1.0.jar;C:\Users\dlgks\.m2\repository\com\querydsl\codegen-utils\5.1.0\codegen-utils-5.1.0.jar;C:\Users\dlgks\.m2\repository\org\eclipse\jdt\ecj\3.26.0\ecj-3.26.0.jar;C:\Users\dlgks\.m2\repository\javax\inject\javax.inject\1\javax.inject-1.jar;C:\Users\dlgks\.m2\repository\io\github\classgraph\classgraph\4.8.146\classgraph-4.8.146.jar;C:\Users\dlgks\.m2\repository\org\apache\commons\commons-dbcp2\2.12.0\commons-dbcp2-2.12.0.jar;C:\Users\dlgks\.m2\repository\org\apache\commons\commons-pool2\2.12.0\commons-pool2-2.12.0.jar;C:\Users\dlgks\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;"/>
+    <property name="java.vm.vendor" value="Amazon.com Inc."/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://aws.amazon.com/corretto/"/>
+    <property name="user.timezone" value="Asia/Seoul"/>
+    <property name="org.jboss.logging.provider" value="slf4j"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="user.country" value="KR"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="C:\Users\dlgks\.jdks\corretto-21.0.9\bin"/>
+    <property name="sun.java.command" value="C:\Users\dlgks\AppData\Local\Temp\surefire3238511741363072442\surefirebooter-20251118181452277_3.jar C:\Users\dlgks\AppData\Local\Temp\surefire3238511741363072442 2025-11-18T18-14-52_180-jvmRun1 surefire-20251118181452277_1tmp surefire_0-20251118181452277_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="C:\fork\ejoping\2joping-book\target\test-classes;C:\fork\ejoping\2joping-book\target\classes;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter\3.3.4\spring-boot-starter-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot\3.3.4\spring-boot-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-context\6.1.13\spring-context-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.3.4\spring-boot-autoconfigure-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.3.4\spring-boot-starter-logging-3.3.4.jar;C:\Users\dlgks\.m2\repository\ch\qos\logback\logback-classic\1.5.8\logback-classic-1.5.8.jar;C:\Users\dlgks\.m2\repository\ch\qos\logback\logback-core\1.5.8\logback-core-1.5.8.jar;C:\Users\dlgks\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.23.1\log4j-to-slf4j-2.23.1.jar;C:\Users\dlgks\.m2\repository\org\apache\logging\log4j\log4j-api\2.23.1\log4j-api-2.23.1.jar;C:\Users\dlgks\.m2\repository\org\slf4j\jul-to-slf4j\2.0.16\jul-to-slf4j-2.0.16.jar;C:\Users\dlgks\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-core\6.1.13\spring-core-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-jcl\6.1.13\spring-jcl-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\3.3.4\spring-boot-starter-actuator-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\3.3.4\spring-boot-actuator-autoconfigure-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-actuator\3.3.4\spring-boot-actuator-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.17.2\jackson-databind-2.17.2.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.17.2\jackson-datatype-jsr310-2.17.2.jar;C:\Users\dlgks\.m2\repository\io\micrometer\micrometer-observation\1.13.4\micrometer-observation-1.13.4.jar;C:\Users\dlgks\.m2\repository\io\micrometer\micrometer-commons\1.13.4\micrometer-commons-1.13.4.jar;C:\Users\dlgks\.m2\repository\io\micrometer\micrometer-jakarta9\1.13.4\micrometer-jakarta9-1.13.4.jar;C:\Users\dlgks\.m2\repository\io\micrometer\micrometer-core\1.13.4\micrometer-core-1.13.4.jar;C:\Users\dlgks\.m2\repository\org\hdrhistogram\HdrHistogram\2.2.2\HdrHistogram-2.2.2.jar;C:\Users\dlgks\.m2\repository\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\3.3.4\spring-boot-starter-data-jpa-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\3.3.4\spring-boot-starter-jdbc-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\zaxxer\HikariCP\5.1.0\HikariCP-5.1.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-jdbc\6.1.13\spring-jdbc-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\hibernate\orm\hibernate-core\6.5.3.Final\hibernate-core-6.5.3.Final.jar;C:\Users\dlgks\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\dlgks\.m2\repository\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;C:\Users\dlgks\.m2\repository\org\hibernate\common\hibernate-commons-annotations\6.0.6.Final\hibernate-commons-annotations-6.0.6.Final.jar;C:\Users\dlgks\.m2\repository\io\smallrye\jandex\3.1.2\jandex-3.1.2.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;C:\Users\dlgks\.m2\repository\net\bytebuddy\byte-buddy\1.14.19\byte-buddy-1.14.19.jar;C:\Users\dlgks\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.5\jaxb-runtime-4.0.5.jar;C:\Users\dlgks\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.5\jaxb-core-4.0.5.jar;C:\Users\dlgks\.m2\repository\org\eclipse\angus\angus-activation\2.0.2\angus-activation-2.0.2.jar;C:\Users\dlgks\.m2\repository\org\glassfish\jaxb\txw2\4.0.5\txw2-4.0.5.jar;C:\Users\dlgks\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\dlgks\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\dlgks\.m2\repository\org\antlr\antlr4-runtime\4.13.0\antlr4-runtime-4.13.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\data\spring-data-jpa\3.3.4\spring-data-jpa-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\data\spring-data-commons\3.3.4\spring-data-commons-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-orm\6.1.13\spring-orm-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-beans\6.1.13\spring-beans-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-aspects\6.1.13\spring-aspects-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-data-redis\3.3.4\spring-boot-starter-data-redis-3.3.4.jar;C:\Users\dlgks\.m2\repository\io\lettuce\lettuce-core\6.3.2.RELEASE\lettuce-core-6.3.2.RELEASE.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-common\4.1.113.Final\netty-common-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-handler\4.1.113.Final\netty-handler-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-resolver\4.1.113.Final\netty-resolver-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-buffer\4.1.113.Final\netty-buffer-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-transport-native-unix-common\4.1.113.Final\netty-transport-native-unix-common-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-codec\4.1.113.Final\netty-codec-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\netty\netty-transport\4.1.113.Final\netty-transport-4.1.113.Final.jar;C:\Users\dlgks\.m2\repository\io\projectreactor\reactor-core\3.6.10\reactor-core-3.6.10.jar;C:\Users\dlgks\.m2\repository\org\reactivestreams\reactive-streams\1.0.4\reactive-streams-1.0.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\data\spring-data-redis\3.0.0\spring-data-redis-3.0.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\data\spring-data-keyvalue\3.3.4\spring-data-keyvalue-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-tx\6.1.13\spring-tx-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-oxm\6.1.13\spring-oxm-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-aop\6.1.13\spring-aop-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-context-support\6.1.13\spring-context-support-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\slf4j\slf4j-api\2.0.16\slf4j-api-2.0.16.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.3.4\spring-boot-starter-validation-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.30\tomcat-embed-el-10.1.30.jar;C:\Users\dlgks\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.1.Final\hibernate-validator-8.0.1.Final.jar;C:\Users\dlgks\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.3.4\spring-boot-starter-web-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.3.4\spring-boot-starter-json-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.17.2\jackson-datatype-jdk8-2.17.2.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.17.2\jackson-module-parameter-names-2.17.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.3.4\spring-boot-starter-tomcat-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.30\tomcat-embed-core-10.1.30.jar;C:\Users\dlgks\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.30\tomcat-embed-websocket-10.1.30.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-web\6.1.13\spring-web-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-webmvc\6.1.13\spring-webmvc-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-expression\6.1.13\spring-expression-6.1.13.jar;C:\Users\dlgks\.m2\repository\com\h2database\h2\2.2.224\h2-2.2.224.jar;C:\Users\dlgks\.m2\repository\com\mysql\mysql-connector-j\8.3.0\mysql-connector-j-8.3.0.jar;C:\Users\dlgks\.m2\repository\org\projectlombok\lombok\1.18.34\lombok-1.18.34.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.3.4\spring-boot-starter-test-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-test\3.3.4\spring-boot-test-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.3.4\spring-boot-test-autoconfigure-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\dlgks\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.2\jakarta.xml.bind-api-4.0.2.jar;C:\Users\dlgks\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.3\jakarta.activation-api-2.1.3.jar;C:\Users\dlgks\.m2\repository\net\minidev\json-smart\2.5.1\json-smart-2.5.1.jar;C:\Users\dlgks\.m2\repository\net\minidev\accessors-smart\2.5.1\accessors-smart-2.5.1.jar;C:\Users\dlgks\.m2\repository\org\ow2\asm\asm\9.6\asm-9.6.jar;C:\Users\dlgks\.m2\repository\org\assertj\assertj-core\3.25.3\assertj-core-3.25.3.jar;C:\Users\dlgks\.m2\repository\org\awaitility\awaitility\4.2.2\awaitility-4.2.2.jar;C:\Users\dlgks\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;C:\Users\dlgks\.m2\repository\org\junit\jupiter\junit-jupiter\5.10.3\junit-jupiter-5.10.3.jar;C:\Users\dlgks\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.3\junit-jupiter-api-5.10.3.jar;C:\Users\dlgks\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\dlgks\.m2\repository\org\junit\platform\junit-platform-commons\1.10.3\junit-platform-commons-1.10.3.jar;C:\Users\dlgks\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\dlgks\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.3\junit-jupiter-params-5.10.3.jar;C:\Users\dlgks\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.3\junit-jupiter-engine-5.10.3.jar;C:\Users\dlgks\.m2\repository\org\junit\platform\junit-platform-engine\1.10.3\junit-platform-engine-1.10.3.jar;C:\Users\dlgks\.m2\repository\org\mockito\mockito-core\5.11.0\mockito-core-5.11.0.jar;C:\Users\dlgks\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.19\byte-buddy-agent-1.14.19.jar;C:\Users\dlgks\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\dlgks\.m2\repository\org\mockito\mockito-junit-jupiter\5.11.0\mockito-junit-jupiter-5.11.0.jar;C:\Users\dlgks\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\dlgks\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\dlgks\.m2\repository\org\springframework\spring-test\6.1.13\spring-test-6.1.13.jar;C:\Users\dlgks\.m2\repository\org\xmlunit\xmlunit-core\2.9.1\xmlunit-core-2.9.1.jar;C:\Users\dlgks\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-ui\2.1.0\springdoc-openapi-starter-webmvc-ui-2.1.0.jar;C:\Users\dlgks\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-api\2.1.0\springdoc-openapi-starter-webmvc-api-2.1.0.jar;C:\Users\dlgks\.m2\repository\org\springdoc\springdoc-openapi-starter-common\2.1.0\springdoc-openapi-starter-common-2.1.0.jar;C:\Users\dlgks\.m2\repository\io\swagger\core\v3\swagger-core-jakarta\2.2.9\swagger-core-jakarta-2.2.9.jar;C:\Users\dlgks\.m2\repository\org\apache\commons\commons-lang3\3.14.0\commons-lang3-3.14.0.jar;C:\Users\dlgks\.m2\repository\io\swagger\core\v3\swagger-annotations-jakarta\2.2.9\swagger-annotations-jakarta-2.2.9.jar;C:\Users\dlgks\.m2\repository\io\swagger\core\v3\swagger-models-jakarta\2.2.9\swagger-models-jakarta-2.2.9.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\dataformat\jackson-dataformat-yaml\2.17.2\jackson-dataformat-yaml-2.17.2.jar;C:\Users\dlgks\.m2\repository\org\webjars\swagger-ui\4.18.2\swagger-ui-4.18.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\security\spring-security-crypto\6.3.3\spring-security-crypto-6.3.3.jar;C:\Users\dlgks\.m2\repository\org\mapstruct\mapstruct\1.5.2.Final\mapstruct-1.5.2.Final.jar;C:\Users\dlgks\.m2\repository\org\mapstruct\mapstruct-processor\1.5.2.Final\mapstruct-processor-1.5.2.Final.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-starter-openfeign\4.1.3\spring-cloud-starter-openfeign-4.1.3.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-starter\4.1.4\spring-cloud-starter-4.1.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-context\4.1.4\spring-cloud-context-4.1.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\security\spring-security-rsa\1.1.3\spring-security-rsa-1.1.3.jar;C:\Users\dlgks\.m2\repository\org\bouncycastle\bcprov-jdk18on\1.78\bcprov-jdk18on-1.78.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-openfeign-core\4.1.3\spring-cloud-openfeign-core-4.1.3.jar;C:\Users\dlgks\.m2\repository\io\github\openfeign\form\feign-form-spring\3.8.0\feign-form-spring-3.8.0.jar;C:\Users\dlgks\.m2\repository\io\github\openfeign\form\feign-form\3.8.0\feign-form-3.8.0.jar;C:\Users\dlgks\.m2\repository\commons-fileupload\commons-fileupload\1.5\commons-fileupload-1.5.jar;C:\Users\dlgks\.m2\repository\commons-io\commons-io\2.11.0\commons-io-2.11.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-commons\4.1.4\spring-cloud-commons-4.1.4.jar;C:\Users\dlgks\.m2\repository\io\github\openfeign\feign-core\13.3\feign-core-13.3.jar;C:\Users\dlgks\.m2\repository\io\github\openfeign\feign-slf4j\13.3\feign-slf4j-13.3.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-starter-netflix-eureka-client\4.1.3\spring-cloud-starter-netflix-eureka-client-4.1.3.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-netflix-eureka-client\4.1.3\spring-cloud-netflix-eureka-client-4.1.3.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\client5\httpclient5\5.3.1\httpclient5-5.3.1.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\core5\httpcore5\5.2.5\httpcore5-5.2.5.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\core5\httpcore5-h2\5.2.5\httpcore5-h2-5.2.5.jar;C:\Users\dlgks\.m2\repository\com\netflix\eureka\eureka-client\2.0.3\eureka-client-2.0.3.jar;C:\Users\dlgks\.m2\repository\com\thoughtworks\xstream\xstream\1.4.20\xstream-1.4.20.jar;C:\Users\dlgks\.m2\repository\io\github\x-stream\mxparser\1.2.2\mxparser-1.2.2.jar;C:\Users\dlgks\.m2\repository\xmlpull\xmlpull\1.1.3.1\xmlpull-1.1.3.1.jar;C:\Users\dlgks\.m2\repository\jakarta\ws\rs\jakarta.ws.rs-api\3.1.0\jakarta.ws.rs-api-3.1.0.jar;C:\Users\dlgks\.m2\repository\com\netflix\spectator\spectator-api\1.7.3\spectator-api-1.7.3.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\httpclient\4.5.3\httpclient-4.5.3.jar;C:\Users\dlgks\.m2\repository\org\apache\httpcomponents\httpcore\4.4.16\httpcore-4.4.16.jar;C:\Users\dlgks\.m2\repository\commons-codec\commons-codec\1.16.1\commons-codec-1.16.1.jar;C:\Users\dlgks\.m2\repository\commons-configuration\commons-configuration\1.10\commons-configuration-1.10.jar;C:\Users\dlgks\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.17.2\jackson-annotations-2.17.2.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.17.2\jackson-core-2.17.2.jar;C:\Users\dlgks\.m2\repository\com\netflix\netflix-commons\netflix-eventbus\0.3.0\netflix-eventbus-0.3.0.jar;C:\Users\dlgks\.m2\repository\com\netflix\netflix-commons\netflix-infix\0.3.0\netflix-infix-0.3.0.jar;C:\Users\dlgks\.m2\repository\commons-jxpath\commons-jxpath\1.3\commons-jxpath-1.3.jar;C:\Users\dlgks\.m2\repository\joda-time\joda-time\2.3\joda-time-2.3.jar;C:\Users\dlgks\.m2\repository\org\antlr\antlr-runtime\3.4\antlr-runtime-3.4.jar;C:\Users\dlgks\.m2\repository\org\antlr\stringtemplate\3.2.1\stringtemplate-3.2.1.jar;C:\Users\dlgks\.m2\repository\antlr\antlr\2.7.7\antlr-2.7.7.jar;C:\Users\dlgks\.m2\repository\com\google\code\gson\gson\2.10.1\gson-2.10.1.jar;C:\Users\dlgks\.m2\repository\com\netflix\servo\servo-core\0.5.3\servo-core-0.5.3.jar;C:\Users\dlgks\.m2\repository\org\apache\commons\commons-math\2.2\commons-math-2.2.jar;C:\Users\dlgks\.m2\repository\javax\annotation\javax.annotation-api\1.2\javax.annotation-api-1.2.jar;C:\Users\dlgks\.m2\repository\org\codehaus\jettison\jettison\1.5.4\jettison-1.5.4.jar;C:\Users\dlgks\.m2\repository\com\netflix\eureka\eureka-core\2.0.3\eureka-core-2.0.3.jar;C:\Users\dlgks\.m2\repository\com\fasterxml\woodstox\woodstox-core\6.2.1\woodstox-core-6.2.1.jar;C:\Users\dlgks\.m2\repository\org\codehaus\woodstox\stax2-api\4.2.1\stax2-api-4.2.1.jar;C:\Users\dlgks\.m2\repository\com\google\guava\guava\33.0.0-jre\guava-33.0.0-jre.jar;C:\Users\dlgks\.m2\repository\com\google\guava\failureaccess\1.0.2\failureaccess-1.0.2.jar;C:\Users\dlgks\.m2\repository\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;C:\Users\dlgks\.m2\repository\org\checkerframework\checker-qual\3.41.0\checker-qual-3.41.0.jar;C:\Users\dlgks\.m2\repository\com\google\errorprone\error_prone_annotations\2.23.0\error_prone_annotations-2.23.0.jar;C:\Users\dlgks\.m2\repository\com\google\j2objc\j2objc-annotations\2.8\j2objc-annotations-2.8.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-starter-loadbalancer\4.1.4\spring-cloud-starter-loadbalancer-4.1.4.jar;C:\Users\dlgks\.m2\repository\org\springframework\cloud\spring-cloud-loadbalancer\4.1.4\spring-cloud-loadbalancer-4.1.4.jar;C:\Users\dlgks\.m2\repository\io\projectreactor\addons\reactor-extra\3.5.2\reactor-extra-3.5.2.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-cache\3.3.4\spring-boot-starter-cache-3.3.4.jar;C:\Users\dlgks\.m2\repository\com\stoyanr\evictor\1.0.0\evictor-1.0.0.jar;C:\Users\dlgks\.m2\repository\org\springframework\boot\spring-boot-starter-aop\3.3.4\spring-boot-starter-aop-3.3.4.jar;C:\Users\dlgks\.m2\repository\org\aspectj\aspectjweaver\1.9.22.1\aspectjweaver-1.9.22.1.jar;C:\Users\dlgks\.m2\repository\com\querydsl\querydsl-jpa\5.1.0\querydsl-jpa-5.1.0-jakarta.jar;C:\Users\dlgks\.m2\repository\com\querydsl\querydsl-core\5.1.0\querydsl-core-5.1.0.jar;C:\Users\dlgks\.m2\repository\com\mysema\commons\mysema-commons-lang\0.2.4\mysema-commons-lang-0.2.4.jar;C:\Users\dlgks\.m2\repository\com\querydsl\querydsl-apt\5.1.0\querydsl-apt-5.1.0-jakarta.jar;C:\Users\dlgks\.m2\repository\com\querydsl\querydsl-codegen\5.1.0\querydsl-codegen-5.1.0.jar;C:\Users\dlgks\.m2\repository\com\querydsl\codegen-utils\5.1.0\codegen-utils-5.1.0.jar;C:\Users\dlgks\.m2\repository\org\eclipse\jdt\ecj\3.26.0\ecj-3.26.0.jar;C:\Users\dlgks\.m2\repository\javax\inject\javax.inject\1\javax.inject-1.jar;C:\Users\dlgks\.m2\repository\io\github\classgraph\classgraph\4.8.146\classgraph-4.8.146.jar;C:\Users\dlgks\.m2\repository\org\apache\commons\commons-dbcp2\2.12.0\commons-dbcp2-2.12.0.jar;C:\Users\dlgks\.m2\repository\org\apache\commons\commons-pool2\2.12.0\commons-pool2-2.12.0.jar;C:\Users\dlgks\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\dlgks"/>
+    <property name="user.language" value="ko"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2025-10-21"/>
+    <property name="java.home" value="C:\Users\dlgks\.jdks\corretto-21.0.9"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\fork\ejoping\2joping-book"/>
+    <property name="style.color" value="always"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="FILE_LOG_CHARSET" value="UTF-8"/>
+    <property name="java.awt.headless" value="true"/>
+    <property name="surefire.real.class.path" value="C:\Users\dlgks\AppData\Local\Temp\surefire3238511741363072442\surefirebooter-20251118181452277_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.9+10-LTS"/>
+    <property name="user.name" value="dlgks"/>
+    <property name="stdout.encoding" value="MS949"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Corretto-21.0.9.10.1"/>
+    <property name="maven.ext.class.path" value="C:\Program Files\JetBrains\IntelliJ IDEA 2025.2.4\plugins\maven\lib\maven-event-listener.jar"/>
+    <property name="localRepository" value="C:\Users\dlgks\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://github.com/corretto/corretto-21/issues/"/>
+    <property name="java.io.tmpdir" value="C:\Users\dlgks\AppData\Local\Temp\"/>
+    <property name="idea.version" value="2025.2.4"/>
+    <property name="com.zaxxer.hikari.pool_number" value="11"/>
+    <property name="java.version" value="21.0.9"/>
+    <property name="user.dir" value="C:\fork\ejoping\2joping-book"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="jansi.passthrough" value="true"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="PID" value="1248"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="CONSOLE_LOG_CHARSET" value="UTF-8"/>
+    <property name="native.encoding" value="MS949"/>
+    <property name="java.library.path" value="C:\Users\dlgks\.jdks\corretto-21.0.9\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files\Google\Chrome\Application;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Users\dlgks\AppData\Local\Microsoft\WindowsApps;;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="MS949"/>
+    <property name="java.vendor" value="Amazon.com Inc."/>
+    <property name="java.vm.version" value="21.0.9+10-LTS"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="maven.repo.local" value="C:\Users\dlgks\.m2\repository"/>
+    <property name="java.class.version" value="65.0"/>
+    <property name="LOGGED_APPLICATION_NAME" value="[bookstore] "/>
+  </properties>
+  <testcase name="testFindActivePolicy" classname="com.nhnacademy.bookstore.coupon.respository.CouponPolicyRepositoryImplTest" time="0.041">
+    <system-out><![CDATA[2025-11-18 18:15:22 - Could not detect default configuration classes for test class [com.nhnacademy.bookstore.coupon.respository.CouponPolicyRepositoryImplTest]: CouponPolicyRepositoryImplTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-11-18 18:15:22 - Found @SpringBootConfiguration com.nhnacademy.bookstore.BookstoreApplication for test class com.nhnacademy.bookstore.coupon.respository.CouponPolicyRepositoryImplTest
+18:15:22,343 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [CONSOLE]
+18:15:22,343 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+18:15:22,343 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+18:15:22,343 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [FILE]
+18:15:22,343 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.FileAppender]
+18:15:22,343 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+18:15:22,343 |-INFO in ch.qos.logback.core.FileAppender[FILE] - File property is set to [logs/file-app.log]
+18:15:22,344 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [ROLLING]
+18:15:22,344 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+18:15:22,344 |-WARN in ch.qos.logback.core.model.processor.ImplicitModelHandler - Ignoring unknown property [maxFileSize] in [ch.qos.logback.core.rolling.TimeBasedRollingPolicy]
+18:15:22,344 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@66553367 - setting totalSizeCap to 30 MB
+18:15:22,344 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@66553367 - No compression will be used
+18:15:22,344 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@66553367 - Will use the pattern logs/myapp.%d{yyyy-MM-dd}.log for the active file
+18:15:22,344 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - The date pattern is 'yyyy-MM-dd' from file name pattern 'logs/myapp.%d{yyyy-MM-dd}.log'.
+18:15:22,344 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Roll-over at midnight.
+18:15:22,344 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Setting initial period to 2025-11-18T09:15:22.327Z
+18:15:22,344 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+18:15:22,344 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[ROLLING] - Active log file name: logs/rolling-app.log
+18:15:22,344 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[ROLLING] - File property is set to [logs/rolling-app.log]
+18:15:22,345 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [com.nhnacademy.bookstore.common] to INFO
+18:15:22,345 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@63c99c01 - Propagating INFO level on Logger[com.nhnacademy.bookstore.common] onto the JUL framework
+18:15:22,345 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [CONSOLE] to Logger[com.nhnacademy.bookstore.common]
+18:15:22,345 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [FILE] to Logger[com.nhnacademy.bookstore.common]
+18:15:22,345 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to WARN
+18:15:22,345 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@63c99c01 - Propagating WARN level on Logger[ROOT] onto the JUL framework
+18:15:22,345 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [CONSOLE] to Logger[ROOT]
+18:15:22,345 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [ROLLING] to Logger[ROOT]
+18:15:22,345 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@26649f25 - End of configuration.
+18:15:22,345 |-INFO in org.springframework.boot.logging.logback.SpringBootJoranConfigurator@5f7645e3 - Registering current configuration as safe fallback point
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.4)
+
+2025-11-18 18:15:22 - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-11-18 18:15:22 - HHH000038: Composite-id class does not override equals(): com.nhnacademy.bookstore.bookset.book.entity.BookContributor$BookContributorId
+2025-11-18 18:15:22 - HHH000039: Composite-id class does not override hashCode(): com.nhnacademy.bookstore.bookset.book.entity.BookContributor$BookContributorId
+2025-11-18 18:15:22 - HHH000038: Composite-id class does not override equals(): com.nhnacademy.bookstore.bookset.book.entity.BookCategory$BookCategoryId
+2025-11-18 18:15:22 - HHH000039: Composite-id class does not override hashCode(): com.nhnacademy.bookstore.bookset.book.entity.BookCategory$BookCategoryId
+Hibernate: 
+    create table book (
+        book_id bigint generated by default as identity,
+        description TEXT,
+        gift_wrappable boolean not null,
+        is_active boolean not null,
+        isbn varchar(13) not null,
+        likes INT default 0 not null,
+        published_date date not null,
+        remain_quantity INT default 0 not null,
+        retail_price integer not null,
+        selling_price integer not null,
+        title varchar(200) not null,
+        views INT default 0 not null,
+        publisher_id bigint not null,
+        primary key (book_id)
+    )
+Hibernate: 
+    create table book_category (
+        book_id bigint not null,
+        category_id bigint not null,
+        primary key (book_id, category_id)
+    )
+Hibernate: 
+    create table book_contributor (
+        book_id bigint not null,
+        contributor_id bigint not null,
+        primary key (book_id, contributor_id)
+    )
+Hibernate: 
+    create table book_image (
+        book_image_id bigint generated by default as identity,
+        image_type varchar(255) not null,
+        book_id bigint not null,
+        image_id bigint not null,
+        primary key (book_image_id)
+    )
+Hibernate: 
+    create table book_tag (
+        book_id bigint not null,
+        tag_id bigint not null,
+        primary key (book_id, tag_id)
+    )
+Hibernate: 
+    create table carrier (
+        carrier_id bigint generated by default as identity,
+        contact_email varchar(255),
+        contact_number varchar(20),
+        name varchar(100),
+        website_url varchar(255),
+        primary key (carrier_id)
+    )
+Hibernate: 
+    create table cart (
+        book_id bigint not null,
+        customer_id bigint not null,
+        quantity integer,
+        primary key (book_id, customer_id)
+    )
+Hibernate: 
+    create table category (
+        category_id bigint generated by default as identity,
+        is_active boolean not null,
+        name varchar(50) not null,
+        parent_category_id bigint,
+        primary key (category_id)
+    )
+Hibernate: 
+    create table contributor (
+        contributor_id bigint generated by default as identity,
+        is_active boolean,
+        name varchar(30),
+        contributor_role_id bigint,
+        primary key (contributor_id)
+    )
+Hibernate: 
+    create table contributor_role (
+        contributor_role_id bigint generated by default as identity,
+        name varchar(50),
+        primary key (contributor_role_id)
+    )
+Hibernate: 
+    create table coupon (
+        coupon_id bigint generated by default as identity,
+        created_at date,
+        expired_at date,
+        name varchar(30),
+        quantity integer,
+        coupon_policy_id bigint,
+        primary key (coupon_id)
+    )
+Hibernate: 
+    create table coupon_book (
+        book_id bigint not null,
+        coupon_id bigint not null,
+        primary key (book_id, coupon_id)
+    )
+Hibernate: 
+    create table coupon_category (
+        category_id bigint not null,
+        coupon_id bigint not null,
+        primary key (category_id, coupon_id)
+    )
+Hibernate: 
+    create table coupon_policy (
+        coupon_policy_id bigint generated by default as identity,
+        detail varchar(255),
+        discount_type enum ('ACTUAL','PERCENT'),
+        discount_value integer,
+        duration integer,
+        is_active boolean,
+        max_discount integer,
+        name varchar(20),
+        usage_limit integer,
+        primary key (coupon_policy_id)
+    )
+Hibernate: 
+    create table customer (
+        customer_id bigint generated by default as identity,
+        email varchar(50) not null,
+        name varchar(50) not null,
+        phone varchar(20) not null,
+        primary key (customer_id)
+    )
+Hibernate: 
+    create table image (
+        image_id bigint generated by default as identity,
+        url varchar(255) not null,
+        primary key (image_id)
+    )
+Hibernate: 
+    create table "likes" (
+        like_id bigint generated by default as identity,
+        book_id bigint not null,
+        customer_id bigint not null,
+        primary key (like_id)
+    )
+Hibernate: 
+    create table member (
+        acc_purchase integer not null,
+        birthday date,
+        birthday_month integer,
+        gender enum ('F','M'),
+        is_payco_login boolean not null,
+        join_date date not null,
+        login_id varchar(20) not null,
+        nickname varchar(20) not null,
+        password varchar(255) not null,
+        point integer not null,
+        recent_login_date date,
+        customer_id bigint not null,
+        member_status_id bigint not null,
+        member_tier_id bigint not null,
+        primary key (customer_id)
+    )
+Hibernate: 
+    create table member_address (
+        member_address_id bigint generated by default as identity,
+        address_alias varchar(255),
+        available boolean not null,
+        is_default_address boolean,
+        detail_address varchar(255),
+        postal_code CHAR(5),
+        receiver varchar(255),
+        road_address varchar(255),
+        customer_id bigint not null,
+        primary key (member_address_id)
+    )
+Hibernate: 
+    create table member_coupon (
+        coupon_usage_id bigint generated by default as identity,
+        invalid_time timestamp(6),
+        is_used boolean,
+        receive_time timestamp(6),
+        used_date timestamp(6),
+        coupon_id bigint,
+        customer_id bigint,
+        primary key (coupon_usage_id)
+    )
+Hibernate: 
+    create table member_status (
+        member_status_id bigint generated by default as identity,
+        status varchar(10) not null,
+        primary key (member_status_id)
+    )
+Hibernate: 
+    create table member_tier (
+        member_tier_id bigint generated by default as identity,
+        acc_rate integer not null,
+        max_promotion integer not null,
+        min_promotion integer not null,
+        name enum ('GOLD','NORMAL','PLATINUM','ROYAL'),
+        status boolean not null,
+        primary key (member_tier_id)
+    )
+Hibernate: 
+    create table non_member (
+        customer_id bigint not null,
+        password varchar(255) not null,
+        primary key (customer_id)
+    )
+Hibernate: 
+    create table order_detail (
+        order_detail_id bigint generated by default as identity,
+        final_price integer not null,
+        quantity integer not null,
+        sell_price integer not null,
+        book_id bigint not null,
+        order_id bigint not null,
+        primary key (order_detail_id)
+    )
+Hibernate: 
+    create table order_state (
+        order_state_id bigint not null,
+        name varchar(20) not null,
+        primary key (order_state_id)
+    )
+Hibernate: 
+    create table orders (
+        order_id bigint generated by default as identity,
+        coupon_sale_price integer default 0 not null,
+        desired_delivery_date date,
+        detail_address varchar(100),
+        order_code varchar(255),
+        order_date timestamp(6) not null,
+        point_usage integer default 0 not null,
+        postal_code CHAR(5),
+        receiver varchar(20) not null,
+        road_address varchar(100) not null,
+        shipping_fee integer not null,
+        total_price integer not null,
+        coupon_usage_id bigint,
+        customer_id bigint not null,
+        order_state_id bigint not null,
+        primary key (order_id)
+    )
+Hibernate: 
+    create table payment_history (
+        payment_history_id bigint generated by default as identity,
+        amount_paid integer not null,
+        payment_code varchar(255) not null,
+        payment_date timestamp(6) not null,
+        order_id bigint,
+        payment_method_id bigint,
+        status_id bigint,
+        primary key (payment_history_id)
+    )
+Hibernate: 
+    create table payment_method (
+        payment_method_id bigint generated by default as identity,
+        name varchar(255) not null,
+        primary key (payment_method_id)
+    )
+Hibernate: 
+    create table point_history (
+        point_history_id bigint generated by default as identity,
+        customer_id bigint,
+        order_id bigint,
+        point_val integer,
+        refund_history_id bigint,
+        register_date timestamp(6),
+        point_type_id bigint,
+        primary key (point_history_id)
+    )
+Hibernate: 
+    create table point_type (
+        point_type_id bigint generated by default as identity,
+        acc_val integer,
+        is_active boolean,
+        name varchar(255),
+        type enum ('ACTUAL','PERCENT'),
+        primary key (point_type_id)
+    )
+Hibernate: 
+    create table publisher (
+        publisher_id bigint generated by default as identity,
+        name varchar(50) not null,
+        primary key (publisher_id)
+    )
+Hibernate: 
+    create table refund_history (
+        refund_history_id bigint generated by default as identity,
+        approved_at timestamp(6),
+        created_at timestamp(6),
+        is_approved boolean not null,
+        refund_fee integer not null,
+        save_point bigint not null,
+        order_id bigint not null,
+        refund_policy_id bigint not null,
+        primary key (refund_history_id)
+    )
+Hibernate: 
+    create table refund_policy (
+        refund_policy_id bigint not null,
+        description TEXT not null,
+        period integer not null,
+        policy enum ('DAMAGE','SIMPLE_CHANGE') not null,
+        refund_fee integer not null,
+        primary key (refund_policy_id)
+    )
+Hibernate: 
+    create table review (
+        review_id bigint generated by default as identity,
+        created_at timestamp(6),
+        image_url varchar(255),
+        rating_value TINYINT,
+        text varchar(255),
+        title varchar(255),
+        updated_at timestamp(6),
+        book_id bigint,
+        customer_id bigint,
+        order_detail_id bigint,
+        primary key (review_id)
+    )
+Hibernate: 
+    create table review_image (
+        review_image_id bigint generated by default as identity,
+        image_id bigint not null,
+        review_id bigint not null,
+        primary key (review_image_id)
+    )
+Hibernate: 
+    create table shipment (
+        shipment_id bigint generated by default as identity,
+        delivery_date timestamp(6),
+        requirement varchar(32),
+        shipping_date timestamp(6),
+        tracking_number varchar(255),
+        carrier_id bigint,
+        order_id bigint,
+        shipment_policy_id bigint,
+        primary key (shipment_id)
+    )
+Hibernate: 
+    create table shipment_policy (
+        shipment_policy_id bigint generated by default as identity,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        is_active boolean,
+        is_member_only boolean,
+        min_order_amount integer,
+        name varchar(255),
+        shipping_fee integer,
+        updated_at timestamp(6),
+        primary key (shipment_policy_id)
+    )
+Hibernate: 
+    create table status (
+        status_id bigint generated by default as identity,
+        name enum ('CANCELLED','COMPLETED','PENDING') not null,
+        primary key (status_id)
+    )
+Hibernate: 
+    create table tag (
+        tag_id bigint generated by default as identity,
+        name varchar(25) not null,
+        primary key (tag_id)
+    )
+Hibernate: 
+    create table wrap (
+        wrap_id bigint generated by default as identity,
+        is_active boolean not null,
+        name varchar(255),
+        wrap_price integer not null,
+        primary key (wrap_id)
+    )
+Hibernate: 
+    create table wrap_image (
+        package_image_id bigint generated by default as identity,
+        image_id bigint not null,
+        wrap_id bigint not null,
+        primary key (package_image_id)
+    )
+Hibernate: 
+    create table wrap_manage (
+        wrap_manage_id bigint generated by default as identity,
+        order_detail_id bigint not null,
+        wrap_id bigint not null,
+        primary key (wrap_manage_id)
+    )
+Hibernate: 
+    alter table if exists book 
+       drop constraint if exists UKehpdfjpu1jm3hijhj4mm0hx9h
+Hibernate: 
+    alter table if exists book 
+       add constraint UKehpdfjpu1jm3hijhj4mm0hx9h unique (isbn)
+Hibernate: 
+    alter table if exists category 
+       drop constraint if exists UK46ccwnsi9409t36lurvtyljak
+Hibernate: 
+    alter table if exists category 
+       add constraint UK46ccwnsi9409t36lurvtyljak unique (name)
+Hibernate: 
+    alter table if exists contributor 
+       drop constraint if exists UKiyrn40r9a2cxg31da28q4otu9
+Hibernate: 
+    alter table if exists contributor 
+       add constraint UKiyrn40r9a2cxg31da28q4otu9 unique (contributor_role_id, name)
+Hibernate: 
+    alter table if exists contributor_role 
+       drop constraint if exists UK4waxswbu4hn7cyjycbbn0sn5t
+Hibernate: 
+    alter table if exists contributor_role 
+       add constraint UK4waxswbu4hn7cyjycbbn0sn5t unique (name)
+Hibernate: 
+    alter table if exists coupon 
+       drop constraint if exists UKdfikvnp7dxdfishfvpnlc0xc1
+Hibernate: 
+    alter table if exists coupon 
+       add constraint UKdfikvnp7dxdfishfvpnlc0xc1 unique (name)
+Hibernate: 
+    alter table if exists customer 
+       drop constraint if exists UKe52vu3svga42r7s9n64u1bqwx
+Hibernate: 
+    alter table if exists customer 
+       add constraint UKe52vu3svga42r7s9n64u1bqwx unique (email, phone)
+Hibernate: 
+    alter table if exists "likes" 
+       drop constraint if exists UKt9kdkqas7ty5ap4f1cxswiux2
+Hibernate: 
+    alter table if exists "likes" 
+       add constraint UKt9kdkqas7ty5ap4f1cxswiux2 unique (customer_id, book_id)
+Hibernate: 
+    alter table if exists member 
+       drop constraint if exists UKenfm5patwjqulw8k4wwuo6f60
+Hibernate: 
+    alter table if exists member 
+       add constraint UKenfm5patwjqulw8k4wwuo6f60 unique (login_id)
+Hibernate: 
+    alter table if exists member_status 
+       drop constraint if exists UKm3otmh3ddptr1uxvy9wrhi77u
+Hibernate: 
+    alter table if exists member_status 
+       add constraint UKm3otmh3ddptr1uxvy9wrhi77u unique (status)
+Hibernate: 
+    alter table if exists orders 
+       drop constraint if exists UKajhwashtm4o1ceq0a6614h2w5
+Hibernate: 
+    alter table if exists orders 
+       add constraint UKajhwashtm4o1ceq0a6614h2w5 unique (coupon_usage_id)
+Hibernate: 
+    alter table if exists payment_history 
+       drop constraint if exists UK62h2l1fwtqubiyuv4ccbmwos9
+Hibernate: 
+    alter table if exists payment_history 
+       add constraint UK62h2l1fwtqubiyuv4ccbmwos9 unique (payment_code)
+Hibernate: 
+    alter table if exists payment_history 
+       drop constraint if exists UKg1ie6kcgijgbvsg17hl123so
+Hibernate: 
+    alter table if exists payment_history 
+       add constraint UKg1ie6kcgijgbvsg17hl123so unique (order_id)
+Hibernate: 
+    alter table if exists payment_method 
+       drop constraint if exists UKai10u6l9urufl9pidfuhnmmcj
+Hibernate: 
+    alter table if exists payment_method 
+       add constraint UKai10u6l9urufl9pidfuhnmmcj unique (name)
+Hibernate: 
+    alter table if exists point_type 
+       drop constraint if exists UKspufbyiwb4241gpw01f6qr8lj
+Hibernate: 
+    alter table if exists point_type 
+       add constraint UKspufbyiwb4241gpw01f6qr8lj unique (name)
+Hibernate: 
+    alter table if exists refund_history 
+       drop constraint if exists UK9qcffctb7cw14b26f2y2uhg2x
+Hibernate: 
+    alter table if exists refund_history 
+       add constraint UK9qcffctb7cw14b26f2y2uhg2x unique (order_id)
+Hibernate: 
+    alter table if exists review 
+       drop constraint if exists UKn42kb24vdjwldm5mmr97s59aw
+Hibernate: 
+    alter table if exists review 
+       add constraint UKn42kb24vdjwldm5mmr97s59aw unique (order_detail_id)
+Hibernate: 
+    alter table if exists shipment_policy 
+       drop constraint if exists UKnmmiol55bf0sulpiipjhu8dem
+Hibernate: 
+    alter table if exists shipment_policy 
+       add constraint UKnmmiol55bf0sulpiipjhu8dem unique (name)
+Hibernate: 
+    alter table if exists status 
+       drop constraint if exists UKreccgx9nr0a8dwv201t44l6pd
+Hibernate: 
+    alter table if exists status 
+       add constraint UKreccgx9nr0a8dwv201t44l6pd unique (name)
+Hibernate: 
+    alter table if exists wrap 
+       drop constraint if exists UKk9vgdnyf4jbdd53kkkua6yah6
+Hibernate: 
+    alter table if exists wrap 
+       add constraint UKk9vgdnyf4jbdd53kkkua6yah6 unique (name)
+Hibernate: 
+    alter table if exists wrap_manage 
+       drop constraint if exists UKptruhdix9rult4k34omb71idx
+Hibernate: 
+    alter table if exists wrap_manage 
+       add constraint UKptruhdix9rult4k34omb71idx unique (wrap_id, order_detail_id)
+Hibernate: 
+    alter table if exists book 
+       add constraint FKgtvt7p649s4x80y6f4842pnfq 
+       foreign key (publisher_id) 
+       references publisher
+Hibernate: 
+    alter table if exists book_category 
+       add constraint FKnyegcbpvce2mnmg26h0i856fd 
+       foreign key (book_id) 
+       references book
+Hibernate: 
+    alter table if exists book_category 
+       add constraint FKam8llderp40mvbbwceqpu6l2s 
+       foreign key (category_id) 
+       references category
+Hibernate: 
+    alter table if exists book_contributor 
+       add constraint FKoiepbipw7hohskv46ylw5f07j 
+       foreign key (book_id) 
+       references book
+Hibernate: 
+    alter table if exists book_contributor 
+       add constraint FKl7sgh8rn1yvdaluuxexve19ba 
+       foreign key (contributor_id) 
+       references contributor
+Hibernate: 
+    alter table if exists book_image 
+       add constraint FKh020sno0rk91annvrd960urno 
+       foreign key (book_id) 
+       references book
+Hibernate: 
+    alter table if exists book_image 
+       add constraint FKf85sv8bn2cwvbcnskqkb1qlb9 
+       foreign key (image_id) 
+       references image
+Hibernate: 
+    alter table if exists book_tag 
+       add constraint FKdrc33u5ufw8rdvajeveowgx7g 
+       foreign key (book_id) 
+       references book
+Hibernate: 
+    alter table if exists book_tag 
+       add constraint FKrxw4xl05l6ns1763bq284e7m2 
+       foreign key (tag_id) 
+       references tag
+Hibernate: 
+    alter table if exists cart 
+       add constraint FK5n0sq8ulj6ykdnrh4dnk0vfmw 
+       foreign key (book_id) 
+       references book
+Hibernate: 
+    alter table if exists cart 
+       add constraint FKmjbs1cyivq2g9dae2j5varijp 
+       foreign key (customer_id) 
+       references member
+Hibernate: 
+    alter table if exists category 
+       add constraint FKs2ride9gvilxy2tcuv7witnxc 
+       foreign key (parent_category_id) 
+       references category
+Hibernate: 
+    alter table if exists contributor 
+       add constraint FKhcu56ncud9o9r2aiukmxos7uq 
+       foreign key (contributor_role_id) 
+       references contributor_role
+Hibernate: 
+    alter table if exists coupon 
+       add constraint FKjnahg3a5otcynjdmxl7cq8p5k 
+       foreign key (coupon_policy_id) 
+       references coupon_policy
+Hibernate: 
+    alter table if exists coupon_book 
+       add constraint FKbdwo8tl9x62r3rf8d6ek9jelo 
+       foreign key (book_id) 
+       references book
+Hibernate: 
+    alter table if exists coupon_book 
+       add constraint FKjwbhq8txh319y6mgv6reaccl1 
+       foreign key (coupon_id) 
+       references coupon
+Hibernate: 
+    alter table if exists coupon_category 
+       add constraint FK4y0p3akmcuccdc0bja38e4gi5 
+       foreign key (category_id) 
+       references category
+Hibernate: 
+    alter table if exists coupon_category 
+       add constraint FK1bux7hg7xiwnicbbf3ys8j2x3 
+       foreign key (coupon_id) 
+       references coupon
+Hibernate: 
+    alter table if exists "likes" 
+       add constraint FKhkm63cpavadk02bcyx1o17wtx 
+       foreign key (book_id) 
+       references book
+Hibernate: 
+    alter table if exists "likes" 
+       add constraint FKe5j6y8qhm2iugqjetdoro2jqr 
+       foreign key (customer_id) 
+       references member
+Hibernate: 
+    alter table if exists member 
+       add constraint FKhi5bxumx6mx2rddoja37ty8q4 
+       foreign key (member_status_id) 
+       references member_status
+Hibernate: 
+    alter table if exists member 
+       add constraint FKeuue6uuygjoa79gq7ho7m7tog 
+       foreign key (member_tier_id) 
+       references member_tier
+Hibernate: 
+    alter table if exists member 
+       add constraint FKbaqvakoxfn8079onqo5kaxcp9 
+       foreign key (customer_id) 
+       references customer
+Hibernate: 
+    alter table if exists member_address 
+       add constraint FKip9ixawn66gnbgjh58mnt2i58 
+       foreign key (customer_id) 
+       references member
+Hibernate: 
+    alter table if exists member_coupon 
+       add constraint FKkxw7ja7v55gk4a368w3gs6s0j 
+       foreign key (coupon_id) 
+       references coupon
+Hibernate: 
+    alter table if exists member_coupon 
+       add constraint FKmsat2cu7mlxkoh6m83fjat3b6 
+       foreign key (customer_id) 
+       references member
+Hibernate: 
+    alter table if exists order_detail 
+       add constraint FK3aceepmpjwpo8pdn7gmjdfckq 
+       foreign key (book_id) 
+       references book
+Hibernate: 
+    alter table if exists order_detail 
+       add constraint FKrws2q0si6oyd6il8gqe2aennc 
+       foreign key (order_id) 
+       references orders
+Hibernate: 
+    alter table if exists orders 
+       add constraint FKf1o6blpxa2kptxm5bp1k2ws5a 
+       foreign key (coupon_usage_id) 
+       references member_coupon
+Hibernate: 
+    alter table if exists orders 
+       add constraint FK624gtjin3po807j3vix093tlf 
+       foreign key (customer_id) 
+       references customer
+Hibernate: 
+    alter table if exists orders 
+       add constraint FKiqkvqjiti5xw0anrad7xnkvoe 
+       foreign key (order_state_id) 
+       references order_state
+Hibernate: 
+    alter table if exists payment_history 
+       add constraint FKn278ec2ny1ai0e8hikff93x43 
+       foreign key (order_id) 
+       references orders
+Hibernate: 
+    alter table if exists payment_history 
+       add constraint FKcxpi9bsdcjdr0imxhe9g4hoik 
+       foreign key (payment_method_id) 
+       references payment_method
+Hibernate: 
+    alter table if exists payment_history 
+       add constraint FK3772s6ixp8sl4m34kuphp2v37 
+       foreign key (status_id) 
+       references status
+Hibernate: 
+    alter table if exists point_history 
+       add constraint FK2fi5722is0em7g0xy047c40oj 
+       foreign key (point_type_id) 
+       references point_type
+Hibernate: 
+    alter table if exists refund_history 
+       add constraint FKe1lxpav50kiioe3e5esbu7mgy 
+       foreign key (order_id) 
+       references orders
+Hibernate: 
+    alter table if exists refund_history 
+       add constraint FK6a5lyubjaykpllksj46tat4kg 
+       foreign key (refund_policy_id) 
+       references refund_policy
+Hibernate: 
+    alter table if exists review 
+       add constraint FK70yrt09r4r54tcgkrwbeqenbs 
+       foreign key (book_id) 
+       references book
+Hibernate: 
+    alter table if exists review 
+       add constraint FKkook80i56dm2507alehaaec8u 
+       foreign key (customer_id) 
+       references member
+Hibernate: 
+    alter table if exists review 
+       add constraint FKcueyxqruikr81ahlxl18e6s0y 
+       foreign key (order_detail_id) 
+       references order_detail
+Hibernate: 
+    alter table if exists review_image 
+       add constraint FK1afiyx13ewycv7jqy7smnquuv 
+       foreign key (image_id) 
+       references image
+Hibernate: 
+    alter table if exists review_image 
+       add constraint FK16wp089tx9nm0obc217gvdd6l 
+       foreign key (review_id) 
+       references review
+Hibernate: 
+    alter table if exists shipment 
+       add constraint FKqx7fy955cdwxgc95y8tsf9dro 
+       foreign key (carrier_id) 
+       references carrier
+Hibernate: 
+    alter table if exists shipment 
+       add constraint FK8amw90d62x67honrwucvjado7 
+       foreign key (order_id) 
+       references orders
+Hibernate: 
+    alter table if exists shipment 
+       add constraint FKqvyp2kkojvv7icmoq0p7lq5vv 
+       foreign key (shipment_policy_id) 
+       references shipment_policy
+Hibernate: 
+    alter table if exists wrap_image 
+       add constraint FK1l53qa3dipr7mquqbi57is5mf 
+       foreign key (image_id) 
+       references image
+Hibernate: 
+    alter table if exists wrap_image 
+       add constraint FKn3i4cqkm26abaoqhshh8p1t3c 
+       foreign key (wrap_id) 
+       references wrap
+Hibernate: 
+    alter table if exists wrap_manage 
+       add constraint FK3o8t17ymjqheaka07yx8jdyyp 
+       foreign key (order_detail_id) 
+       references order_detail
+Hibernate: 
+    alter table if exists wrap_manage 
+       add constraint FKlmhq3t62e7y2w0jooo9pjkb82 
+       foreign key (wrap_id) 
+       references wrap
+Hibernate: 
+    insert 
+    into
+        coupon_policy
+        (detail, discount_type, discount_value, duration, is_active, max_discount, name, usage_limit, coupon_policy_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        coupon_policy
+        (detail, discount_type, discount_value, duration, is_active, max_discount, name, usage_limit, coupon_policy_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    select
+        cp1_0.coupon_policy_id,
+        cp1_0.name,
+        cast(cp1_0.discount_type as varchar),
+        cp1_0.discount_value,
+        cp1_0.usage_limit,
+        cp1_0.duration,
+        cp1_0.detail,
+        cp1_0.max_discount 
+    from
+        coupon_policy cp1_0 
+    where
+        cp1_0.is_active=?
+]]></system-out>
+  </testcase>
+</testsuite>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PointServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.point.service.impl</a> &gt; <span class="el_source">PointServiceImpl.java</span></div><h1>PointServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.point.service.impl;
+
+import com.nhnacademy.bookstore.common.error.enums.RedirectType;
+import com.nhnacademy.bookstore.common.error.exception.orderset.order.OrderNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.point.PointAmountException;
+import com.nhnacademy.bookstore.common.error.exception.user.member.MemberNotFoundException;
+import com.nhnacademy.bookstore.orderset.order.entity.Order;
+import com.nhnacademy.bookstore.orderset.order.repository.OrderRepository;
+import com.nhnacademy.bookstore.point.dto.request.*;
+import com.nhnacademy.bookstore.point.dto.response.GetDetailPointHistoriesResponse;
+import com.nhnacademy.bookstore.point.dto.response.GetMyPageDetailPointHistoriesResponse;
+import com.nhnacademy.bookstore.point.dto.response.GetMyPageSimplePointHistoriesResponse;
+import com.nhnacademy.bookstore.point.dto.response.GetSimplePointHistoriesResponse;
+import com.nhnacademy.bookstore.point.entity.PointType;
+import com.nhnacademy.bookstore.point.enums.PointTypeEnum;
+import com.nhnacademy.bookstore.point.repository.PointHistoryRepository;
+import com.nhnacademy.bookstore.point.repository.PointTypeRepository;
+import com.nhnacademy.bookstore.point.service.PointService;
+import com.nhnacademy.bookstore.user.member.entity.Member;
+import com.nhnacademy.bookstore.user.member.repository.MemberRepository;
+import com.nhnacademy.bookstore.user.tier.entity.MemberTier;
+import com.nhnacademy.bookstore.user.tier.enums.Tier;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class PointServiceImpl implements PointService {
+
+    private final PointHistoryService pointHistoryService;
+
+    private final PointTypeRepository pointTypeRepository;
+    private final PointHistoryRepository pointHistoryRepository;
+    private final MemberRepository memberRepository;
+    private final OrderRepository orderRepository;
+
+    @Override
+    @Transactional
+    public void awardReviewPoint(ReviewPointAwardRequest request) {
+<span class="fc" id="L45">        Member member = memberRepository.findById(request.customerId())</span>
+<span class="fc" id="L46">                .orElseThrow(() -&gt; new MemberNotFoundException(</span>
+                        &quot;회원을 찾을 수 없습니다.&quot;,
+                        RedirectType.NONE,
+                        null
+                ));
+
+<span class="fc" id="L52">        PointType reviewPointType = pointTypeRepository.findByNameAndIsActiveTrue(&quot;리뷰작성&quot;)</span>
+<span class="pc" id="L53">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;리뷰 포인트 정책을 찾을 수 없습니다.&quot;));</span>
+
+<span class="fc" id="L55">        int pointAmount = reviewPointType.getAccVal();</span>
+
+<span class="fc" id="L57">        member.addPoint(pointAmount);</span>
+<span class="fc" id="L58">        Long reviewPointHistoryId = pointHistoryService.createReviewPointHistory(</span>
+                new CreateReviewPointHistoryRequest(
+                        reviewPointType,
+                        null,
+                        null,
+<span class="fc" id="L63">                        member.getId(),</span>
+<span class="fc" id="L64">                        pointAmount,</span>
+<span class="fc" id="L65">                        LocalDateTime.now()</span>
+                )
+        );
+<span class="fc" id="L68">        memberRepository.save(member);</span>
+<span class="fc" id="L69">    }</span>
+
+    @Override
+    @Transactional
+    public void awardOrderPoint(OrderPointAwardRequest request) {
+<span class="fc" id="L74">        Member member = memberRepository.findById(request.customerId())</span>
+<span class="pc" id="L75">                .orElseThrow(() -&gt; new MemberNotFoundException(</span>
+                        &quot;회원을 찾을 수 없습니다.&quot;,
+                        RedirectType.NONE,
+                        null
+                ));
+
+<span class="fc" id="L81">        Order order = orderRepository.findByOrderId(request.orderId())</span>
+<span class="fc" id="L82">                .orElseThrow(OrderNotFoundException::new);</span>
+
+<span class="fc" id="L84">        MemberTier memberTier = member.getTier();</span>
+<span class="fc" id="L85">        Tier tierName = memberTier.getName();</span>
+
+<span class="fc" id="L87">        int pointAmount = getPointAmount(order, String.valueOf(tierName), member);</span>
+
+<span class="fc" id="L89">        PointType orderPointType = pointTypeRepository.findByNameAndIsActiveTrue(&quot;도서주문&quot;)</span>
+<span class="pc" id="L90">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;도서주문 포인트 정책을 찾을 수 없습니다.&quot;));</span>
+
+<span class="fc" id="L92">        member.addPoint(pointAmount);</span>
+<span class="fc" id="L93">        Long orderPointHistoryId = pointHistoryService.createOrderPointHistory(</span>
+                new CreateOrderPointHistoryRequest(
+                        orderPointType,
+                        null,
+<span class="fc" id="L97">                        order.getOrderId(),</span>
+<span class="fc" id="L98">                        member.getId(),</span>
+<span class="fc" id="L99">                        pointAmount,</span>
+<span class="fc" id="L100">                        LocalDateTime.now()</span>
+                )
+        );
+<span class="fc" id="L103">        memberRepository.save(member);</span>
+<span class="fc" id="L104">    }</span>
+
+    @Override
+    @Transactional
+    public void usePoint(PointUseRequest request) {
+<span class="fc" id="L109">        Member member = memberRepository.findById(request.customerId())</span>
+<span class="pc" id="L110">                .orElseThrow(() -&gt; new MemberNotFoundException(</span>
+                        &quot;회원을 찾을 수 없습니다.&quot;,
+                        RedirectType.NONE,
+                        null
+                ));
+
+<span class="fc" id="L116">        int accPoint = member.getPoint();</span>
+<span class="fc" id="L117">        int usePointAmount = request.pointAmount();</span>
+
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (accPoint &lt; usePointAmount) {</span>
+<span class="fc" id="L120">            throw new PointAmountException(</span>
+                    &quot;포인트 사용량이 포인트 보유량보다 많습니다.&quot;
+            );
+        }
+
+<span class="fc" id="L125">        PointType pointUseType = pointTypeRepository.findByNameAndIsActiveTrue(&quot;포인트사용&quot;)</span>
+<span class="pc" id="L126">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;포인트 사용 정책을 찾을 수 없습니다.&quot;));</span>
+
+<span class="fc" id="L128">        member.usePoint(usePointAmount);</span>
+<span class="fc" id="L129">        pointHistoryService.createPointUseHistory(</span>
+                new CreatePointUseHistoryUseRequest(
+                        pointUseType,
+                        null,
+                        null,
+<span class="fc" id="L134">                        member.getId(),</span>
+<span class="fc" id="L135">                        usePointAmount,</span>
+<span class="fc" id="L136">                        LocalDateTime.now()</span>
+                )
+        );
+<span class="fc" id="L139">        memberRepository.save(member);</span>
+<span class="fc" id="L140">    }</span>
+
+    /**
+     * @param customerId
+     * @return 회원 페이지 포인트 간략 정보
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public GetMyPageSimplePointHistoriesResponse getMyPageSimplePointHistories(Long customerId) {
+<span class="fc" id="L149">        Member member = memberRepository.findById(customerId)</span>
+<span class="pc" id="L150">                .orElseThrow(() -&gt; new MemberNotFoundException(</span>
+                        &quot;회원을 찾을 수 없습니다.&quot;,
+                        RedirectType.NONE,
+                        null
+                ));
+
+<span class="fc" id="L156">        List&lt;GetSimplePointHistoriesResponse&gt; responses = pointHistoryRepository</span>
+<span class="fc" id="L157">                .findAllByCustomerIdOrderByRegisterDateDesc(customerId)</span>
+<span class="fc" id="L158">                .stream()</span>
+<span class="fc" id="L159">                .map(GetSimplePointHistoriesResponse::from)</span>
+<span class="fc" id="L160">                .toList();</span>
+
+<span class="fc" id="L162">        return GetMyPageSimplePointHistoriesResponse.of(member, responses);</span>
+    }
+
+    /**
+     * @param customerId
+     * @return 회원 페이지 포인트 상세 정보
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public GetMyPageDetailPointHistoriesResponse getMyPageDetailPointHistories(Long customerId) {
+<span class="fc" id="L172">        Member member = memberRepository.findById(customerId)</span>
+<span class="pc" id="L173">                .orElseThrow(() -&gt; new MemberNotFoundException(</span>
+                        &quot;회원을 찾을 수 없습니다.&quot;,
+                        RedirectType.NONE,
+                        null
+                ));
+
+<span class="fc" id="L179">        List&lt;GetDetailPointHistoriesResponse&gt; responses = pointHistoryRepository</span>
+<span class="fc" id="L180">                .findAllByCustomerIdOrderByRegisterDateDesc(customerId)</span>
+<span class="fc" id="L181">                .stream()</span>
+<span class="fc" id="L182">                .map(GetDetailPointHistoriesResponse::from)</span>
+<span class="fc" id="L183">                .toList();</span>
+
+<span class="fc" id="L185">        return GetMyPageDetailPointHistoriesResponse.of(member, responses);</span>
+    }
+
+    private int getPointAmount(Order order, String tierName, Member member) {
+<span class="fc" id="L189">        int totalPrice = order.getTotalPrice();</span>
+
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (tierName.equals(&quot;일반&quot;)) {</span>
+<span class="fc" id="L192">            totalPrice = totalPrice * 1 / 100;</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        } else if (member.getTier().equals(&quot;로얄&quot;)) {</span>
+<span class="nc" id="L194">            totalPrice = totalPrice * 2 / 100;</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">        } else if (member.getTier().equals(&quot;골드&quot;)) {</span>
+<span class="nc" id="L196">            totalPrice = totalPrice * 3 / 100;</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        } else if (member.getTier().equals(&quot;플래티넘&quot;)) {</span>
+<span class="nc" id="L198">            totalPrice = totalPrice * 4 / 100;</span>
+        } else {
+<span class="nc" id="L200">            totalPrice = 0;</span>
+        }
+<span class="fc" id="L202">        return totalPrice;</span>
+    }
+
+    private Integer calculatePurchasePoint(Integer totalPrice, PointType pointType) {
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        if (pointType.getType() == PointTypeEnum.PERCENT) {</span>
+<span class="nc" id="L207">            return (int) (totalPrice * (pointType.getAccVal() / 100.0));</span>
+        }
+<span class="nc" id="L209">        return pointType.getAccVal();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

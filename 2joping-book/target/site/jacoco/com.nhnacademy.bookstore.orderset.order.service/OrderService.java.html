@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.orderset.order.service</a> &gt; <span class="el_source">OrderService.java</span></div><h1>OrderService.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.orderset.order.service;
+
+import com.nhnacademy.bookstore.admin.wrap.entity.Wrap;
+import com.nhnacademy.bookstore.admin.wrap.entity.WrapManage;
+import com.nhnacademy.bookstore.admin.wrap.repository.WrapManageRepository;
+import com.nhnacademy.bookstore.admin.wrap.repository.WrapRepository;
+import com.nhnacademy.bookstore.bookset.book.entity.Book;
+import com.nhnacademy.bookstore.bookset.book.repository.BookRepository;
+import com.nhnacademy.bookstore.common.error.enums.RedirectType;
+import com.nhnacademy.bookstore.common.error.exception.bookset.book.BookNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.book.BookStockOutException;
+import com.nhnacademy.bookstore.common.error.exception.coupon.CouponInvalidException;
+import com.nhnacademy.bookstore.common.error.exception.orderset.order.OrderPointInvalidException;
+import com.nhnacademy.bookstore.common.error.exception.shipment.ShipmentNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.user.customer.NonMemberValidationFailed;
+import com.nhnacademy.bookstore.coupon.dto.response.MemberCouponResponseDto;
+import com.nhnacademy.bookstore.coupon.entity.member.MemberCoupon;
+import com.nhnacademy.bookstore.coupon.enums.DiscountType;
+import com.nhnacademy.bookstore.coupon.repository.member.MemberCouponRepository;
+import com.nhnacademy.bookstore.coupon.service.MemberCouponService;
+import com.nhnacademy.bookstore.orderset.order.dto.OrderListResponseDto;
+import com.nhnacademy.bookstore.orderset.order.dto.request.OrderPostRequest;
+import com.nhnacademy.bookstore.orderset.order.dto.request.OrderRequest;
+import com.nhnacademy.bookstore.orderset.order.entity.Order;
+import com.nhnacademy.bookstore.orderset.order.mapper.OrderMapper;
+import com.nhnacademy.bookstore.orderset.order.repository.OrderRepository;
+import com.nhnacademy.bookstore.orderset.orderdetail.entity.OrderDetail;
+import com.nhnacademy.bookstore.orderset.orderdetail.repository.OrderDetailRepository;
+import com.nhnacademy.bookstore.orderset.orderstate.entity.OrderState;
+import com.nhnacademy.bookstore.orderset.orderstate.service.OrderStateService;
+import com.nhnacademy.bookstore.paymentset.paymenthistory.entity.PaymentHistory;
+import com.nhnacademy.bookstore.paymentset.paymenthistory.repository.PaymentHistoryRepository;
+import com.nhnacademy.bookstore.paymentset.paymentmethod.entity.PaymentMethod;
+import com.nhnacademy.bookstore.paymentset.paymentmethod.enums.PaymentMethodType;
+import com.nhnacademy.bookstore.paymentset.paymentmethod.exception.PaymentMethodNotFoundException;
+import com.nhnacademy.bookstore.paymentset.paymentmethod.repository.PaymentMethodRepository;
+import com.nhnacademy.bookstore.paymentset.status.entity.PaymentStatus;
+import com.nhnacademy.bookstore.paymentset.status.enums.PaymentStatusType;
+import com.nhnacademy.bookstore.paymentset.status.exception.PaymentStatusNotFoundException;
+import com.nhnacademy.bookstore.paymentset.status.repository.PaymentStatusRepository;
+import com.nhnacademy.bookstore.point.dto.request.OrderPointAwardRequest;
+import com.nhnacademy.bookstore.point.dto.request.PointUseRequest;
+import com.nhnacademy.bookstore.point.service.PointService;
+import com.nhnacademy.bookstore.shipment.dto.request.ShipmentRequestDto;
+import com.nhnacademy.bookstore.shipment.dto.response.ShipmentPolicyResponseDto;
+import com.nhnacademy.bookstore.shipment.entity.Shipment;
+import com.nhnacademy.bookstore.shipment.entity.ShipmentPolicy;
+import com.nhnacademy.bookstore.shipment.repository.ShipmentPolicyRepository;
+import com.nhnacademy.bookstore.shipment.repository.ShipmentRepository;
+import com.nhnacademy.bookstore.user.customer.dto.response.CustomerWithMemberStatusResponse;
+import com.nhnacademy.bookstore.user.customer.entity.Customer;
+import com.nhnacademy.bookstore.user.customer.service.CustomerService;
+import com.nhnacademy.bookstore.user.member.repository.MemberRepository;
+import com.nhnacademy.bookstore.user.member.service.MemberService;
+import com.nhnacademy.bookstore.user.nonmember.service.NonMemberService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+/**
+ * 주문 처리를 위한 서비스
+ * redis 주문 정보 임시저장/조회와
+ * 주문 관련 CRUD를 제공한다
+ *
+ * @author 이승준
+ */
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+    private static final String ORDER_KEY = &quot;order:&quot;;
+
+    private final RedisTemplate&lt;Object, Object&gt; redisTemplate;
+    private final OrderStateService orderStateService;
+    private final CustomerService customerService;
+    private final NonMemberService nonMemberService;
+    private final MemberService memberService;
+    private final MemberCouponService memberCouponService;
+    private final PointService pointService;
+
+    private final BookRepository bookRepository;
+    private final MemberRepository memberRepository;
+    private final MemberCouponRepository memberCouponRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final OrderRepository orderRepository;
+    private final PaymentHistoryRepository paymentHistoryRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
+    private final PaymentStatusRepository paymentStatusRepository;
+    private final ShipmentPolicyRepository shipmentPolicyRepository;
+    private final ShipmentRepository shipmentRepository;
+    private final WrapRepository wrapRepository;
+    private final WrapManageRepository wrapManageRepository;
+
+    private final OrderMapper orderMapper;
+
+    public void registerOrderOnRedis(OrderRequest orderRequest) {
+        // 주문 임시 저장 10분 동안 유효
+<span class="nc" id="L103">        redisTemplate.opsForValue().set(ORDER_KEY + orderRequest.orderCode(), orderRequest, 10, TimeUnit.MINUTES);</span>
+<span class="nc" id="L104">    }</span>
+
+    public OrderRequest getOrderOnRedis(String orderId) {
+<span class="nc" id="L107">        return (OrderRequest) redisTemplate.opsForValue().get(ORDER_KEY + orderId);</span>
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public OrderRequest validateOrderRequest(OrderRequest orderRequest, Long customerId) {
+<span class="nc" id="L112">        Map&lt;Long, Integer&gt; bookQuantityMap =</span>
+<span class="nc" id="L113">                orderRequest.cartItemList().stream()</span>
+<span class="nc" id="L114">                        .collect(Collectors.toMap(</span>
+                                OrderRequest.CartItemRequest::bookId,
+                                OrderRequest.CartItemRequest::quantity
+                        ));
+<span class="nc" id="L118">        List&lt;Book&gt; books = bookRepository.findByBookIdIn(bookQuantityMap.keySet());</span>
+
+        // 도서 가격 재계산
+<span class="nc" id="L121">        int bookCost = books.stream().mapToInt(b -&gt; {</span>
+<span class="nc" id="L122">            int quantity = bookQuantityMap.getOrDefault(b.getBookId(), 0);</span>
+<span class="nc" id="L123">            return b.getSellingPrice() * quantity;</span>
+<span class="nc" id="L124">        }).sum();</span>
+
+        // 포장 가격 재계산
+<span class="nc" id="L127">        List&lt;OrderRequest.WrapItemRequest&gt; wrapItems =</span>
+<span class="nc" id="L128">                orderRequest.wrapList().stream().filter(w -&gt; Objects.nonNull(w.wrapId())).toList();</span>
+
+        // key: 포장 ID, value: 카운트된 포장 ID 수
+<span class="nc" id="L131">        Map&lt;Long, Integer&gt; wrapCountMap = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        for (OrderRequest.WrapItemRequest item : wrapItems) {</span>
+<span class="nc" id="L133">            Long wrapId = item.wrapId();</span>
+<span class="nc" id="L134">            Integer wrapCount = wrapCountMap.getOrDefault(wrapId, 0);</span>
+<span class="nc" id="L135">            wrapCountMap.put(wrapId, wrapCount + 1);</span>
+<span class="nc" id="L136">        }</span>
+<span class="nc" id="L137">        List&lt;Wrap&gt; wraps = wrapRepository.findByWrapIdIn(wrapCountMap.keySet());</span>
+
+<span class="nc" id="L139">        int wrapCost = wraps.stream()</span>
+<span class="nc" id="L140">                .map(w -&gt; w.getWrapPrice() * wrapCountMap.get(w.getWrapId()))</span>
+<span class="nc" id="L141">                .reduce(0, Integer::sum);</span>
+
+        // 배송비 결정
+<span class="nc" id="L144">        List&lt;ShipmentPolicyResponseDto&gt; shipmentPolicies =</span>
+<span class="nc" id="L145">                shipmentPolicyRepository.findActiveShipmentPolicies()</span>
+<span class="nc" id="L146">                        .stream()</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">                        .filter(s -&gt; isMember(customerId) == s.isMemberOnly()).collect(Collectors.toCollection(ArrayList::new));</span>
+<span class="nc" id="L148">        int shipmentCost = 0;</span>
+
+        // 배송 정책 최소 적용 가격 기준으로 정렬 및 책정
+<span class="nc" id="L151">        Objects.requireNonNull(shipmentPolicies).sort((p1, p2) -&gt; p1.minOrderAmount() - p2.minOrderAmount());</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        for (ShipmentPolicyResponseDto dto : shipmentPolicies) {</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">            if (bookCost &gt;= dto.minOrderAmount()) {</span>
+<span class="nc" id="L154">                shipmentCost = dto.shippingFee();</span>
+            }
+<span class="nc" id="L156">        }</span>
+
+        // 쿠폰 유효성 검사
+<span class="nc" id="L159">        validateCouponUsage(orderRequest, customerId);</span>
+
+        // 쿠폰 사용 id와 일치하는 회원의 쿠폰 조회
+<span class="nc" id="L162">        int couponDiscount = calculateCouponDiscount(orderRequest, customerId, bookCost);</span>
+
+        // 포인트 유효성 검사
+<span class="nc" id="L165">        int totalCost = bookCost + wrapCost + shipmentCost - couponDiscount;</span>
+<span class="nc" id="L166">        int point = 0;</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (isMember(customerId)) {</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            if (memberService.getPointsOfMember(customerId).point() &lt; orderRequest.point()) {</span>
+<span class="nc" id="L169">                throw new OrderPointInvalidException(&quot;보유한 포인트를 초과했습니다.&quot;);</span>
+            }
+
+<span class="nc bnc" id="L172" title="All 2 branches missed.">            if (totalCost &lt; orderRequest.point()) {</span>
+<span class="nc" id="L173">                throw new OrderPointInvalidException(String.format(&quot;포인트 %d는 주문 금액보다 많은 포인트입니다.&quot;, orderRequest.point()));</span>
+            }
+
+<span class="nc" id="L176">            point = orderRequest.point();</span>
+        }
+
+        // 포인트 금액 차감
+<span class="nc" id="L180">        totalCost -= point;</span>
+
+<span class="nc" id="L182">        return generateOrderRequest(orderRequest, bookCost, shipmentCost, wrapCost, totalCost, couponDiscount);</span>
+    }
+
+    @Transactional
+    public int calculateCouponDiscount(OrderRequest orderRequest, Long customerId, int bookCost) {
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        if (!isMember(customerId)) {</span>
+<span class="nc" id="L188">            return 0;</span>
+        }
+
+<span class="nc" id="L191">        List&lt;MemberCouponResponseDto&gt; memberCoupons = memberCouponService.getAllMemberCoupons(customerId);</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">        if (memberCoupons.isEmpty()) {</span>
+<span class="nc" id="L193">            return 0;</span>
+        }
+
+<span class="nc" id="L196">        Optional&lt;MemberCouponResponseDto&gt; coupon = memberCoupons.stream()</span>
+<span class="nc" id="L197">                .filter(c -&gt; c.couponUsageId().equals(orderRequest.couponId()))</span>
+<span class="nc" id="L198">                .findFirst();</span>
+        // 조회된 쿠폰이 없으면 예외
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        if (coupon.isEmpty()) {</span>
+<span class="nc" id="L201">            throw new CouponInvalidException(&quot;로그인한 회원이 가진 쿠폰이 아닙니다.&quot;);</span>
+        }
+
+<span class="nc" id="L204">        return coupon.map(m -&gt; calculateCouponDiscount(bookCost, m)).orElse(0);</span>
+    }
+
+    private void validateCouponUsage(OrderRequest orderRequest, Long customerId) {
+<span class="nc bnc" id="L208" title="All 4 branches missed.">        if (!isMember(customerId) &amp;&amp; orderRequest.couponId() &gt; 0) {</span>
+<span class="nc" id="L209">            throw new CouponInvalidException(&quot;로그인 후 쿠폰을 사용해주십시오.&quot;);</span>
+        }
+<span class="nc" id="L211">    }</span>
+
+    private OrderRequest generateOrderRequest(
+            OrderRequest orderRequest,
+            int bookCost,
+            int shipmentCost,
+            int wrapCost,
+            int totalCost,
+            int couponDiscount) {
+<span class="nc" id="L220">        return new OrderRequest(</span>
+<span class="nc" id="L221">                orderRequest.cartItemList(),                // 장바구니 항목</span>
+<span class="nc" id="L222">                orderRequest.deliveryInfo(),               // 배송 정보</span>
+<span class="nc" id="L223">                orderRequest.point(),                      // 포인트</span>
+<span class="nc" id="L224">                orderRequest.couponId(),                   // 쿠폰 ID</span>
+<span class="nc" id="L225">                orderRequest.wrapList(),                   // 포장 목록</span>
+<span class="nc" id="L226">                bookCost,                                  // 도서 비용</span>
+<span class="nc" id="L227">                shipmentCost,                              // 배송비</span>
+<span class="nc" id="L228">                wrapCost,                                  // 포장비</span>
+<span class="nc" id="L229">                totalCost,                                 // 총 비용</span>
+<span class="nc" id="L230">                couponDiscount, // 쿠폰 할인</span>
+<span class="nc" id="L231">                orderRequest.nonMemberPassword(),</span>
+<span class="nc" id="L232">                orderRequest.orderCode()</span>
+        );
+    }
+
+    /**
+     * 주문 성공 시 수행되는 주문 등록
+     *
+     * @param orderRequest     사용자가 작성한 주문 요청
+     * @param orderPostRequest
+     * @param customerId
+     */
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void registerOrder(OrderRequest orderRequest, OrderPostRequest orderPostRequest, Long customerId) {
+<span class="nc" id="L245">        Order order = new Order();</span>
+<span class="nc" id="L246">        OrderState orderState = orderStateService.getWaitingState();</span>
+<span class="nc" id="L247">        MemberCoupon memberCoupon = null;</span>
+<span class="nc" id="L248">        List&lt;MemberCouponResponseDto&gt; memberCoupons = memberCouponService.getAllMemberCoupons(</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">                isMember(customerId) ? customerId : 0</span>
+        );
+
+<span class="nc" id="L252">        CustomerWithMemberStatusResponse customerWithMemberStatusResponse =</span>
+<span class="nc" id="L253">                customerService.getOrCreateCustomerIfNonMember(customerId, orderRequest);</span>
+<span class="nc" id="L254">        Customer customer = customerWithMemberStatusResponse.customer();</span>
+
+        // 적용된 쿠폰이 있는 경우 쿠폰 가져오기, (해당 회원이 가진 쿠폰만)
+<span class="nc bnc" id="L257" title="All 4 branches missed.">        if (orderRequest.couponId() != null &amp;&amp; orderRequest.couponId() &gt; 0 &amp;&amp;</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">                memberCoupons.stream().anyMatch(dto -&gt; dto.couponId().equals(orderRequest.couponId()))) {</span>
+<span class="nc" id="L259">            memberCoupon = memberCouponRepository.findById(orderRequest.couponId()).orElse(null);</span>
+        }
+<span class="nc" id="L261">        order.apply(orderState, memberCoupon, orderRequest, orderPostRequest, customer);</span>
+<span class="nc" id="L262">        Order savedOrder = orderRepository.save(order);</span>
+<span class="nc" id="L263">        redisTemplate.delete(ORDER_KEY + orderPostRequest.orderId()); // 임시저장한 주문정보 삭제</span>
+
+        // 주문 상세 등록
+<span class="nc" id="L266">        List&lt;OrderRequest.CartItemRequest&gt; cartItemRequests = orderRequest.cartItemList();</span>
+<span class="nc" id="L267">        List&lt;Long&gt; bookIds = cartItemRequests.stream().map(OrderRequest.CartItemRequest::bookId).toList();</span>
+<span class="nc" id="L268">        Map&lt;Long, Book&gt; bookMap =</span>
+<span class="nc" id="L269">                bookRepository.findByBookIdIn(bookIds).stream().collect(Collectors.toMap(</span>
+                        Book::getBookId,
+<span class="nc" id="L271">                        book -&gt; book</span>
+                ));
+<span class="nc" id="L273">        Map&lt;Long, OrderDetail&gt; orderDetailMap = cartItemRequests.stream()</span>
+<span class="nc" id="L274">                .map(cartItem -&gt; {</span>
+<span class="nc" id="L275">                    Book book = bookMap.get(cartItem.bookId());</span>
+<span class="nc bnc" id="L276" title="All 2 branches missed.">                    if (book == null) {</span>
+<span class="nc" id="L277">                        throw new BookNotFoundException();</span>
+                    }
+
+<span class="nc bnc" id="L280" title="All 2 branches missed.">                    if (book.getRemainQuantity() &lt; cartItem.quantity()) {</span>
+<span class="nc" id="L281">                        throw new BookStockOutException(&quot;재고 소진&quot;, RedirectType.REDIRECT, &quot;/&quot;);</span>
+                    }
+
+<span class="nc" id="L284">                    book.decreaseQuantity(cartItem.quantity());</span>
+<span class="nc" id="L285">                    OrderDetail orderDetail = new OrderDetail();</span>
+<span class="nc" id="L286">                    orderDetail.apply(savedOrder, book, cartItem.quantity(), cartItem.unitPrice());</span>
+<span class="nc" id="L287">                    return Map.entry(book.getBookId(), orderDetail);</span>
+                })
+<span class="nc" id="L289">                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));</span>
+<span class="nc" id="L290">        orderDetailRepository.saveAll(orderDetailMap.values());</span>
+
+        // 주문 포장 등록
+<span class="nc" id="L293">        List&lt;OrderRequest.WrapItemRequest&gt; validWrapRequests =</span>
+<span class="nc" id="L294">                orderRequest.wrapList().stream().filter(w -&gt; Objects.nonNull(w.wrapId())).toList();</span>
+<span class="nc" id="L295">        List&lt;Long&gt; wrapIds = validWrapRequests.stream().map(OrderRequest.WrapItemRequest::wrapId).toList();</span>
+<span class="nc" id="L296">        Map&lt;Long, Wrap&gt; wrapMap =</span>
+<span class="nc" id="L297">                wrapRepository.findByWrapIdIn(wrapIds).stream().collect(Collectors.toMap(</span>
+                        Wrap::getWrapId,
+<span class="nc" id="L299">                        wrap -&gt; wrap</span>
+                ));
+<span class="nc" id="L301">        List&lt;WrapManage&gt; wrapManages = validWrapRequests.stream()</span>
+<span class="nc" id="L302">                .map(item -&gt; {</span>
+<span class="nc" id="L303">                    OrderDetail orderDetail = orderDetailMap.get(item.bookId());</span>
+<span class="nc" id="L304">                    Wrap wrap = wrapMap.get(item.wrapId());</span>
+<span class="nc" id="L305">                    return new WrapManage(null, wrap, orderDetail);</span>
+<span class="nc" id="L306">                }).toList();</span>
+<span class="nc" id="L307">        wrapManageRepository.saveAll(wrapManages);</span>
+
+        // 배송 등록
+<span class="nc" id="L310">        Shipment shipment = new Shipment();</span>
+<span class="nc" id="L311">        ShipmentPolicy shipmentPolicy =</span>
+<span class="nc" id="L312">                shipmentPolicyRepository.findById(orderRequest.deliveryInfo().deliveryPolicyId())</span>
+<span class="nc" id="L313">                        .orElseThrow(ShipmentNotFoundException::new);</span>
+<span class="nc" id="L314">        ShipmentRequestDto shipmentRequestDto = new ShipmentRequestDto(</span>
+                null,
+<span class="nc" id="L316">                orderRequest.deliveryInfo().deliveryPolicyId(),</span>
+<span class="nc" id="L317">                savedOrder.getOrderId(),</span>
+<span class="nc" id="L318">                orderRequest.deliveryInfo().requirement(),</span>
+                null,
+                null,
+                null
+        );
+<span class="nc" id="L323">        shipment.toEntity(shipmentRequestDto, null, shipmentPolicy, savedOrder);</span>
+<span class="nc" id="L324">        shipmentRepository.save(shipment);</span>
+
+        // 결제 등록
+<span class="nc" id="L327">        PaymentMethodType paymentMethodType = determinePaymentMethod(orderPostRequest.method());</span>
+<span class="nc" id="L328">        PaymentMethod paymentMethod = paymentMethodRepository.findByPaymentMethodType(paymentMethodType)</span>
+<span class="nc" id="L329">                .orElseThrow(</span>
+<span class="nc" id="L330">                        () -&gt; new PaymentMethodNotFoundException(orderPostRequest.method()));</span>
+<span class="nc" id="L331">        PaymentStatus paymentStatus = paymentStatusRepository.findByStatusType(PaymentStatusType.COMPLETED).orElseThrow(</span>
+                PaymentStatusNotFoundException::new);
+<span class="nc" id="L333">        PaymentHistory paymentHistory = new PaymentHistory();</span>
+<span class="nc" id="L334">        paymentHistory.apply(</span>
+                paymentStatus,
+                paymentMethod,
+                savedOrder,
+<span class="nc" id="L338">                orderPostRequest.paymentKey(),</span>
+<span class="nc" id="L339">                orderRequest.totalCost()</span>
+        );
+<span class="nc" id="L341">        paymentHistoryRepository.save(paymentHistory);</span>
+
+        // 쿠폰 사용 처리
+<span class="nc" id="L344">        Optional.ofNullable(memberCoupon).ifPresent(m -&gt; m.updateUsed(true));</span>
+
+        // 포인트 차감
+<span class="nc" id="L347">        memberRepository.findById(customer.getId()).ifPresent(m -&gt; {</span>
+            // 회원인 경우만 포인트를 차감한다.
+<span class="nc" id="L349">            PointUseRequest pointUseRequest = new PointUseRequest(customer.getId(), orderRequest.point());</span>
+<span class="nc" id="L350">            pointService.usePoint(pointUseRequest);</span>
+            // 회원 등급별 포인트 적립 수행
+<span class="nc" id="L352">            OrderPointAwardRequest orderPointAwardRequest =</span>
+                    new OrderPointAwardRequest(
+<span class="nc" id="L354">                            customer.getId(),</span>
+<span class="nc" id="L355">                            savedOrder.getOrderId()</span>
+                    );
+<span class="nc" id="L357">            pointService.awardOrderPoint(orderPointAwardRequest);</span>
+<span class="nc" id="L358">        });</span>
+
+        // 비회원인 경우 비회원용 비밀번호 등록
+<span class="nc bnc" id="L361" title="All 2 branches missed.">        if (!customerWithMemberStatusResponse.isMember()) {</span>
+<span class="nc bnc" id="L362" title="All 4 branches missed.">            if (orderRequest.nonMemberPassword() == null || orderRequest.nonMemberPassword().isEmpty()) {</span>
+<span class="nc" id="L363">                throw new NonMemberValidationFailed(&quot;비밀번호가 유효하지 않습니다.&quot;, RedirectType.REDIRECT, &quot;/&quot;);</span>
+            }
+<span class="nc" id="L365">            nonMemberService.setNonMemberPassword(customer, orderRequest.nonMemberPassword());</span>
+        }
+<span class="nc" id="L367">    }</span>
+
+    /**
+     * 정해진 유형 중 결제 유형을 결정하기 위한 메소드
+     *
+     * @param method 결제 수단
+     * @return 결제 수단 유형
+     */
+    private PaymentMethodType determinePaymentMethod(String method) {
+<span class="nc bnc" id="L376" title="All 2 branches missed.">        for (PaymentMethodType type : PaymentMethodType.values()) {</span>
+<span class="nc" id="L377">            boolean present = type.getCandidates().stream().anyMatch(c -&gt; c.toUpperCase().contains(method));</span>
+<span class="nc bnc" id="L378" title="All 2 branches missed.">            if (present) {</span>
+<span class="nc" id="L379">                return type;</span>
+            }
+        }
+
+<span class="nc" id="L383">        return null;</span>
+    }
+
+    public List&lt;OrderListResponseDto&gt; getOrders() {
+<span class="nc" id="L387">        List&lt;Order&gt; orders = orderRepository.findAll();</span>
+<span class="nc" id="L388">        return orderMapper.toOrderListResponseDto(orders);</span>
+    }
+
+    public boolean updateOrderState(Long orderId, Long orderStateId) {
+<span class="nc bnc" id="L392" title="All 2 branches missed.">        return orderRepository.updateOrderStateByOrderIdAndOrderStateId(orderId, orderStateId) != 0;</span>
+    }
+
+    private boolean isMember(Long customerId) {
+<span class="nc bnc" id="L396" title="All 2 branches missed.">        return customerId != null;</span>
+    }
+
+    private int calculateCouponDiscount(int bookCost, MemberCouponResponseDto memberCouponResponseDto) {
+<span class="nc" id="L400">        Integer usageLimit = memberCouponResponseDto.couponResponseDto().couponPolicyResponseDto().usageLimit();</span>
+<span class="nc" id="L401">        Integer maxDiscount = memberCouponResponseDto.couponResponseDto().couponPolicyResponseDto().maxDiscount();</span>
+<span class="nc" id="L402">        DiscountType discountType =</span>
+<span class="nc" id="L403">                DiscountType.valueOf(memberCouponResponseDto.couponResponseDto().couponPolicyResponseDto().discountType());</span>
+<span class="nc" id="L404">        Integer discountValue = memberCouponResponseDto.couponResponseDto().couponPolicyResponseDto().discountValue();</span>
+<span class="nc bnc" id="L405" title="All 2 branches missed.">        int discountCost = discountType.equals(DiscountType.PERCENT) ? discountValue * bookCost / 100 : discountValue;</span>
+
+<span class="nc bnc" id="L407" title="All 4 branches missed.">        if (usageLimit != null &amp;&amp; bookCost &lt; usageLimit) {</span>
+<span class="nc" id="L408">            return discountCost;</span>
+        }
+
+<span class="nc bnc" id="L411" title="All 4 branches missed.">        if (maxDiscount != null &amp;&amp; maxDiscount &lt; discountCost) {</span>
+<span class="nc" id="L412">            discountCost = maxDiscount;</span>
+        }
+
+<span class="nc" id="L415">        return discountCost;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

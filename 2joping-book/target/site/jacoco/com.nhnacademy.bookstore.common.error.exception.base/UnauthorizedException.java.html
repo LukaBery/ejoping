@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnauthorizedException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.common.error.exception.base</a> &gt; <span class="el_source">UnauthorizedException.java</span></div><h1>UnauthorizedException.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.common.error.exception.base;
+
+import com.nhnacademy.bookstore.common.error.enums.RedirectType;
+import lombok.Getter;
+
+import java.io.Serializable;
+
+/**
+ * UnauthorizedException 클래스
+ * 이 예외는 애플리케이션에서 인증되지 않은 액세스(HTTP 401)를 나타냅니다.
+ * 이 클래스는 리다이렉션 처리와 추가 데이터 전달을 위한 필드를 포함하고 있습니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@Getter
+public class UnauthorizedException  extends RuntimeException{
+
+    private final RedirectType redirectType;
+    private final String url;
+    private final Serializable data;
+
+    public UnauthorizedException(String message) {
+<span class="nc" id="L24">        super(message);</span>
+<span class="nc" id="L25">        this.redirectType = null;</span>
+<span class="nc" id="L26">        this.url = null;</span>
+<span class="nc" id="L27">        this.data = null;</span>
+<span class="nc" id="L28">    }</span>
+
+    public UnauthorizedException(String message, RedirectType redirectType, String url) {
+<span class="nc" id="L31">        super(message);</span>
+<span class="nc" id="L32">        this.redirectType = redirectType;</span>
+<span class="nc" id="L33">        this.url = url;</span>
+<span class="nc" id="L34">        this.data = null;</span>
+<span class="nc" id="L35">    }</span>
+
+    public UnauthorizedException(String message, RedirectType redirectType, String url, Serializable data) {
+<span class="fc" id="L38">        super(message);</span>
+<span class="fc" id="L39">        this.redirectType = redirectType;</span>
+<span class="fc" id="L40">        this.url = url;</span>
+<span class="fc" id="L41">        this.data = data;</span>
+<span class="fc" id="L42">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

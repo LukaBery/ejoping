@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TagServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.bookset.tag.service</a> &gt; <span class="el_source">TagServiceImpl.java</span></div><h1>TagServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.bookset.tag.service;
+
+
+import com.nhnacademy.bookstore.bookset.book.entity.Book;
+import com.nhnacademy.bookstore.bookset.book.repository.BookRepository;
+import com.nhnacademy.bookstore.bookset.tag.dto.TagRequestDto;
+import com.nhnacademy.bookstore.bookset.tag.dto.TagResponseDto;
+import com.nhnacademy.bookstore.bookset.tag.entity.BookTag;
+import com.nhnacademy.bookstore.bookset.tag.entity.Tag;
+import com.nhnacademy.bookstore.bookset.tag.repository.BookTagRepository;
+import com.nhnacademy.bookstore.bookset.tag.repository.TagRepository;
+import com.nhnacademy.bookstore.common.error.exception.base.NotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.tag.TagAlreadyAssignedBookException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.tag.TagNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * tag service
+ *
+ * @author : 박채연
+ * @date : 2024-10-27
+ */
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class TagServiceImpl implements TagService {
+    private final TagRepository tagRepository;
+    private final BookRepository bookRepository;
+    private final BookTagRepository bookTagRepository;
+
+    /**
+     * 새로운 태그를 생성합니다.
+     *
+     * @param dto 태그 요청 데이터
+     * @return 생성된 태그 정보
+     */
+    public TagResponseDto createTag(TagRequestDto dto) {
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (tagRepository.findByName(dto.name()).isPresent()) {</span>
+<span class="fc" id="L43">            throw new TagAlreadyAssignedBookException();</span>
+        }
+<span class="fc" id="L45">        Tag tag = new Tag(dto.name());</span>
+<span class="fc" id="L46">        Tag savedTag = tagRepository.save(tag);</span>
+
+<span class="fc" id="L48">        return new TagResponseDto(savedTag.getTagId(), savedTag.getName());</span>
+    }
+
+    /**
+     * 특정 책에 태그를 할당합니다.
+     *
+     * @param tagId  태그 ID
+     * @param bookId 책 ID
+     * @return 할당된 태그 정보
+     */
+    @Override
+    public TagResponseDto assignedTagToBook(Long tagId, Long bookId) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (bookTagRepository.existsByBook_BookIdAndTag_TagId(bookId, tagId)) {</span>
+<span class="fc" id="L61">            throw new TagAlreadyAssignedBookException();</span>
+        }
+
+<span class="fc" id="L64">        Book book = bookRepository.findById(bookId)</span>
+<span class="pc" id="L65">                .orElseThrow(() -&gt; new NotFoundException(&quot;존재하지 않는 책입니다.&quot;)); // 일단은 이렇게 구현 나중에 book exception 생기면 추가예정</span>
+<span class="fc" id="L66">        Tag tag = tagRepository.findById(tagId)</span>
+<span class="fc" id="L67">                .orElseThrow(TagNotFoundException::new);</span>
+
+<span class="fc" id="L69">        BookTag bookTag = new BookTag(new BookTag.BookTagId(bookId, tagId), book, tag);</span>
+<span class="fc" id="L70">        bookTagRepository.save(bookTag);</span>
+
+<span class="fc" id="L72">        return new TagResponseDto(tag.getTagId(), tag.getName());</span>
+    }
+
+    /**
+     * 특정 태그를 조회합니다.
+     *
+     * @param tagId 태그 ID
+     * @return 조회된 태그 정보
+     */
+    @Override
+    public TagResponseDto getTag(Long tagId) {
+<span class="fc" id="L83">        Tag tag = tagRepository.findById(tagId)</span>
+<span class="fc" id="L84">                .orElseThrow(TagNotFoundException::new);</span>
+
+<span class="fc" id="L86">        return new TagResponseDto(tag.getTagId(), tag.getName());</span>
+    }
+
+
+    /**
+     * 모든 태그를 조회합니다.
+     *
+     * @return 모든 태그 정보 리스트
+     */
+    @Override
+    public List&lt;TagResponseDto&gt; getAllTags() {
+<span class="fc" id="L97">        List&lt;Tag&gt; tags = tagRepository.findAll();</span>
+<span class="fc" id="L98">        return tags.stream()</span>
+<span class="fc" id="L99">                .map(tag -&gt; new TagResponseDto(tag.getTagId(), tag.getName()))</span>
+<span class="fc" id="L100">                .toList();</span>
+    }
+
+    /**
+     * 특정 태그를 업데이트합니다.
+     *
+     * @param tagId 태그 ID
+     * @param dto   업데이트할 태그 데이터
+     * @return 업데이트된 태그 정보
+     */
+    @Override
+    public TagResponseDto updateTag(Long tagId, TagRequestDto dto) {
+<span class="fc" id="L112">        Tag tag = tagRepository.findById(tagId)</span>
+<span class="fc" id="L113">                .orElseThrow(TagNotFoundException::new);</span>
+
+<span class="fc" id="L115">        tag.updateTag(dto.name());</span>
+<span class="fc" id="L116">        Tag updatedTag = tagRepository.save(tag);</span>
+<span class="fc" id="L117">        return new TagResponseDto(updatedTag.getTagId(), updatedTag.getName());</span>
+    }
+
+    /**
+     * 특정 태그를 삭제합니다.
+     *
+     * @param tagId 태그 ID
+     */
+    @Override
+    public void deleteById(Long tagId) {
+<span class="fc" id="L127">        Tag tag = tagRepository.findById(tagId)</span>
+<span class="fc" id="L128">                .orElseThrow(TagNotFoundException::new);</span>
+<span class="fc" id="L129">        tagRepository.delete(tag);</span>
+<span class="fc" id="L130">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

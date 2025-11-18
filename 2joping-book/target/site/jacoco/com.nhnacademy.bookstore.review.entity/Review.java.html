@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Review.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.review.entity</a> &gt; <span class="el_source">Review.java</span></div><h1>Review.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.review.entity;
+
+import com.nhnacademy.bookstore.bookset.book.entity.Book;
+import com.nhnacademy.bookstore.orderset.orderdetail.entity.OrderDetail;
+import com.nhnacademy.bookstore.user.member.entity.Member;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import java.sql.Timestamp;
+
+/**
+ * 리뷰 Entity
+ *
+ * @author : 이유현
+ * @date : 2024-11-12
+ */
+
+@Entity
+@Table(name = &quot;review&quot;)
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+public class Review {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long reviewId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;order_detail_id&quot;)
+    private OrderDetail orderDetail;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;customer_id&quot;)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;book_id&quot;)
+    private Book book;
+
+    @Column(name = &quot;title&quot;)
+    private String title;
+
+    @Column(name = &quot;text&quot;)
+    private String text;
+
+    @Column(name = &quot;rating_value&quot;, columnDefinition = &quot;TINYINT&quot;)
+    private int ratingValue;
+
+    @Column(name = &quot;created_at&quot;, updatable = false)
+    private Timestamp createdAt;
+
+    @Column(name = &quot;updated_at&quot;)
+    private Timestamp updatedAt;
+
+    @Column(name = &quot;image_url&quot;)
+    private String imageUrl;
+
+<span class="nc" id="L60">    public Review(OrderDetail orderDetail, Member member, Book book, String title, String text, int ratingValue, Timestamp createdAt, Timestamp updatedAt, String imageUrl) {</span>
+<span class="nc" id="L61">        this.orderDetail = orderDetail;</span>
+<span class="nc" id="L62">        this.member = member;</span>
+<span class="nc" id="L63">        this.book = book;</span>
+<span class="nc" id="L64">        this.title = title;</span>
+<span class="nc" id="L65">        this.text = text;</span>
+<span class="nc" id="L66">        this.ratingValue = ratingValue;</span>
+<span class="nc" id="L67">        this.createdAt = createdAt;</span>
+<span class="nc" id="L68">        this.updatedAt = updatedAt;</span>
+<span class="nc" id="L69">        this.imageUrl = imageUrl;</span>
+<span class="nc" id="L70">    }</span>
+
+
+    public void update(int ratingValue, String title, String text, String imageUrl, Timestamp updatedAt) {
+<span class="nc" id="L74">        this.ratingValue = ratingValue;</span>
+<span class="nc" id="L75">        this.title = title;</span>
+<span class="nc" id="L76">        this.text= text;</span>
+<span class="nc" id="L77">        this.imageUrl= imageUrl;</span>
+<span class="nc" id="L78">        this.updatedAt = updatedAt;</span>
+<span class="nc" id="L79">    }</span>
+
+    public void clearImage() {
+<span class="nc" id="L82">        this.imageUrl = null;</span>
+<span class="nc" id="L83">    }</span>
+    public void updateImage(String newUrl) {
+<span class="nc" id="L85">        this.imageUrl = newUrl;</span>
+<span class="nc" id="L86">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

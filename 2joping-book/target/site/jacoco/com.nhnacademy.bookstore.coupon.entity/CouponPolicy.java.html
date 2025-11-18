@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CouponPolicy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.coupon.entity</a> &gt; <span class="el_source">CouponPolicy.java</span></div><h1>CouponPolicy.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.coupon.entity;
+
+import com.nhnacademy.bookstore.coupon.enums.DiscountType;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+/**
+ * CouponPolicy 엔티티 클래스
+ * 쿠폰 정책 정보를 관리하는 클래스입니다. 각 쿠폰 정책에는 할인 유형, 할인 값, 사용 한도, 유효 기간 등의
+ * 세부 정보가 포함됩니다. 이 정책을 바탕으로 쿠폰이 발행되며, 정책에 따른 제약 조건도 정의됩니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@Entity
+@Table(name = &quot;coupon_policy&quot;)
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CouponPolicy {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = &quot;coupon_policy_id&quot;)
+        private Long couponPolicyId;
+
+        @Column(length = 20)
+        private String name;
+
+        @Enumerated(EnumType.STRING)
+        private DiscountType discountType;
+
+        private Integer discountValue;
+
+        private Integer usageLimit;
+
+        private Integer duration;
+
+        private String detail;
+
+        private Integer maxDiscount;
+
+        private Boolean isActive;
+
+        @Builder
+        private CouponPolicy(
+                final String name,
+                final DiscountType discountType,
+                final Integer discountValue,
+                final Integer usageLimit,
+                final Integer duration,
+                final String detail,
+                final Integer maxDiscount,
+                final Boolean isActive
+<span class="fc" id="L58">        ) {</span>
+<span class="fc" id="L59">                this.name = name;</span>
+<span class="fc" id="L60">                this.discountType = discountType;</span>
+<span class="fc" id="L61">                this.discountValue = discountValue;</span>
+<span class="fc" id="L62">                this.usageLimit = usageLimit;</span>
+<span class="fc" id="L63">                this.duration = duration;</span>
+<span class="fc" id="L64">                this.detail = detail;</span>
+<span class="fc" id="L65">                this.maxDiscount = maxDiscount;</span>
+<span class="fc" id="L66">                this.isActive = isActive;</span>
+<span class="fc" id="L67">        }</span>
+
+        public void updateName(String name) {
+<span class="fc" id="L70">                this.name = name;</span>
+<span class="fc" id="L71">        }</span>
+
+        public void updateDiscountType(DiscountType discountType) {
+<span class="fc" id="L74">                this.discountType = discountType;</span>
+<span class="fc" id="L75">        }</span>
+
+        public void updateDiscountValue(Integer discountValue) {
+<span class="fc" id="L78">                this.discountValue = discountValue;</span>
+<span class="fc" id="L79">        }</span>
+
+        public void updateUsageLimit(Integer usageLimit) {
+<span class="fc" id="L82">                this.usageLimit = usageLimit;</span>
+<span class="fc" id="L83">        }</span>
+
+        public void updateDuration(Integer duration) {
+<span class="fc" id="L86">                this.duration = duration;</span>
+<span class="fc" id="L87">        }</span>
+
+        public void updateDetail(String detail) {
+<span class="fc" id="L90">                this.detail = detail;</span>
+<span class="fc" id="L91">        }</span>
+
+        public void updateMaxDiscount(Integer maxDiscount) {
+<span class="fc" id="L94">                this.maxDiscount = maxDiscount;</span>
+<span class="fc" id="L95">        }</span>
+
+        public void deactivateCouponPolicy() {
+<span class="fc" id="L98">                this.isActive = false;</span>
+<span class="fc" id="L99">        }</span>
+
+        public void updateActive(Boolean active) {
+<span class="fc" id="L102">                this.isActive = active;</span>
+<span class="fc" id="L103">        }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

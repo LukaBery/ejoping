@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Order.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.orderset.order.entity</a> &gt; <span class="el_source">Order.java</span></div><h1>Order.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.orderset.order.entity;
+
+
+/**
+ * 주문 Entity
+ *
+ * @author : 이유현
+ * @date : 2024-10-22
+ */
+
+
+import com.nhnacademy.bookstore.coupon.entity.member.MemberCoupon;
+import com.nhnacademy.bookstore.orderset.order.dto.request.OrderPostRequest;
+import com.nhnacademy.bookstore.orderset.order.dto.request.OrderRequest;
+import com.nhnacademy.bookstore.orderset.orderdetail.entity.OrderDetail;
+import com.nhnacademy.bookstore.orderset.orderstate.entity.OrderState;
+import com.nhnacademy.bookstore.user.customer.entity.Customer;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = &quot;orders&quot;)
+@Builder
+public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;order_id&quot;, nullable = false)
+    private Long orderId;
+
+    @Column(name = &quot;order_code&quot;)
+    private String orderCode;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;order_state_id&quot;, nullable = false)
+    private OrderState orderState;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = &quot;customer_id&quot;, nullable = false)
+    private Customer customer;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = &quot;coupon_usage_id&quot;)
+    private MemberCoupon couponUsage;
+
+    @Column(name = &quot;order_date&quot;, nullable = false)
+    private LocalDateTime orderDate;
+
+    @Column(name = &quot;desired_delivery_date&quot;)
+    private LocalDate desiredDeliveryDate;
+
+    @Column(name = &quot;receiver&quot;, length = 20, nullable = false)
+    private String receiver;
+
+    @Column(name = &quot;postal_code&quot;, columnDefinition = &quot;CHAR(5)&quot;)
+    private String postalCode;
+
+    @Column(name = &quot;road_address&quot;, length = 100, nullable = false)
+    private String roadAddress;
+
+    @Column(name = &quot;detail_address&quot;, length = 100)
+    private String detailAddress;
+
+    @Column(name = &quot;point_usage&quot;, nullable = false)
+    @ColumnDefault(&quot;0&quot;)
+    private int pointUsage = 0;
+
+    @Column(name = &quot;shipping_fee&quot;, nullable = false)
+    private int shippingFee;
+
+    @Column(name = &quot;coupon_sale_price&quot;, nullable = false)
+    @ColumnDefault(&quot;0&quot;)
+    private int couponSalePrice = 0;
+
+    @Column(name = &quot;total_price&quot;, nullable = false)
+    private int totalPrice;
+
+    @OneToMany(mappedBy = &quot;order&quot;, fetch = FetchType.LAZY)
+    private List&lt;OrderDetail&gt; orderDetails;
+
+    public void apply(OrderState orderState, MemberCoupon memberCoupon, OrderRequest orderRequest, OrderPostRequest orderPostRequest,
+                      Customer customer) {
+<span class="nc" id="L94">        LocalDateTime now = LocalDateTime.now();</span>
+
+<span class="nc" id="L96">        this.orderCode = orderPostRequest.orderId();</span>
+<span class="nc" id="L97">        this.orderState = orderState;</span>
+<span class="nc" id="L98">        this.customer = customer;</span>
+<span class="nc" id="L99">        this.couponUsage = memberCoupon;</span>
+<span class="nc" id="L100">        this.orderDate = now;</span>
+<span class="nc" id="L101">        this.desiredDeliveryDate = LocalDate.parse(orderRequest.deliveryInfo().desiredDate());</span>
+<span class="nc" id="L102">        this.receiver = orderRequest.deliveryInfo().receiver();</span>
+<span class="nc" id="L103">        this.postalCode = orderRequest.deliveryInfo().postalCode();</span>
+<span class="nc" id="L104">        this.roadAddress = orderRequest.deliveryInfo().address();</span>
+<span class="nc" id="L105">        this.detailAddress = orderRequest.deliveryInfo().detailAddress();</span>
+<span class="nc" id="L106">        this.pointUsage = orderRequest.point();</span>
+<span class="nc" id="L107">        this.shippingFee = orderRequest.deliveryCost();</span>
+<span class="nc" id="L108">        this.couponSalePrice = orderRequest.couponDiscount();</span>
+<span class="nc" id="L109">        this.totalPrice = orderRequest.totalCost();</span>
+<span class="nc" id="L110">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

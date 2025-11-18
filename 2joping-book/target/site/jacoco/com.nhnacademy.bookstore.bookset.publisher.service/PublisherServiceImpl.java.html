@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PublisherServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.bookset.publisher.service</a> &gt; <span class="el_source">PublisherServiceImpl.java</span></div><h1>PublisherServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.bookset.publisher.service;
+
+    /**
+     * 출판사 ServiceImpl
+     *
+     * @author : 이유현
+     *
+     * @date : 2024.10.23
+     */
+
+import com.nhnacademy.bookstore.bookset.publisher.dto.response.PublisherCreateResponseDto;
+import com.nhnacademy.bookstore.bookset.publisher.dto.request.PublisherRequestDto;
+import com.nhnacademy.bookstore.bookset.publisher.dto.response.PublisherResponseDto;
+import com.nhnacademy.bookstore.bookset.publisher.entity.Publisher;
+import com.nhnacademy.bookstore.bookset.publisher.exception.PublisherAlreadyExistException;
+import com.nhnacademy.bookstore.bookset.publisher.exception.PublisherNotFoundException;
+import com.nhnacademy.bookstore.bookset.publisher.repository.PublisherRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class PublisherServiceImpl implements PublisherService{
+
+    private final PublisherRepository publisherRepository;
+
+    private Publisher findPublisherById(Long id) {
+<span class="fc" id="L35">        return publisherRepository.findById(id)</span>
+<span class="fc" id="L36">                .orElseThrow(() -&gt; new PublisherNotFoundException(&quot;출판사를 찾을 수 없습니다.&quot;));</span>
+    }
+
+    /**
+     * 출판사 정보를 등록하는 메서드
+     * @param requestDto  출판사 이름을 체크해서 DB에 저장. 이미 있으면 PublisherAlreadyExistException 발생
+     * @return -&gt; PublisherCreateResponseDto
+     */
+    @Override
+    public PublisherCreateResponseDto registerPublisher(PublisherRequestDto requestDto) {
+<span class="fc" id="L46">        publisherRepository.findByName(requestDto.name())</span>
+<span class="fc" id="L47">                .ifPresent(existingPublisher -&gt; {</span>
+<span class="fc" id="L48">                    throw new PublisherAlreadyExistException(&quot;등록하려는 출판사가 이미 존재합니다.&quot;);</span>
+                });
+
+<span class="fc" id="L51">        Publisher publisher = new Publisher(requestDto.name());</span>
+<span class="fc" id="L52">        Publisher savedPublisher = publisherRepository.save(publisher);</span>
+
+<span class="fc" id="L54">        return new PublisherCreateResponseDto(savedPublisher.getPublisherId(), savedPublisher.getName());</span>
+    }
+
+
+    /**
+     * 특정 출판사를 조회하는 메서드
+     * @param id 조회하려는 publisher의 id, 없으면 PublisherNotFoundException 발생
+     * @return -&gt; 출판사 객체
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public PublisherResponseDto getPublisherById(Long id) {
+<span class="fc" id="L66">        Publisher publisher = findPublisherById(id);</span>
+<span class="fc" id="L67">        return new PublisherResponseDto(publisher.getPublisherId(), publisher.getName());</span>
+    }
+
+    /**
+     * 모든 출판사를 조회하는 메서드
+     * @return -&gt; 출판사 객체
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page&lt;PublisherResponseDto&gt; getAllPublishers(Pageable pageable) {
+<span class="fc" id="L77">        return publisherRepository.findAllBy(pageable);</span>
+    }
+
+
+    /**
+     * 모든 출판사를 조회하는 메서드 (등록용)
+     * @return -&gt; 출판사 객체
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;PublisherResponseDto&gt; getAllPublishersForRegister() {
+<span class="fc" id="L88">        List&lt;Publisher&gt; publishers = publisherRepository.findAll();</span>
+<span class="fc" id="L89">        List&lt;PublisherResponseDto&gt; responseDtoList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        for (Publisher publisher : publishers) {</span>
+<span class="fc" id="L92">            PublisherResponseDto dto = new PublisherResponseDto(publisher.getPublisherId(), publisher.getName());</span>
+<span class="fc" id="L93">            responseDtoList.add(dto);</span>
+<span class="fc" id="L94">        }</span>
+<span class="fc" id="L95">        return responseDtoList;</span>
+    }
+
+
+    /**
+     * 특정 출판사를 삭제하는 메서드
+     * @param id 삭제하려는 publisher의 id, 없으면 PublisherNotFoundException 발생
+     */
+    @Override
+    public void deletePublisher(Long id) {
+<span class="fc" id="L105">        Publisher publisher = findPublisherById(id);</span>
+<span class="fc" id="L106">        publisherRepository.delete(publisher);</span>
+<span class="fc" id="L107">    }</span>
+
+    /**
+     * 특정 출판사를 수정하는 메서드
+     * @param id 수정하려는 publisher의 id, 없으면 PublisherNotFoundException 발생
+     * @return -&gt; PublisherResponseDto
+     */
+    @Override
+    public PublisherResponseDto updatePublisher(Long id, PublisherRequestDto publisherRequestDto) {
+<span class="fc" id="L116">        Publisher publisher = findPublisherById(id);</span>
+<span class="fc" id="L117">        publisher.update(publisherRequestDto.name());</span>
+<span class="fc" id="L118">        Publisher updatedPublisher = publisherRepository.save(publisher);</span>
+<span class="fc" id="L119">        return new PublisherResponseDto(updatedPublisher.getPublisherId(), updatedPublisher.getName());</span>
+    }
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

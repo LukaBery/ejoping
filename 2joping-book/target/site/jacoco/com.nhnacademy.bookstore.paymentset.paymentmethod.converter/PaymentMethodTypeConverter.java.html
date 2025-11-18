@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PaymentMethodTypeConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.paymentset.paymentmethod.converter</a> &gt; <span class="el_source">PaymentMethodTypeConverter.java</span></div><h1>PaymentMethodTypeConverter.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.paymentset.paymentmethod.converter;
+
+import com.nhnacademy.bookstore.paymentset.paymentmethod.enums.PaymentMethodType;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+
+@Converter(autoApply = true)
+<span class="fc" id="L8">public class PaymentMethodTypeConverter implements AttributeConverter&lt;PaymentMethodType, String&gt; {</span>
+    @Override
+    public String convertToDatabaseColumn(PaymentMethodType paymentMethod) {
+<span class="fc" id="L11">        return paymentMethod.getName();</span>
+    }
+
+    @Override
+    public PaymentMethodType convertToEntityAttribute(String dbData) {
+<span class="fc bfc" id="L16" title="All 4 branches covered.">        if (dbData == null || dbData.isEmpty()) {</span>
+<span class="fc" id="L17">            return null;</span>
+        }
+
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        for (PaymentMethodType paymentMethod : PaymentMethodType.values()) {</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">            if (paymentMethod.getName().equals(dbData)) {</span>
+<span class="fc" id="L22">                return paymentMethod;</span>
+            }
+        }
+
+<span class="fc" id="L26">        throw new IllegalArgumentException(&quot;Unknown value: &quot; + dbData);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

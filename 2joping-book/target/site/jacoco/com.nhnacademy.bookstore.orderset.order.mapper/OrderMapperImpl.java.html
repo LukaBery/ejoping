@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.orderset.order.mapper</a> &gt; <span class="el_source">OrderMapperImpl.java</span></div><h1>OrderMapperImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.orderset.order.mapper;
+
+import com.nhnacademy.bookstore.coupon.entity.Coupon;
+import com.nhnacademy.bookstore.coupon.entity.member.MemberCoupon;
+import com.nhnacademy.bookstore.orderset.order.dto.OrderListResponseDto;
+import com.nhnacademy.bookstore.orderset.order.entity.Order;
+import com.nhnacademy.bookstore.orderset.orderstate.entity.OrderState;
+import com.nhnacademy.bookstore.user.customer.entity.Customer;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2025-11-18T17:46:31+0900&quot;,
+    comments = &quot;version: 1.5.2.Final, compiler: javac, environment: Java 21.0.9 (Amazon.com Inc.)&quot;
+)
+@Component
+<span class="nc" id="L21">public class OrderMapperImpl implements OrderMapper {</span>
+
+    @Override
+    public OrderListResponseDto toOrderResponseDto(Order order) {
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        if ( order == null ) {</span>
+<span class="nc" id="L26">            return null;</span>
+        }
+
+<span class="nc" id="L29">        int orderStateId = 0;</span>
+<span class="nc" id="L30">        Long orderId = null;</span>
+<span class="nc" id="L31">        String customerName = null;</span>
+<span class="nc" id="L32">        String couponName = null;</span>
+<span class="nc" id="L33">        String receiver = null;</span>
+<span class="nc" id="L34">        String postalCode = null;</span>
+<span class="nc" id="L35">        String roadAddress = null;</span>
+<span class="nc" id="L36">        String detailAddress = null;</span>
+<span class="nc" id="L37">        Integer pointUsage = null;</span>
+<span class="nc" id="L38">        Integer shippingFee = null;</span>
+<span class="nc" id="L39">        Integer couponSalePrice = null;</span>
+<span class="nc" id="L40">        Integer totalPrice = null;</span>
+<span class="nc" id="L41">        LocalDate desiredDeliveryDate = null;</span>
+
+<span class="nc" id="L43">        Long orderStateId1 = orderOrderStateOrderStateId( order );</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if ( orderStateId1 != null ) {</span>
+<span class="nc" id="L45">            orderStateId = orderStateId1.intValue();</span>
+        }
+<span class="nc" id="L47">        orderId = order.getOrderId();</span>
+<span class="nc" id="L48">        customerName = orderCustomerName( order );</span>
+<span class="nc" id="L49">        couponName = orderCouponUsageCouponName( order );</span>
+<span class="nc" id="L50">        receiver = order.getReceiver();</span>
+<span class="nc" id="L51">        postalCode = order.getPostalCode();</span>
+<span class="nc" id="L52">        roadAddress = order.getRoadAddress();</span>
+<span class="nc" id="L53">        detailAddress = order.getDetailAddress();</span>
+<span class="nc" id="L54">        pointUsage = order.getPointUsage();</span>
+<span class="nc" id="L55">        shippingFee = order.getShippingFee();</span>
+<span class="nc" id="L56">        couponSalePrice = order.getCouponSalePrice();</span>
+<span class="nc" id="L57">        totalPrice = order.getTotalPrice();</span>
+<span class="nc" id="L58">        desiredDeliveryDate = order.getDesiredDeliveryDate();</span>
+
+<span class="nc" id="L60">        OrderListResponseDto orderListResponseDto = new OrderListResponseDto( orderId, orderStateId, customerName, couponName, receiver, postalCode, roadAddress, detailAddress, pointUsage, shippingFee, couponSalePrice, totalPrice, desiredDeliveryDate );</span>
+
+<span class="nc" id="L62">        return orderListResponseDto;</span>
+    }
+
+    @Override
+    public List&lt;OrderListResponseDto&gt; toOrderListResponseDto(List&lt;Order&gt; orderList) {
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if ( orderList == null ) {</span>
+<span class="nc" id="L68">            return null;</span>
+        }
+
+<span class="nc" id="L71">        List&lt;OrderListResponseDto&gt; list = new ArrayList&lt;OrderListResponseDto&gt;( orderList.size() );</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        for ( Order order : orderList ) {</span>
+<span class="nc" id="L73">            list.add( toOrderResponseDto( order ) );</span>
+<span class="nc" id="L74">        }</span>
+
+<span class="nc" id="L76">        return list;</span>
+    }
+
+    private Long orderOrderStateOrderStateId(Order order) {
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if ( order == null ) {</span>
+<span class="nc" id="L81">            return null;</span>
+        }
+<span class="nc" id="L83">        OrderState orderState = order.getOrderState();</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if ( orderState == null ) {</span>
+<span class="nc" id="L85">            return null;</span>
+        }
+<span class="nc" id="L87">        Long orderStateId = orderState.getOrderStateId();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if ( orderStateId == null ) {</span>
+<span class="nc" id="L89">            return null;</span>
+        }
+<span class="nc" id="L91">        return orderStateId;</span>
+    }
+
+    private String orderCustomerName(Order order) {
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if ( order == null ) {</span>
+<span class="nc" id="L96">            return null;</span>
+        }
+<span class="nc" id="L98">        Customer customer = order.getCustomer();</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        if ( customer == null ) {</span>
+<span class="nc" id="L100">            return null;</span>
+        }
+<span class="nc" id="L102">        String name = customer.getName();</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if ( name == null ) {</span>
+<span class="nc" id="L104">            return null;</span>
+        }
+<span class="nc" id="L106">        return name;</span>
+    }
+
+    private String orderCouponUsageCouponName(Order order) {
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if ( order == null ) {</span>
+<span class="nc" id="L111">            return null;</span>
+        }
+<span class="nc" id="L113">        MemberCoupon couponUsage = order.getCouponUsage();</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if ( couponUsage == null ) {</span>
+<span class="nc" id="L115">            return null;</span>
+        }
+<span class="nc" id="L117">        Coupon coupon = couponUsage.getCoupon();</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if ( coupon == null ) {</span>
+<span class="nc" id="L119">            return null;</span>
+        }
+<span class="nc" id="L121">        String name = coupon.getName();</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if ( name == null ) {</span>
+<span class="nc" id="L123">            return null;</span>
+        }
+<span class="nc" id="L125">        return name;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

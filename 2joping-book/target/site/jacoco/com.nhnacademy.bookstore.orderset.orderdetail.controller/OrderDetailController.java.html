@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderDetailController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.orderset.orderdetail.controller</a> &gt; <span class="el_source">OrderDetailController.java</span></div><h1>OrderDetailController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.orderset.orderdetail.controller;
+
+import com.nhnacademy.bookstore.orderset.orderdetail.dto.response.OrderDetailResponseDto;
+import com.nhnacademy.bookstore.orderset.orderdetail.service.OrderDetailService;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(&quot;api/v1/bookstore/od&quot;)
+public class OrderDetailController {
+    private final OrderDetailService orderDetailService;
+
+    @Operation(summary = &quot;주문ID로 주문 상세 조회&quot;, description = &quot;주문에 관련된 주문상세를 조회합니다.&quot;)
+    @GetMapping(&quot;/{orderId}&quot;)
+    public ResponseEntity&lt;List&lt;OrderDetailResponseDto&gt;&gt; getOrderDetailsByOrderId(@PathVariable Long orderId) {
+<span class="fc" id="L23">        List&lt;OrderDetailResponseDto&gt; orderDetails = orderDetailService.getOrderDetailByOrderId(orderId);</span>
+<span class="fc" id="L24">        return ResponseEntity.ok(orderDetails);</span>
+    }
+
+    @Operation(summary = &quot;고객ID로 주문 상세 조회&quot;, description = &quot;고객에 관련된 주문상세를 조회합니다.&quot;)
+    @GetMapping(&quot;/customer&quot;)
+    public ResponseEntity&lt;Page&lt;OrderDetailResponseDto&gt;&gt; getOrderDetailsByCustomerId(Pageable pageable,
+            @RequestHeader(&quot;X-Customer-Id&quot;) String customerId) {
+<span class="fc" id="L31">        Page&lt;OrderDetailResponseDto&gt; orderDetails = orderDetailService.getOrderDetailByCustomerId(pageable, Long.valueOf(customerId));</span>
+<span class="fc" id="L32">        return ResponseEntity.ok(orderDetails);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

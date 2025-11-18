@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PointHistoryService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.point.service.impl</a> &gt; <span class="el_source">PointHistoryService.java</span></div><h1>PointHistoryService.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.point.service.impl;
+
+import com.nhnacademy.bookstore.point.dto.request.CreateOrderPointHistoryRequest;
+import com.nhnacademy.bookstore.point.dto.request.CreatePointUseHistoryUseRequest;
+import com.nhnacademy.bookstore.point.dto.request.CreateReviewPointHistoryRequest;
+import com.nhnacademy.bookstore.point.entity.PointHistory;
+import com.nhnacademy.bookstore.point.repository.PointHistoryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+@Service
+@RequiredArgsConstructor
+public class PointHistoryService {
+
+    private final PointHistoryRepository pointHistoryRepository;
+
+    @Transactional
+    public Long createReviewPointHistory(CreateReviewPointHistoryRequest request) {
+<span class="fc" id="L22">        PointHistory pointHistory = PointHistory.builder()</span>
+<span class="fc" id="L23">                .pointType(request.pointType())</span>
+<span class="fc" id="L24">                .refundHistoryId(request.refundHistoryId())</span>
+<span class="fc" id="L25">                .orderId(request.orderId())</span>
+<span class="fc" id="L26">                .customerId(request.customerId())</span>
+<span class="fc" id="L27">                .pointVal(request.pointVal())</span>
+<span class="fc" id="L28">                .registerDate(LocalDateTime.now())</span>
+<span class="fc" id="L29">                .build();</span>
+
+<span class="fc" id="L31">        return pointHistoryRepository.save(pointHistory).getPointTypeHistoryId();</span>
+    }
+
+    @Transactional
+    public Long createOrderPointHistory(CreateOrderPointHistoryRequest request) {
+<span class="fc" id="L36">        PointHistory pointHistory = PointHistory.builder()</span>
+<span class="fc" id="L37">                .pointType(request.pointType())</span>
+<span class="fc" id="L38">                .refundHistoryId(request.refundHistoryId())</span>
+<span class="fc" id="L39">                .orderId(request.orderId())</span>
+<span class="fc" id="L40">                .customerId(request.customerId())</span>
+<span class="fc" id="L41">                .pointVal(request.pointVal())</span>
+<span class="fc" id="L42">                .registerDate(LocalDateTime.now())</span>
+<span class="fc" id="L43">                .build();</span>
+
+<span class="fc" id="L45">        return pointHistoryRepository.save(pointHistory).getPointTypeHistoryId();</span>
+    }
+
+    @Transactional
+    public Long createPointUseHistory(CreatePointUseHistoryUseRequest request) {
+<span class="fc" id="L50">        PointHistory pointHistory = PointHistory.builder()</span>
+<span class="fc" id="L51">                .pointType(request.pointType())</span>
+<span class="fc" id="L52">                .refundHistoryId(request.refundHistoryId())</span>
+<span class="fc" id="L53">                .orderId(request.orderId())</span>
+<span class="fc" id="L54">                .customerId(request.customerId())</span>
+<span class="fc" id="L55">                .pointVal(request.pointVal())</span>
+<span class="fc" id="L56">                .registerDate(LocalDateTime.now())</span>
+<span class="fc" id="L57">                .build();</span>
+
+<span class="fc" id="L59">        return pointHistoryRepository.save(pointHistory).getPointTypeHistoryId();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

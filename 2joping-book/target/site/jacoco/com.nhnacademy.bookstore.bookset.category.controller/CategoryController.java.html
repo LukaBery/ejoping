@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CategoryController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.bookset.category.controller</a> &gt; <span class="el_source">CategoryController.java</span></div><h1>CategoryController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.bookset.category.controller;
+
+import com.nhnacademy.bookstore.bookset.category.dto.request.CategoryRequestDto;
+import com.nhnacademy.bookstore.bookset.category.dto.response.CategoryIsActiveResponseDto;
+import com.nhnacademy.bookstore.bookset.category.dto.response.CategoryResponseDto;
+import com.nhnacademy.bookstore.bookset.category.service.CategoryService;
+import com.nhnacademy.bookstore.common.annotation.ValidPathVariable;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 카테고리 컨트롤러
+ *
+ * @author : 정세희
+ * @date : 2024-11-07
+ */
+@Tag(name = &quot;Category&quot;, description = &quot;카테고리 관리 API&quot;)
+@RestController
+@RequestMapping(&quot;/api/v1/bookstore&quot;)
+@RequiredArgsConstructor
+public class CategoryController {
+
+    private final CategoryService categoryService;
+
+    @Operation(summary = &quot;카테고리 생성&quot;, description = &quot;새로운 카테고리를 생성합니다.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;카테고리 생성 성공&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;유효하지 않은 요청 데이터&quot;)
+    @PostMapping(&quot;/categories&quot;)
+    public ResponseEntity&lt;CategoryResponseDto&gt; createCategory(@Valid @RequestBody CategoryRequestDto request) {
+<span class="fc" id="L41">        CategoryResponseDto response = categoryService.createCategory(request);</span>
+<span class="fc" id="L42">        return ResponseEntity.status(HttpStatus.CREATED).body(response);</span>
+    }
+
+    @Operation(summary = &quot;카테고리 조회&quot;, description = &quot;카테고리 ID로 카테고리를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;카테고리 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;카테고리를 찾을 수 없음&quot;)
+    @GetMapping(&quot;/categories/{categoryId}&quot;)
+    public ResponseEntity&lt;CategoryResponseDto&gt; getCategory(@ValidPathVariable @PathVariable Long categoryId) {
+<span class="fc" id="L50">        CategoryResponseDto response = categoryService.getCategory(categoryId);</span>
+<span class="fc" id="L51">        return ResponseEntity.ok(response);</span>
+    }
+
+    @Operation(summary = &quot;최상위 카테고리 조회&quot;, description = &quot;최상위 카테고리를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;카테고리 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;카테고리를 찾을 수 없음&quot;)
+    @GetMapping(&quot;/categories/top&quot;)
+    public ResponseEntity&lt;List&lt;CategoryResponseDto&gt;&gt; getTopCategories() {
+<span class="fc" id="L59">        List&lt;CategoryResponseDto&gt; response = categoryService.getTopCategories();</span>
+<span class="fc" id="L60">        return ResponseEntity.ok(response);</span>
+    }
+
+    @Operation(summary = &quot;부모 카테고리 조회&quot;, description = &quot;특정 카테고리의 부모 카테고리를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;부모 카테고리 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;카테고리를 찾을 수 없음&quot;)
+    @GetMapping(&quot;/categories/{categoryId}/parent&quot;)
+    public ResponseEntity&lt;CategoryResponseDto&gt; getParentCategory(@ValidPathVariable @PathVariable Long categoryId) {
+<span class="fc" id="L68">        CategoryResponseDto response = categoryService.getParentCategory(categoryId);</span>
+<span class="fc" id="L69">        return ResponseEntity.ok(response);</span>
+    }
+
+    @Operation(summary = &quot;할아버지 카테고리 조회&quot;, description = &quot;특정 카테고리의 할아버지 카테고리를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;할아버지 카테고리 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;카테고리를 찾을 수 없음&quot;)
+    @GetMapping(&quot;/categories/{categoryId}/grandparent&quot;)
+    public ResponseEntity&lt;CategoryResponseDto&gt; getGrandparentCategory(@ValidPathVariable @PathVariable Long categoryId) {
+<span class="fc" id="L77">        CategoryResponseDto response = categoryService.getGrandparentCategory(categoryId);</span>
+<span class="fc" id="L78">        return ResponseEntity.ok(response);</span>
+    }
+
+    @Operation(summary = &quot;자식 카테고리 조회&quot;, description = &quot;특정 카테고리의 자식 카테고리 리스트를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;자식 카테고리 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;카테고리를 찾을 수 없음&quot;)
+    @GetMapping(&quot;/categories/{categoryId}/children&quot;)
+    public ResponseEntity&lt;List&lt;CategoryResponseDto&gt;&gt; getChildCategories(@ValidPathVariable @PathVariable Long categoryId) {
+<span class="fc" id="L86">        List&lt;CategoryResponseDto&gt; response = categoryService.getChildCategories(categoryId);</span>
+<span class="fc" id="L87">        return ResponseEntity.ok(response);</span>
+    }
+
+    @Operation(summary = &quot;전체 활성 카테고리 조회&quot;, description = &quot;모든 활성화된 카테고리를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;전체 활성 카테고리 조회 성공&quot;)
+    @GetMapping(&quot;/categories&quot;)
+    public ResponseEntity&lt;List&lt;CategoryResponseDto&gt;&gt; getAllActiveCategories() {
+<span class="fc" id="L94">        List&lt;CategoryResponseDto&gt; response = categoryService.getAllActiveCategories();</span>
+<span class="fc" id="L95">        return ResponseEntity.ok(response);</span>
+    }
+
+    @Operation(summary = &quot;전체 카테고리 조회(페이징)&quot;, description = &quot;모든 카테고리를 조회합니다.(페이징)&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;전체 카테고리 조회 성공&quot;)
+    @GetMapping(&quot;/categories/pages&quot;)
+    public ResponseEntity&lt;Page&lt;CategoryIsActiveResponseDto&gt;&gt; getAllCategoriesPage(
+            @PageableDefault(size = 20) Pageable pageable) {
+<span class="fc" id="L103">        Page&lt;CategoryIsActiveResponseDto&gt; response = categoryService.getAllCategoriesPage(pageable);</span>
+<span class="fc" id="L104">        return ResponseEntity.ok(response);</span>
+    }
+
+    @Operation(summary = &quot;카테고리 수정&quot;, description = &quot;특정 카테고리를 수정합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;카테고리 수정 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;카테고리를 찾을 수 없음&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;유효하지 않은 요청 데이터&quot;)
+    @PutMapping(&quot;/categories/{categoryId}&quot;)
+    public ResponseEntity&lt;CategoryResponseDto&gt; updateCategory(
+            @ValidPathVariable @PathVariable Long categoryId,
+            @Valid @RequestBody CategoryRequestDto request
+    ) {
+<span class="fc" id="L116">        CategoryResponseDto response = categoryService.updateCategory(categoryId, request);</span>
+<span class="fc" id="L117">        return ResponseEntity.ok(response);</span>
+    }
+
+    @Operation(summary = &quot;카테고리 비활성화&quot;, description = &quot;특정 카테고리를 비활성화합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;카테고리 비활성화 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;카테고리를 찾을 수 없음&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;비활성화할 수 없는 카테고리&quot;)
+    @PutMapping(&quot;/categories/{categoryId}/deactivate&quot;)
+    public ResponseEntity&lt;Long&gt; deactivateCategory(@ValidPathVariable @PathVariable Long categoryId) {
+<span class="fc" id="L126">        Long deactivatedCategoryId = categoryService.deactivateCategory(categoryId);</span>
+<span class="fc" id="L127">        return ResponseEntity.ok(deactivatedCategoryId);</span>
+    }
+
+    @Operation(summary = &quot;카테고리 활성화&quot;, description = &quot;비활성화된 카테고리를 활성화합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;카테고리 활성화 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;카테고리를 찾을 수 없음&quot;)
+    @PutMapping(&quot;/categories/{categoryId}/activate&quot;)
+    public ResponseEntity&lt;Long&gt; activateCategory(@ValidPathVariable @PathVariable Long categoryId) {
+<span class="fc" id="L135">        Long activatedCategoryId = categoryService.activateCategory(categoryId);</span>
+<span class="fc" id="L136">        return ResponseEntity.ok(activatedCategoryId);</span>
+    }
+}
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

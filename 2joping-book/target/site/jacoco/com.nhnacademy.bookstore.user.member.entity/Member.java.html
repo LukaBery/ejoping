@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Member.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.entity</a> &gt; <span class="el_source">Member.java</span></div><h1>Member.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.entity;
+
+import com.nhnacademy.bookstore.coupon.entity.member.MemberCoupon;
+import com.nhnacademy.bookstore.like.entity.Like;
+import com.nhnacademy.bookstore.user.customer.entity.Customer;
+import com.nhnacademy.bookstore.user.enums.Gender;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberCreateRequestDto;
+import com.nhnacademy.bookstore.user.memberstatus.entity.MemberStatus;
+import com.nhnacademy.bookstore.user.tier.entity.MemberTier;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
+/**
+ * Member
+ * 회원 정보를 나타내는 엔티티 클래스입니다. 고객 정보를 상속받으며, 회원의 로그인 정보, 포인트, 적립금, 회원 상태 및 등급 등 다양한 정보를 포함합니다.
+ * 추가적으로, 회원 가입 시 필요한 정보를 DTO를 통해 엔티티로 변환할 수 있습니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@Entity
+@Table(name = &quot;member&quot;)
+@PrimaryKeyJoinColumn(name = &quot;customer_id&quot;)
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Builder
+public class Member extends Customer {
+
+
+    @Column(nullable = false, unique = true, length = 20)
+    private String loginId;
+
+    @Column(nullable = false, length = 255)
+    private String password;
+
+    @Setter
+    @Column(nullable = false, length = 20)
+    private String nickname;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    private LocalDate birthday;
+
+    private Integer birthdayMonth;
+
+    @Column(nullable = false)
+    private LocalDate joinDate;
+
+    private LocalDate recentLoginDate;
+
+    private boolean isPaycoLogin;
+
+    @Column(nullable = false)
+    private int point;
+
+    @Column(nullable = false)
+    private int accPurchase;
+
+    @OneToMany(mappedBy = &quot;member&quot;, fetch = FetchType.EAGER)
+    private List&lt;Like&gt; likes;
+
+    @OneToMany(mappedBy = &quot;member&quot;, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List&lt;MemberAddress&gt; addresses;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;member_status_id&quot;, nullable = false)
+    @Setter
+    private MemberStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;member_tier_id&quot;, nullable = false)
+    @Setter
+    private MemberTier tier;
+
+    @OneToMany(mappedBy = &quot;member&quot;, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List&lt;MemberCoupon&gt; memberCoupons;
+
+
+    /**
+     * 주어진 DTO를 기반으로 회원의 필드를 초기화합니다.
+     *
+     * @param requestDto 회원 가입 시 필요한 정보를 담은 DTO 객체
+     */
+    public void toEntity(MemberCreateRequestDto requestDto, String password) {
+<span class="fc" id="L90">        this.initializeCustomerFields(requestDto.name(), requestDto.phone(), requestDto.email());</span>
+<span class="fc" id="L91">        this.loginId = requestDto.loginId();</span>
+<span class="fc" id="L92">        this.password = password;</span>
+<span class="fc" id="L93">        this.nickname = requestDto.nickName();</span>
+<span class="fc" id="L94">        this.gender = requestDto.gender();</span>
+<span class="fc" id="L95">        this.birthday = requestDto.birthday();</span>
+<span class="fc" id="L96">        this.birthdayMonth = requestDto.birthday().getMonthValue();</span>
+<span class="fc" id="L97">        this.joinDate = LocalDate.now();</span>
+<span class="fc" id="L98">        this.isPaycoLogin = false;</span>
+<span class="fc" id="L99">        this.point = 0;</span>
+<span class="fc" id="L100">        this.accPurchase = 0;</span>
+
+<span class="fc" id="L102">    }</span>
+
+    public void addPoint(int amount) {
+<span class="fc" id="L105">        this.point += amount;</span>
+<span class="fc" id="L106">    }</span>
+
+    public void usePoint(int amount) {
+<span class="fc" id="L109">        this.point -= amount;</span>
+<span class="fc" id="L110">    }</span>
+
+    public void withdrawStatus(MemberStatus status) {
+<span class="fc" id="L113">        this.status = status;</span>
+<span class="fc" id="L114">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

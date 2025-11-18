@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderStateService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.orderset.orderstate.service</a> &gt; <span class="el_source">OrderStateService.java</span></div><h1>OrderStateService.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.orderset.orderstate.service;
+
+import com.nhnacademy.bookstore.common.error.exception.orderset.orderstate.OrderStateNotFoundException;
+import com.nhnacademy.bookstore.orderset.orderstate.dto.request.CreateOrderStateRequest;
+import com.nhnacademy.bookstore.orderset.orderstate.dto.request.UpdateOrderStateRequest;
+import com.nhnacademy.bookstore.orderset.orderstate.dto.response.GetOrderStateResponse;
+import com.nhnacademy.bookstore.orderset.orderstate.entity.OrderState;
+import com.nhnacademy.bookstore.orderset.orderstate.repository.OrderStateRepository;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class OrderStateService {
+
+    private final OrderStateRepository orderStateRepository;
+
+    public Long createOrderState(@Valid CreateOrderStateRequest request) {
+<span class="nc" id="L21">        OrderState orderState = OrderState.builder()</span>
+<span class="nc" id="L22">                .name(request.name())</span>
+<span class="nc" id="L23">                .build();</span>
+<span class="nc" id="L24">        return orderStateRepository.save(orderState).getOrderStateId();</span>
+    }
+
+    @Transactional(readOnly = true)
+    public Long updateOrderState(Long orderStateId, @Valid UpdateOrderStateRequest request) {
+<span class="nc" id="L29">        OrderState orderState = orderStateRepository.findByOrderStateId(orderStateId)</span>
+<span class="nc" id="L30">                .orElseThrow(OrderStateNotFoundException::new);</span>
+
+<span class="nc" id="L32">        orderState.updateName(request.newName());</span>
+
+<span class="nc" id="L34">        return orderStateRepository.save(orderState).getOrderStateId();</span>
+    }
+
+    @Transactional(readOnly = true)
+    public GetOrderStateResponse getOrderState(Long orderStateId) {
+<span class="nc" id="L39">        OrderState orderState = orderStateRepository.findByOrderStateId(orderStateId)</span>
+<span class="nc" id="L40">                .orElseThrow((OrderStateNotFoundException::new));</span>
+
+<span class="nc" id="L42">        return GetOrderStateResponse.from(orderState);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public OrderState getWaitingState() {
+<span class="nc" id="L47">        OrderState orderState =</span>
+<span class="nc" id="L48">                orderStateRepository.findByOrderStateId(0L).orElseThrow((OrderStateNotFoundException::new));</span>
+
+<span class="nc" id="L50">        return orderState;</span>
+    }
+
+    public void deleteOrderState(Long orderStateId) {
+<span class="nc" id="L54">        OrderState orderState = orderStateRepository.findByOrderStateId(orderStateId)</span>
+<span class="nc" id="L55">                .orElseThrow(OrderStateNotFoundException::new);</span>
+<span class="nc" id="L56">        orderStateRepository.delete(orderState);</span>
+<span class="nc" id="L57">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

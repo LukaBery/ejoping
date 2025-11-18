@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.nhnacademy.bookstore.point.service.impl.PointServiceImplTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.304 s -- in com.nhnacademy.bookstore.point.service.impl.PointServiceImplTest

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CouponPolicyRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.coupon.repository.policy.impl</a> &gt; <span class="el_source">CouponPolicyRepositoryImpl.java</span></div><h1>CouponPolicyRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.coupon.repository.policy.impl;
+
+
+import com.nhnacademy.bookstore.coupon.dto.response.CouponPolicyResponseDto;
+import com.nhnacademy.bookstore.coupon.repository.policy.CouponPolicyQuerydslRepository;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+import static com.nhnacademy.bookstore.coupon.entity.QCouponPolicy.couponPolicy;
+
+
+
+/**
+ * CouponPolicyRepositoryImpl
+ * 이 클래스는 Querydsl을 사용하여 활성화된 쿠폰 정책을 조회하는 커스텀 레포지토리의 구현체입니다.
+ * CouponPolicy 엔티티를 조회하여 CouponPolicyResponseDto로 매핑된 활성 정책 목록을 반환합니다.
+ * JPAQueryFactory를 사용하여 효율적인 데이터베이스 접근을 제공합니다.
+ *
+ * @since 1.0
+ * @author Luha
+ */
+@Repository
+@RequiredArgsConstructor
+public class CouponPolicyRepositoryImpl implements CouponPolicyQuerydslRepository {
+
+    private final JPAQueryFactory queryFactory;
+
+    /**
+     * 활성화된 쿠폰 정책을 조회하여 CouponPolicyResponseDto 목록으로 반환합니다.
+     *
+     * @return 활성 쿠폰 정책 정보를 담은 CouponPolicyResponseDto 목록
+     */
+    @Override
+    public List&lt;CouponPolicyResponseDto&gt; findActivePolicy() {
+<span class="fc" id="L39">        return queryFactory.select(Projections.constructor(CouponPolicyResponseDto.class,</span>
+                        couponPolicy.couponPolicyId,
+                        couponPolicy.name,
+<span class="fc" id="L42">                        couponPolicy.discountType.stringValue(),</span>
+                        couponPolicy.discountValue,
+                        couponPolicy.usageLimit,
+                        couponPolicy.duration,
+                        couponPolicy.detail,
+                        couponPolicy.maxDiscount))
+<span class="fc" id="L48">                .from(couponPolicy)</span>
+<span class="fc" id="L49">                .where(couponPolicy.isActive.isTrue())</span>
+<span class="fc" id="L50">                .fetch();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.service.impl</a> &gt; <span class="el_source">MemberServiceImpl.java</span></div><h1>MemberServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.service.impl;
+
+import com.nhnacademy.bookstore.common.error.enums.RedirectType;
+import com.nhnacademy.bookstore.common.error.exception.user.member.MemberDuplicateException;
+import com.nhnacademy.bookstore.common.error.exception.user.member.MemberNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.user.member.MemberPasswordNotEqualException;
+import com.nhnacademy.bookstore.common.error.exception.user.member.status.MemberNothingToUpdateException;
+import com.nhnacademy.bookstore.common.error.exception.user.member.status.MemberStatusNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.user.member.tier.MemberTierNotFoundException;
+import com.nhnacademy.bookstore.coupon.service.MemberCouponService;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberCreateRequestDto;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberUpdateRequesteDto;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberWithdrawRequesteDto;
+import com.nhnacademy.bookstore.user.member.dto.response.*;
+import com.nhnacademy.bookstore.user.member.entity.Member;
+import com.nhnacademy.bookstore.user.member.repository.MemberRepository;
+import com.nhnacademy.bookstore.user.member.service.MemberService;
+import com.nhnacademy.bookstore.user.memberstatus.entity.MemberStatus;
+import com.nhnacademy.bookstore.user.memberstatus.repository.MemberStatusRepository;
+import com.nhnacademy.bookstore.user.tier.entity.MemberTier;
+import com.nhnacademy.bookstore.user.tier.repository.MemberTierRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * MemberServiceImpl
+ * 회원 서비스 구현 클래스입니다. 회원 가입 시, ID, 이메일, 전화번호 중복 여부를 검사하고
+ * 기본 회원 상태 및 등급을 설정합니다. 회원 가입 성공 시, 환영 메시지를 포함한 DTO를 반환합니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@Service
+@RequiredArgsConstructor
+public class MemberServiceImpl implements MemberService {
+
+    static final String MEMBER_SIGNUP_URL = &quot;/signup&quot;;
+    static final String MEMBER_EDIT_PROFILE_URL = &quot;/mypage/edit-profile&quot;;
+    static final String MEMBER_WITHDRAW_URL = &quot;/mypage/withdraw&quot;;
+    private static final int INITIAL_PAGE_SIZE = 10;
+
+    private final MemberRepository memberRepository;
+    private final MemberStatusRepository statusRepository;
+    private final MemberTierRepository tierRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final MemberCouponService memberCouponService;
+
+    /**
+     * 신규 회원을 등록하는 메서드.
+     * &lt;p&gt;
+     * ID, 이메일, 전화번호 중복 여부를 검증하고, 기본 회원 상태 및 등급을 설정하여 저장합니다.
+     *
+     * @param memberDto 신규 회원 정보가 담긴 DTO
+     * @return MemberCreateSuccessResponseDto 회원 가입 성공 메시지와 닉네임을 포함한 DTO
+     * @throws MemberDuplicateException      ID, 이메일, 전화번호 중복 발생 시 예외
+     * @throws MemberStatusNotFoundException 기본 회원 상태가 존재하지 않을 경우 예외
+     * @throws MemberTierNotFoundException   기본 회원 등급이 존재하지 않을 경우 예외
+     */
+    @Override
+    @Transactional
+    public MemberCreateSuccessResponseDto registerNewMember(MemberCreateRequestDto memberDto) {
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (memberRepository.existsByLoginId(memberDto.loginId())) {</span>
+<span class="fc" id="L70">            throw new MemberDuplicateException(</span>
+                    &quot;이미 사용 중인 아이디입니다.&quot;,
+                    RedirectType.REDIRECT,
+                    MEMBER_SIGNUP_URL,
+                    memberDto
+            );
+        }
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (memberRepository.existsByEmail(memberDto.email())) {</span>
+<span class="fc" id="L79">            throw new MemberDuplicateException(</span>
+                    &quot;이미 존재하는 이메일입니다.&quot;,
+                    RedirectType.REDIRECT,
+                    MEMBER_SIGNUP_URL,
+                    memberDto
+            );
+        }
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (memberRepository.existsByPhone(memberDto.phone())) {</span>
+<span class="fc" id="L88">            throw new MemberDuplicateException(</span>
+                    &quot;이미 존재하는 전화번호입니다.&quot;,
+                    RedirectType.REDIRECT,
+                    MEMBER_SIGNUP_URL,
+                    memberDto
+            );
+        }
+
+<span class="fc" id="L96">        MemberStatus defaultStatus = statusRepository.findById(1L)</span>
+<span class="fc" id="L97">                .orElseThrow(() -&gt; new MemberStatusNotFoundException(</span>
+                        &quot;기본 상태를 찾을 수 없습니다.&quot;,
+                        RedirectType.REDIRECT,
+                        MEMBER_SIGNUP_URL
+                ));
+
+<span class="fc" id="L103">        MemberTier defaultTier = tierRepository.findById(1L)</span>
+<span class="fc" id="L104">                .orElseThrow(() -&gt; new MemberTierNotFoundException(</span>
+                        &quot;기본 회원등급을 찾을 수 없습니다.&quot;,
+                        RedirectType.REDIRECT,
+                        MEMBER_SIGNUP_URL,
+                        memberDto
+                ));
+
+<span class="fc" id="L111">        Member requestMember = new Member();</span>
+<span class="fc" id="L112">        String encodedPassword = passwordEncoder.encode(memberDto.password());</span>
+<span class="fc" id="L113">        requestMember.toEntity(memberDto, encodedPassword);</span>
+<span class="fc" id="L114">        requestMember.setStatus(defaultStatus);</span>
+<span class="fc" id="L115">        requestMember.setTier(defaultTier);</span>
+
+<span class="fc" id="L117">        Member member = memberRepository.save(requestMember);</span>
+
+<span class="fc" id="L119">        memberCouponService.saveWelcomeCoupon(member);</span>
+<span class="fc" id="L120">        return new MemberCreateSuccessResponseDto(member.getNickname());</span>
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public List&lt;GetAllMembersResponse&gt; getAllMembers(
+            final int page
+    ) {
+<span class="fc" id="L129">        final Pageable pageable = PageRequest.of(page, INITIAL_PAGE_SIZE);</span>
+<span class="fc" id="L130">        return memberRepository.findAllByOrderByNicknameDesc(pageable).stream()</span>
+<span class="fc" id="L131">                .map(GetAllMembersResponse::from)</span>
+<span class="fc" id="L132">                .toList();</span>
+    }
+
+    /**
+     * 회원 정보를 업데이트하고, 업데이트된 정보를 반환합니다.
+     *
+     * @param customerId 수정할 회원의 고유 ID
+     * @param memberDto  수정 요청 데이터를 담은 DTO
+     * @return 업데이트된 회원 정보를 담은 DTO
+     * @throws MemberNotFoundException  회원 ID가 존재하지 않을 경우 발생
+     * @throws MemberDuplicateException 중복된 이메일 또는 전화번호가 존재할 경우 발생
+     */
+    @Transactional
+    @Override
+    public MemberUpdateResponseDto updateMember(long customerId, MemberUpdateRequesteDto memberDto) {
+<span class="fc" id="L147">        Member member = memberRepository.findById(customerId)</span>
+<span class="fc" id="L148">                .orElseThrow(() -&gt; new MemberNotFoundException(&quot;해당 멤버가 존재하지 않습니다.&quot; + customerId,</span>
+                                                               RedirectType.REDIRECT, MEMBER_EDIT_PROFILE_URL
+                ));
+
+<span class="fc" id="L152">        String phone = null;</span>
+<span class="fc" id="L153">        String email = null;</span>
+<span class="fc" id="L154">        String nickName = null;</span>
+<span class="fc" id="L155">        boolean isUpdated = false;</span>
+
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if (!member.getPhone().equals(memberDto.phone())) {</span>
+
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            if (memberRepository.existsByPhone(memberDto.phone())) {</span>
+<span class="fc" id="L160">                throw new MemberDuplicateException(</span>
+                        &quot;이미 존재하는 전화번호입니다.&quot;,
+                        RedirectType.REDIRECT,
+                        MEMBER_EDIT_PROFILE_URL,
+                        memberDto
+                );
+            }
+<span class="fc" id="L167">            phone = memberDto.phone();</span>
+<span class="fc" id="L168">            isUpdated = true;</span>
+
+        }
+
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (!member.getEmail().equals(memberDto.email())) {</span>
+
+<span class="fc bfc" id="L174" title="All 2 branches covered.">            if (memberRepository.existsByEmail(memberDto.email())) {</span>
+<span class="fc" id="L175">                throw new MemberDuplicateException(</span>
+                        &quot;이미 존재하는 이메일입니다.&quot;,
+                        RedirectType.REDIRECT,
+                        MEMBER_EDIT_PROFILE_URL,
+                        memberDto
+                );
+            }
+<span class="fc" id="L182">            email = memberDto.email();</span>
+<span class="fc" id="L183">            isUpdated = true;</span>
+
+
+        }
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        if (!member.getNickname().equals(memberDto.nickName())) {</span>
+<span class="fc" id="L188">            nickName = memberDto.nickName();</span>
+<span class="fc" id="L189">            isUpdated = true;</span>
+
+        }
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        if (!isUpdated) {</span>
+<span class="fc" id="L193">            throw new MemberNothingToUpdateException(&quot;업데이트할 데이터가 없습니다.&quot;, RedirectType.REDIRECT,</span>
+                                                     MEMBER_EDIT_PROFILE_URL
+            );
+        }
+<span class="fc" id="L197">        MemberUpdateRequesteDto realUpdateDto = new MemberUpdateRequesteDto(phone, email, nickName);</span>
+
+<span class="fc" id="L199">        return memberRepository.updateMemberDetails(realUpdateDto, customerId);</span>
+    }
+
+    /**
+     * 회원 정보를 조회합니다.
+     *
+     * @param customerId 조회할 회원의 고유 ID
+     * @return 조회된 회원 정보를 담은 DTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public MemberUpdateResponseDto getMemberInfo(long customerId) {
+<span class="fc" id="L211">        return memberRepository.getMemberInfo(customerId);</span>
+    }
+
+    @Transactional
+    @Override
+    public MemberWithdrawResponseDto withdrawMember(long customerId, MemberWithdrawRequesteDto memberDto) {
+
+<span class="fc" id="L218">        Member member = memberRepository.findById(customerId)</span>
+<span class="fc" id="L219">                .orElseThrow(() -&gt; new MemberNotFoundException(&quot;해당 멤버가 존재하지 않습니다.&quot;, RedirectType.REDIRECT,</span>
+                                                               MEMBER_WITHDRAW_URL
+                ));
+
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        if (!passwordEncoder.matches(memberDto.password(), member.getPassword())) {</span>
+<span class="fc" id="L224">            throw new MemberPasswordNotEqualException(&quot;비밀번호가 일치하지 않습니다.&quot;, RedirectType.REDIRECT, MEMBER_WITHDRAW_URL);</span>
+        }
+
+<span class="fc" id="L227">        MemberStatus status = statusRepository.findById(3L)</span>
+<span class="fc" id="L228">                .orElseThrow(() -&gt; new MemberStatusNotFoundException(&quot;회원 상태가 존재하지 않습니다.&quot;, RedirectType.REDIRECT,</span>
+                                                                     MEMBER_WITHDRAW_URL
+                ));
+<span class="fc" id="L231">        member.withdrawStatus(status);</span>
+
+
+<span class="fc" id="L234">        return new MemberWithdrawResponseDto(member.getName());</span>
+    }
+
+    /**
+     * 회원이 가진 포인트를 조회합니다.
+     *
+     * @param customerId 조회할 회원의 고객 ID
+     * @return 회원이 가진 포인트
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public MemberPointResponse getPointsOfMember(Long customerId) {
+<span class="fc" id="L246">        return memberRepository.findPointById(customerId).orElseThrow(</span>
+<span class="fc" id="L247">                () -&gt; new MemberNotFoundException(&quot;회원 정보를 찾을 수 없습니다.&quot;, RedirectType.REDIRECT, &quot;/&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

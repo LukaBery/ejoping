@@ -1,0 +1,710 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BookServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.bookset.book.service.impl</a> &gt; <span class="el_source">BookServiceImpl.java</span></div><h1>BookServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.bookset.book.service.impl;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.nhnacademy.bookstore.bookset.book.dto.request.*;
+import com.nhnacademy.bookstore.bookset.book.dto.response.*;
+import com.nhnacademy.bookstore.bookset.book.entity.Book;
+import com.nhnacademy.bookstore.bookset.book.entity.BookCategory;
+import com.nhnacademy.bookstore.bookset.book.entity.BookContributor;
+import com.nhnacademy.bookstore.bookset.book.repository.BookCategoryRepository;
+import com.nhnacademy.bookstore.bookset.book.repository.BookContributorRepository;
+import com.nhnacademy.bookstore.bookset.book.repository.BookRepository;
+import com.nhnacademy.bookstore.bookset.book.service.BookService;
+import com.nhnacademy.bookstore.bookset.category.dto.response.CategoryResponseDto;
+import com.nhnacademy.bookstore.bookset.category.entity.Category;
+import com.nhnacademy.bookstore.bookset.category.repository.CategoryRepository;
+import com.nhnacademy.bookstore.bookset.contributor.dto.request.ContributorRoleRequestDto;
+import com.nhnacademy.bookstore.bookset.contributor.dto.response.ContributorResponseDto;
+import com.nhnacademy.bookstore.bookset.contributor.entity.Contributor;
+import com.nhnacademy.bookstore.bookset.contributor.entity.ContributorRole;
+import com.nhnacademy.bookstore.bookset.contributor.repository.ContributorRepository;
+import com.nhnacademy.bookstore.bookset.contributor.repository.ContributorRoleRepository;
+import com.nhnacademy.bookstore.bookset.publisher.entity.Publisher;
+import com.nhnacademy.bookstore.bookset.publisher.repository.PublisherRepository;
+import com.nhnacademy.bookstore.bookset.tag.dto.TagResponseDto;
+import com.nhnacademy.bookstore.bookset.tag.entity.BookTag;
+import com.nhnacademy.bookstore.bookset.tag.entity.Tag;
+import com.nhnacademy.bookstore.bookset.tag.repository.BookTagRepository;
+import com.nhnacademy.bookstore.bookset.tag.repository.TagRepository;
+import com.nhnacademy.bookstore.common.error.exception.bookset.book.BookNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.category.CategoryNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.contributor.ContributorNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.contributor.ContributorRoleNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.publisher.PublisherNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.tag.TagNotFoundException;
+import com.nhnacademy.bookstore.imageset.entity.BookImage;
+import com.nhnacademy.bookstore.imageset.entity.Image;
+import com.nhnacademy.bookstore.imageset.repository.BookImageRepository;
+import com.nhnacademy.bookstore.imageset.repository.ImageRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class BookServiceImpl implements BookService {
+
+    private final BookRepository bookRepository;
+    private final PublisherRepository publisherRepository;
+    private final ContributorRepository contributorRepository;
+    private final ContributorRoleRepository contributorRoleRepository;
+    private final BookContributorRepository bookContributorRepository;
+    private final CategoryRepository categoryRepository;
+    private final BookCategoryRepository bookCategoryRepository;
+    private final ImageRepository imageRepository;
+    private final BookImageRepository bookImageRepository;
+    private final BookTagRepository bookTagRepository;
+    private final ObjectMapper objectMapper;
+    private final TagRepository tagRepository;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    /**
+     * 텍스트를 파싱하여 기여자를 생성하고 반환하는 메서드
+     *
+     * @param text 파싱할 기여자 텍스트 (이름과 역할을 포함)
+     * @return 기여자 리스트 객체 (ContributorResponseDto)
+     */
+    @Override
+    public List&lt;ContributorResponseDto&gt; getContributorListForAPI(String text) {
+<span class="fc" id="L85">        String pattern = &quot;([\\p{L}\\w\\s,]+) \\(([^)]+)\\)&quot;;</span>
+<span class="fc" id="L86">        Pattern regex = Pattern.compile(pattern);</span>
+<span class="fc" id="L87">        Matcher matcher = regex.matcher(text);</span>
+
+<span class="fc" id="L89">        List&lt;ContributorResponseDto&gt; contributorDtos = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        while (matcher.find()) {</span>
+<span class="fc" id="L92">            String[] rawNames = matcher.group(1).trim().split(&quot;,\\s*&quot;);</span>
+<span class="fc" id="L93">            List&lt;String&gt; names = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            for (String rawName : rawNames) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">                if (!rawName.isBlank()) {</span>
+<span class="fc" id="L97">                    names.add(rawName.trim());</span>
+                }
+            }
+
+<span class="fc" id="L101">            String roleName = matcher.group(2).trim();</span>
+
+<span class="fc" id="L103">            ContributorRole role = contributorRoleRepository.findByName(roleName)</span>
+<span class="fc" id="L104">                    .orElseGet(() -&gt; {</span>
+<span class="fc" id="L105">                        ContributorRole newRole = new ContributorRole();</span>
+<span class="fc" id="L106">                        ContributorRoleRequestDto requestDto = new ContributorRoleRequestDto(roleName);</span>
+<span class="fc" id="L107">                        newRole.toEntity(requestDto);</span>
+<span class="fc" id="L108">                        return contributorRoleRepository.save(newRole);</span>
+                    });
+
+
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            for (String name : names) {</span>
+<span class="fc" id="L113">                Contributor contributor = contributorRepository.findByName(name)</span>
+<span class="fc" id="L114">                        .orElseGet(() -&gt; {</span>
+<span class="fc" id="L115">                            Contributor newContributor = new Contributor(null, role, name, true);</span>
+<span class="fc" id="L116">                            return contributorRepository.save(newContributor);</span>
+                        });
+
+<span class="fc" id="L119">                contributorDtos.add(new ContributorResponseDto(</span>
+<span class="fc" id="L120">                        contributor.getContributorId(),</span>
+<span class="fc" id="L121">                        contributor.getContributorRole().getContributorRoleId(),</span>
+<span class="fc" id="L122">                        contributor.getName()</span>
+                ));
+<span class="fc" id="L124">            }</span>
+<span class="fc" id="L125">        }</span>
+<span class="fc" id="L126">        return contributorDtos;</span>
+    }
+
+    /**
+     * 텍스트를 파싱하여 최하위 레벨의 카테고리를 반환하는 메서드
+     *
+     * @param categoryText 파싱할 카테고리 텍스트 (구분자 &gt; 사용)
+     * @return 최하위 레벨의 카테고리 객체 (Category)
+     */
+    public Category getLowestLevelCategory(String categoryText) {
+<span class="fc" id="L136">        String[] categories = categoryText.split(&quot;&gt;&quot;);</span>
+<span class="fc" id="L137">        int upperLimit = Math.min(3, categories.length);</span>
+
+<span class="fc" id="L139">        Category parentCategory = null;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">        for (int i = 0; i &lt; upperLimit; i++) {</span>
+<span class="fc" id="L141">            String categoryName = categories[i].trim();</span>
+
+<span class="fc" id="L143">            Category finalParentCategory = parentCategory;</span>
+<span class="fc" id="L144">            Category category = categoryRepository.findByName(categoryName)</span>
+<span class="fc" id="L145">                    .orElseGet(() -&gt; {</span>
+<span class="fc" id="L146">                        Category newCategory = new Category();</span>
+<span class="fc" id="L147">                        newCategory.updateName(categoryName);</span>
+<span class="fc" id="L148">                        newCategory.activate();</span>
+<span class="fc" id="L149">                        newCategory.updateParentCategory(finalParentCategory); // 상위 카테고리를 설정</span>
+<span class="fc" id="L150">                        return categoryRepository.save(newCategory);</span>
+                    });
+
+            // 현재 카테고리를 부모 카테고리로 설정
+<span class="fc" id="L154">            parentCategory = category;</span>
+        }
+<span class="fc" id="L156">        return parentCategory;</span>
+    }
+
+    /**
+     * 도서와 태그를 연관짓는 메서드
+     *
+     * @param book    태그를 연관시킬 도서 객체
+     * @param tagList 태그 목록 텍스트
+     * @return 태그 리스트 객체 (TagResponseDto)
+     */
+    public List&lt;TagResponseDto&gt; associateBookWithTag(Book book, List&lt;String&gt; tagList) {
+        // &quot;[]&quot; 문자열 처리
+<span class="fc bfc" id="L168" title="All 4 branches covered.">        if (tagList.size() == 1 &amp;&amp; tagList.get(0).equals(&quot;[]&quot;)) {</span>
+<span class="fc" id="L169">            tagList = new ArrayList&lt;&gt;(); // 빈 리스트로 대체</span>
+        }
+
+<span class="fc" id="L172">        List&lt;TagResponseDto&gt; tagResponseDtos = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        for (String inputTag : tagList) {</span>
+<span class="fc" id="L174">            String tagName = inputTag.trim();</span>
+<span class="fc" id="L175">            Tag tag = tagRepository.findByName(tagName)</span>
+<span class="fc" id="L176">                    .orElseThrow(TagNotFoundException::new);</span>
+
+<span class="fc" id="L178">            BookTag bookTag = new BookTag(</span>
+<span class="fc" id="L179">                    new BookTag.BookTagId(book.getBookId(), tag.getTagId()),</span>
+                    book,
+                    tag
+            );
+<span class="fc" id="L183">            bookTagRepository.save(bookTag);</span>
+
+<span class="fc" id="L185">            tagResponseDtos.add(new TagResponseDto(tag.getTagId(), tag.getName()));</span>
+<span class="fc" id="L186">        }</span>
+
+<span class="fc" id="L188">        return tagResponseDtos;</span>
+    }
+
+    /**
+     * 주어진 카테고리 ID를 기반으로 계층 구조에서 가장 하위 레벨의 카테고리를 반환하는 메서드
+     *
+     * @param topCategoryId
+     * @param middleCategoryId
+     * @param bottomCategoryId
+     * @return 계층 구조에서 가장 하위 레벨의 카테고리 객체
+     */
+    public Category getCategoryHierarchy(Long topCategoryId, Long middleCategoryId, Long bottomCategoryId) {
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        if (bottomCategoryId != null) {</span>
+<span class="fc" id="L201">            return categoryRepository.findById(bottomCategoryId)</span>
+<span class="fc" id="L202">                    .orElseThrow(CategoryNotFoundException::new);</span>
+        }
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (middleCategoryId != null) {</span>
+<span class="fc" id="L205">            return categoryRepository.findById(middleCategoryId)</span>
+<span class="fc" id="L206">                    .orElseThrow(CategoryNotFoundException::new);</span>
+        }
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        if (topCategoryId != null) {</span>
+<span class="fc" id="L209">            return categoryRepository.findById(topCategoryId)</span>
+<span class="fc" id="L210">                    .orElseThrow(CategoryNotFoundException::new);</span>
+        }
+<span class="fc" id="L212">        throw new IllegalArgumentException(&quot;At least one category must be selected.&quot;);</span>
+    }
+
+    /**
+     * 기여자 리스트를 가져오는 메서드
+     *
+     * @param contributorListJson Json 형식의 기여자 리스트
+     * @return 기여자 리스트 객체 (ContributorResponseDto)
+     */
+    @Override
+    public List&lt;ContributorResponseDto&gt; getContributorList(String contributorListJson) {
+<span class="fc" id="L223">        List&lt;ContributorResponseDto&gt; contributorDtos = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L225" title="All 4 branches covered.">        if (contributorListJson == null || contributorListJson.isEmpty()) {</span>
+<span class="fc" id="L226">            return contributorDtos;</span>
+        }
+
+        try {
+<span class="fc" id="L230">            ObjectMapper objectMapper = new ObjectMapper();</span>
+<span class="fc" id="L231">            List&lt;Map&lt;String, String&gt;&gt; contributorList = objectMapper.readValue(contributorListJson, new TypeReference&lt;&gt;() {</span>
+            });
+
+<span class="fc bfc" id="L234" title="All 2 branches covered.">            for (Map&lt;String, String&gt; contributorMap : contributorList) {</span>
+<span class="fc" id="L235">                String name = contributorMap.get(&quot;name&quot;);</span>
+<span class="fc" id="L236">                String roleName = contributorMap.get(&quot;role&quot;);</span>
+
+<span class="pc bpc" id="L238" title="1 of 4 branches missed.">                if (name == null || roleName == null) {</span>
+<span class="fc" id="L239">                    throw new IllegalArgumentException(&quot;Contributor name or role is missing&quot;);</span>
+                }
+
+<span class="fc" id="L242">                ContributorRole role = contributorRoleRepository.findByName(roleName)</span>
+<span class="fc" id="L243">                        .orElseThrow(ContributorRoleNotFoundException::new);</span>
+
+<span class="fc" id="L245">                Contributor contributor = contributorRepository.findByName(name)</span>
+<span class="fc" id="L246">                        .orElseThrow(ContributorNotFoundException::new);</span>
+
+<span class="fc" id="L248">                contributorDtos.add(new ContributorResponseDto(</span>
+<span class="fc" id="L249">                        contributor.getContributorId(),</span>
+<span class="fc" id="L250">                        contributor.getContributorRole().getContributorRoleId(),</span>
+<span class="fc" id="L251">                        contributor.getName()</span>
+                ));
+<span class="fc" id="L253">            }</span>
+<span class="fc" id="L254">        } catch (IOException ex) {</span>
+            // JSON 변환 중 발생한 예외 처리
+<span class="fc" id="L256">            ex.printStackTrace();</span>
+<span class="fc" id="L257">            throw new RuntimeException(&quot;Error processing contributor list JSON&quot;);</span>
+<span class="fc" id="L258">        }</span>
+
+<span class="fc" id="L260">        return contributorDtos;</span>
+    }
+
+    /**
+     * 도서를 단독으로 등록하는 메서드
+     *
+     * @param bookCreateRequestDto 도서 등록 요청 정보 (BookCreateRequestDto)
+     * @return 등록된 도서에 대한 응답 정보 (BookCreateResponseDto)
+     */
+    @Override
+    public BookCreateResponseDto createBook(BookCreateRequestDto bookCreateRequestDto) {
+
+<span class="fc" id="L272">        BookCreateHtmlRequestDto bookCreateHtmlRequestDto = bookCreateRequestDto.bookCreateHtmlRequestDto();</span>
+<span class="fc" id="L273">        ImageUrlRequestDto imageUrlRequestDto = bookCreateRequestDto.imageUrlRequestDto();</span>
+
+<span class="fc" id="L275">        Publisher publisher = publisherRepository.findByName(bookCreateHtmlRequestDto.publisherName())</span>
+<span class="fc" id="L276">                .orElseThrow(PublisherNotFoundException::new);</span>
+
+<span class="fc" id="L278">        Book book = new Book(</span>
+                null,
+                publisher,
+<span class="fc" id="L281">                bookCreateHtmlRequestDto.title(),</span>
+<span class="fc" id="L282">                bookCreateHtmlRequestDto.description(),</span>
+<span class="fc" id="L283">                bookCreateHtmlRequestDto.publishedDate(),</span>
+<span class="fc" id="L284">                bookCreateHtmlRequestDto.isbn(),</span>
+<span class="fc" id="L285">                bookCreateHtmlRequestDto.retailPrice(),</span>
+<span class="fc" id="L286">                bookCreateHtmlRequestDto.sellingPrice(),</span>
+<span class="fc" id="L287">                bookCreateHtmlRequestDto.giftWrappable(),</span>
+<span class="fc" id="L288">                bookCreateHtmlRequestDto.isActive(),</span>
+<span class="fc" id="L289">                bookCreateHtmlRequestDto.remainQuantity(),</span>
+                0,
+                0, null
+        );
+
+<span class="fc" id="L294">        List&lt;ContributorResponseDto&gt; contributorResponseDtos = getContributorList(bookCreateHtmlRequestDto.contributorList());</span>
+
+<span class="fc" id="L296">        contributorResponseDtos.forEach(dto -&gt; {</span>
+<span class="fc" id="L297">            Contributor contributor = contributorRepository.findById(dto.contributorId())</span>
+<span class="fc" id="L298">                    .orElseThrow(ContributorNotFoundException::new);</span>
+
+<span class="fc" id="L300">            bookContributorRepository.save(new BookContributor(</span>
+<span class="fc" id="L301">                    new BookContributor.BookContributorId(book.getBookId(), contributor.getContributorId()),</span>
+                    book,
+                    contributor
+            ));
+<span class="fc" id="L305">        });</span>
+
+<span class="fc" id="L307">        Category category = getCategoryHierarchy(</span>
+<span class="fc" id="L308">                bookCreateRequestDto.bookCreateHtmlRequestDto().topCategoryId(),</span>
+<span class="fc" id="L309">                bookCreateRequestDto.bookCreateHtmlRequestDto().middleCategoryId(),</span>
+<span class="fc" id="L310">                bookCreateRequestDto.bookCreateHtmlRequestDto().bottomCategoryId()</span>
+        );
+
+<span class="fc" id="L313">        bookCategoryRepository.save(new BookCategory(</span>
+<span class="fc" id="L314">                new BookCategory.BookCategoryId(book.getBookId(), category.getCategoryId()),</span>
+                book,
+                category
+        ));
+
+<span class="fc" id="L319">        CategoryResponseDto categoryResponseDto = new CategoryResponseDto(</span>
+<span class="fc" id="L320">                category.getCategoryId(),</span>
+<span class="fc" id="L321">                category.getName(),</span>
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">                category.getParentCategory() != null ? category.getParentCategory().getCategoryId() : null</span>
+        );
+
+        List&lt;TagResponseDto&gt; tagResponseDtos;
+<span class="fc" id="L326">        tagResponseDtos = associateBookWithTag(book, bookCreateHtmlRequestDto.tagList());</span>
+
+<span class="fc bfc" id="L328" title="All 2 branches covered.">        String thumbnailImageUrl = imageUrlRequestDto.thumbnailImageUrl() != null ? imageUrlRequestDto.thumbnailImageUrl() : &quot;http://image.toast.com/aaaacko/ejoping/book/default/default-book-image.jpg&quot;;</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">        String detailImageUrl = imageUrlRequestDto.detailImageUrl() != null ? imageUrlRequestDto.detailImageUrl() : &quot;http://image.toast.com/aaaacko/ejoping/book/default/default-book-image.jpg&quot;;</span>
+
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        if (imageUrlRequestDto.thumbnailImageUrl() != null) {</span>
+<span class="fc" id="L332">            Image thumbnailImage = imageRepository.save(new Image(thumbnailImageUrl));</span>
+<span class="fc" id="L333">            bookImageRepository.save(new BookImage(book, thumbnailImage, &quot;썸네일&quot;));</span>
+        }
+
+<span class="fc bfc" id="L336" title="All 2 branches covered.">        if (imageUrlRequestDto.detailImageUrl() != null) {</span>
+<span class="fc" id="L337">            Image detailImage = imageRepository.save(new Image(detailImageUrl));</span>
+<span class="fc" id="L338">            bookImageRepository.save(new BookImage(book, detailImage, &quot;상세&quot;));</span>
+        }
+
+<span class="fc" id="L341">        bookRepository.save(book);</span>
+
+<span class="fc" id="L343">        return new BookCreateResponseDto(</span>
+<span class="fc" id="L344">                book.getBookId(),</span>
+<span class="fc" id="L345">                book.getTitle(),</span>
+<span class="fc" id="L346">                book.getDescription(),</span>
+<span class="fc" id="L347">                book.getPublisher().getName(),</span>
+<span class="fc" id="L348">                book.getPublishedDate(),</span>
+<span class="fc" id="L349">                book.getIsbn(),</span>
+<span class="fc" id="L350">                book.getRetailPrice(),</span>
+<span class="fc" id="L351">                book.getSellingPrice(),</span>
+<span class="fc" id="L352">                book.isGiftWrappable(),</span>
+<span class="fc" id="L353">                book.isActive(),</span>
+<span class="fc" id="L354">                book.getRemainQuantity(),</span>
+                contributorResponseDtos,
+                categoryResponseDto,
+                tagResponseDtos,
+<span class="fc" id="L358">                imageUrlRequestDto.thumbnailImageUrl(),</span>
+<span class="fc" id="L359">                imageUrlRequestDto.detailImageUrl()</span>
+        );
+    }
+
+    /**
+     * 알라딘 API를 통해 도서를 등록하는 메서드
+     *
+     * @param query 검색명
+     * @return 등록된 도서 리스트 객체 (BookCreateAPIResponseDto)
+     * @throws ContributorNotFoundException 기여자를 찾을 수 없는 경우 발생
+     */
+    @Override
+    public List&lt;BookCreateAPIResponseDto&gt; createBooks(String query) {
+
+<span class="fc" id="L373">        String apiKey = &quot;ttbdlugus1759001&quot;;</span>
+<span class="fc" id="L374">        String url = &quot;http://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=&quot; + apiKey + &quot;&amp;Query=&quot; + query + &quot;&amp;QueryType=Title&amp;MaxResults=5&amp;start=1&amp;SearchTarget=Book&amp;output=JS&amp;Version=20131101&quot;;</span>
+
+<span class="fc" id="L376">        ResponseEntity&lt;String&gt; response = restTemplate.getForEntity(url, String.class);</span>
+<span class="fc" id="L377">        String jsonResponse = response.getBody();</span>
+<span class="fc" id="L378">        List&lt;BookCreateAPIResponseDto&gt; bookCreateResponseDtos = new ArrayList&lt;&gt;();</span>
+
+        try {
+<span class="fc" id="L381">            JsonNode rootNode = objectMapper.readTree(jsonResponse);</span>
+<span class="fc" id="L382">            ArrayNode itemsNode = (ArrayNode) rootNode.path(&quot;item&quot;);</span>
+
+<span class="fc bfc" id="L384" title="All 2 branches covered.">            for (JsonNode itemNode : itemsNode) {</span>
+<span class="fc" id="L385">                String publisherName = itemNode.path(&quot;publisher&quot;).asText();</span>
+<span class="fc" id="L386">                Publisher publisher = publisherRepository.findByName(publisherName)</span>
+<span class="fc" id="L387">                        .orElseGet(() -&gt; publisherRepository.save(new Publisher(publisherName)));</span>
+
+<span class="fc" id="L389">                String title = itemNode.path(&quot;title&quot;).asText();</span>
+<span class="fc" id="L390">                String description = itemNode.path(&quot;description&quot;).asText();</span>
+<span class="fc" id="L391">                LocalDate publishedDate = LocalDate.parse(itemNode.path(&quot;pubDate&quot;).asText());</span>
+<span class="fc" id="L392">                String isbn = itemNode.path(&quot;isbn13&quot;).asText();</span>
+<span class="fc" id="L393">                int retailPrice = itemNode.path(&quot;priceStandard&quot;).asInt();</span>
+<span class="fc" id="L394">                int sellingPrice = itemNode.path(&quot;priceSales&quot;).asInt();</span>
+<span class="fc" id="L395">                String contributors = itemNode.path(&quot;author&quot;).asText();</span>
+<span class="fc" id="L396">                String categories = itemNode.path(&quot;categoryName&quot;).asText();</span>
+<span class="fc" id="L397">                String thumbnail = itemNode.path(&quot;cover&quot;).asText();</span>
+
+<span class="fc" id="L399">                Book book = new Book(</span>
+                        null,
+                        publisher,
+                        title,
+                        description,
+                        publishedDate,
+                        isbn,
+                        retailPrice,
+                        sellingPrice,
+                        true,
+                        true,
+                        1000,
+                        0,
+                        0, null
+                );
+
+<span class="fc" id="L415">                bookRepository.save(book);</span>
+<span class="fc" id="L416">                bookRepository.flush();</span>
+
+<span class="fc" id="L418">                List&lt;ContributorResponseDto&gt; contributorResponseDtos = getContributorListForAPI(contributors);</span>
+
+<span class="fc" id="L420">                contributorResponseDtos.forEach(dto -&gt; {</span>
+<span class="fc" id="L421">                    Contributor contributor = contributorRepository.findById(dto.contributorId())</span>
+<span class="fc" id="L422">                            .orElseThrow(ContributorNotFoundException::new);</span>
+
+<span class="fc" id="L424">                    bookContributorRepository.save(new BookContributor(</span>
+<span class="fc" id="L425">                            new BookContributor.BookContributorId(book.getBookId(), contributor.getContributorId()),</span>
+                            book,
+                            contributor
+                    ));
+<span class="fc" id="L429">                });</span>
+
+<span class="fc" id="L431">                Category category = getLowestLevelCategory(categories);</span>
+
+<span class="fc" id="L433">                bookCategoryRepository.save(new BookCategory(</span>
+<span class="fc" id="L434">                        new BookCategory.BookCategoryId(book.getBookId(), category.getCategoryId()),</span>
+                        book,
+                        category
+                ));
+
+<span class="fc" id="L439">                CategoryResponseDto categoryResponseDto = new CategoryResponseDto(</span>
+<span class="fc" id="L440">                        category.getCategoryId(),</span>
+<span class="fc" id="L441">                        category.getName(),</span>
+<span class="pc bpc" id="L442" title="1 of 2 branches missed.">                        category.getParentCategory() != null ? category.getParentCategory().getCategoryId() : null</span>
+                );
+
+<span class="fc" id="L445">                Image image = imageRepository.save(new Image(thumbnail));</span>
+<span class="fc" id="L446">                bookImageRepository.save(new BookImage(book, image, &quot;썸네일&quot;));</span>
+
+<span class="fc" id="L448">                BookCreateAPIResponseDto bookCreateResponseDto = new BookCreateAPIResponseDto(</span>
+<span class="fc" id="L449">                        book.getBookId(),</span>
+<span class="fc" id="L450">                        book.getPublisher().getName(),</span>
+<span class="fc" id="L451">                        book.getTitle(),</span>
+<span class="fc" id="L452">                        book.getDescription(),</span>
+<span class="fc" id="L453">                        book.getPublishedDate(),</span>
+<span class="fc" id="L454">                        book.getIsbn(),</span>
+<span class="fc" id="L455">                        book.getRetailPrice(),</span>
+<span class="fc" id="L456">                        book.getSellingPrice(),</span>
+<span class="fc" id="L457">                        book.isGiftWrappable(),</span>
+<span class="fc" id="L458">                        book.isActive(),</span>
+<span class="fc" id="L459">                        book.getRemainQuantity(),</span>
+                        contributorResponseDtos,
+                        categoryResponseDto,
+                        thumbnail
+                );
+<span class="fc" id="L464">                bookCreateResponseDtos.add(bookCreateResponseDto);</span>
+<span class="fc" id="L465">            }</span>
+<span class="fc" id="L466">        } catch (Exception e) {</span>
+<span class="fc" id="L467">            throw new RuntimeException(&quot;데이터 처리 중 예외 발생&quot;, e);</span>
+<span class="fc" id="L468">        }</span>
+<span class="fc" id="L469">        return bookCreateResponseDtos;</span>
+    }
+
+    /**
+     * 전체 도서를 조회하는 메서드
+     *
+     * @return 도서 객체
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page&lt;BookSimpleResponseDto&gt; getAllBooks(Pageable pageable) {
+<span class="fc" id="L480">        Page&lt;BookSimpleResponseDto&gt; books = bookRepository.findAllBooks(pageable);</span>
+<span class="fc" id="L481">        return books;</span>
+    }
+
+    /**
+     * 카테고리로 도서를 조회하는 메서드
+     *
+     * @param categoryId
+     * @return 도서 객체
+     */
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page&lt;BookSimpleResponseDto&gt; getBooksByCategoryId(Pageable pageable, Long categoryId) {
+<span class="fc" id="L494">        return bookRepository.findBooksByCategoryId(pageable, categoryId);</span>
+    }
+
+    /**
+     * 기여자로 도서를 조회하는 메서드
+     *
+     * @param contributorId
+     * @return 도서 객체
+     */
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page&lt;BookSimpleResponseDto&gt; getBooksByContributorId(Pageable pageable, Long contributorId) {
+<span class="fc" id="L507">        return bookRepository.findBooksByContributorId(pageable, contributorId);</span>
+    }
+
+    /**
+     * 특정 도서를 조회하는 메서드
+     *
+     * @param bookId
+     * @return 도서 객체
+     */
+
+    @Transactional(readOnly = true)
+    @Override
+    public BookResponseDto getBookById(Long bookId) {
+<span class="fc" id="L520">        BookResponseDto book = bookRepository.findBookByBookId(bookId).orElseThrow(() -&gt; new BookNotFoundException(&quot;도서를 찾을 수 없습니다.&quot;));</span>
+<span class="fc" id="L521">        return book;</span>
+    }
+
+//    /**
+//     * Id 리스트를 받아 도서리스트를 조회하는 메서드
+//     * @param bookIds 특정 도서 아이디 리스트
+//     * @return 도서목록
+//     */
+//    @Override
+//    public List&lt;BookResponseDto&gt; getBooksById(List&lt;Long&gt; bookIds) {
+//        // TODO 장바구니에서 도서 정보 조회 필요.
+//        return List.of();
+//    }
+
+    /**
+     * 특정 도서를 업데이트용으로 조회하는 메서드
+     *
+     * @param bookId
+     * @return 도서 객체
+     */
+    @Override
+    public BookUpdateResponseDto getUpdateBookByBookId(Long bookId) {
+<span class="fc" id="L543">        BookUpdateResponseDto book = bookRepository.findUpdateBookByBookId(bookId).orElseThrow(() -&gt; new BookNotFoundException(&quot;도서를 찾을 수 없습니다.&quot;));</span>
+<span class="fc" id="L544">        return book;</span>
+    }
+
+    /**
+     * 특정 도서를 업데이트하는 메서드
+     *
+     * @param bookId
+     * @param bookUpdateRequestDto 도서 업데이트 요청 데이터가 담긴 DTO
+     * @return 업데이트된 도서의 결과 정보가 담긴 DTO
+     */
+    @Transactional
+    @Override
+    public BookUpdateResultResponseDto updateBook(Long bookId, BookUpdateRequestDto bookUpdateRequestDto) {
+<span class="fc" id="L557">        Book book = bookRepository.findById(bookId)</span>
+<span class="fc" id="L558">                .orElseThrow(() -&gt; new BookNotFoundException(&quot;책을 찾을 수 없습니다.&quot;));</span>
+
+<span class="fc" id="L560">        BookUpdateHtmlRequestDto bookUpdateHtmlRequestDto = bookUpdateRequestDto.bookUpdateHtmlRequestDto();</span>
+<span class="fc" id="L561">        ImageUrlRequestDto imageUrlRequestDto = bookUpdateRequestDto.imageUrlRequestDto();</span>
+
+<span class="fc" id="L563">        Publisher publisher = publisherRepository.findByName(bookUpdateHtmlRequestDto.publisherName())</span>
+<span class="fc" id="L564">                .orElseThrow(PublisherNotFoundException::new);</span>
+
+<span class="fc" id="L566">        book.updateBook(</span>
+<span class="fc" id="L567">                bookUpdateHtmlRequestDto.title(),</span>
+<span class="fc" id="L568">                bookUpdateHtmlRequestDto.description(),</span>
+                publisher,
+<span class="fc" id="L570">                bookUpdateHtmlRequestDto.publishedDate(),</span>
+<span class="fc" id="L571">                bookUpdateHtmlRequestDto.isbn(),</span>
+<span class="fc" id="L572">                bookUpdateHtmlRequestDto.retailPrice(),</span>
+<span class="fc" id="L573">                bookUpdateHtmlRequestDto.sellingPrice(),</span>
+<span class="fc" id="L574">                bookUpdateHtmlRequestDto.giftWrappable(),</span>
+<span class="fc" id="L575">                bookUpdateHtmlRequestDto.isActive(),</span>
+<span class="fc" id="L576">                bookUpdateHtmlRequestDto.remainQuantity()</span>
+        );
+
+<span class="fc" id="L579">        bookContributorRepository.deleteByBook(book);</span>
+
+<span class="fc" id="L581">        List&lt;ContributorResponseDto&gt; contributorResponseDtos = getContributorList(bookUpdateHtmlRequestDto.contributorList());</span>
+
+<span class="fc" id="L583">        contributorResponseDtos.forEach(dto -&gt; {</span>
+<span class="fc" id="L584">            Contributor contributor = contributorRepository.findById(dto.contributorId())</span>
+<span class="fc" id="L585">                    .orElseThrow(ContributorNotFoundException::new);</span>
+
+<span class="fc" id="L587">            bookContributorRepository.save(new BookContributor(</span>
+<span class="fc" id="L588">                    new BookContributor.BookContributorId(book.getBookId(), contributor.getContributorId()),</span>
+                    book,
+                    contributor
+            ));
+<span class="fc" id="L592">        });</span>
+
+<span class="fc" id="L594">        bookCategoryRepository.deleteByBook(book);</span>
+
+<span class="fc" id="L596">        Category category = getCategoryHierarchy(</span>
+<span class="fc" id="L597">                bookUpdateRequestDto.bookUpdateHtmlRequestDto().topCategoryId(),</span>
+<span class="fc" id="L598">                bookUpdateRequestDto.bookUpdateHtmlRequestDto().middleCategoryId(),</span>
+<span class="fc" id="L599">                bookUpdateRequestDto.bookUpdateHtmlRequestDto().bottomCategoryId()</span>
+        );
+
+<span class="fc" id="L602">        bookCategoryRepository.save(new BookCategory(</span>
+<span class="fc" id="L603">                new BookCategory.BookCategoryId(book.getBookId(), category.getCategoryId()),</span>
+                book,
+                category
+        ));
+
+<span class="fc" id="L608">        CategoryResponseDto categoryResponseDto = new CategoryResponseDto(</span>
+<span class="fc" id="L609">                category.getCategoryId(),</span>
+<span class="fc" id="L610">                category.getName(),</span>
+<span class="pc bpc" id="L611" title="1 of 2 branches missed.">                category.getParentCategory() != null ? category.getParentCategory().getCategoryId() : null</span>
+        );
+
+<span class="fc" id="L614">        bookTagRepository.deleteByBook(book);</span>
+<span class="fc" id="L615">        List&lt;TagResponseDto&gt; tagResponseDtos = associateBookWithTag(book, bookUpdateHtmlRequestDto.tagList());</span>
+
+<span class="fc" id="L617">        String thumbnailImageUrl = null;</span>
+<span class="fc" id="L618">        String detailImageUrl = null;</span>
+<span class="fc" id="L619">        String defaultImageUrl = &quot;http://image.toast.com/aaaacko/ejoping/book/default/default-book-image.jpg&quot;;</span>
+
+<span class="fc bfc" id="L621" title="All 2 branches covered.">        if (bookUpdateHtmlRequestDto.removeThumbnailImage()) {</span>
+<span class="fc" id="L622">            removeExistingImages(book, &quot;썸네일&quot;);</span>
+<span class="fc" id="L623">            Image thumbnailImage = imageRepository.save(new Image(defaultImageUrl));</span>
+<span class="fc" id="L624">            bookImageRepository.save(new BookImage(book, thumbnailImage, &quot;썸네일&quot;));</span>
+<span class="fc" id="L625">            thumbnailImageUrl = thumbnailImage.getUrl();</span>
+<span class="pc bpc" id="L626" title="1 of 4 branches missed.">        } else if (imageUrlRequestDto.thumbnailImageUrl() != null &amp;&amp; !imageUrlRequestDto.thumbnailImageUrl().isBlank()) {</span>
+<span class="fc" id="L627">            thumbnailImageUrl = imageUrlRequestDto.thumbnailImageUrl();</span>
+<span class="fc" id="L628">            removeExistingImages(book, &quot;썸네일&quot;);</span>
+<span class="fc" id="L629">            Image thumbnailImage = imageRepository.save(new Image(thumbnailImageUrl));</span>
+<span class="fc" id="L630">            bookImageRepository.save(new BookImage(book, thumbnailImage, &quot;썸네일&quot;));</span>
+<span class="fc" id="L631">        } else {</span>
+<span class="fc" id="L632">            List&lt;BookImage&gt; existingThumbnails = bookImageRepository.findByBookAndImageType(book, &quot;썸네일&quot;);</span>
+<span class="pc bpc" id="L633" title="1 of 2 branches missed.">            if (!existingThumbnails.isEmpty()) {</span>
+<span class="fc" id="L634">                thumbnailImageUrl = existingThumbnails.get(0).getImage().getUrl();</span>
+            }
+        }
+
+<span class="fc bfc" id="L638" title="All 2 branches covered.">        if (bookUpdateHtmlRequestDto.removeDetailImage()) {</span>
+<span class="fc" id="L639">            removeExistingImages(book, &quot;상세&quot;);</span>
+<span class="fc" id="L640">            Image detailImage = imageRepository.save(new Image(defaultImageUrl));</span>
+<span class="fc" id="L641">            bookImageRepository.save(new BookImage(book, detailImage, &quot;상세&quot;));</span>
+<span class="fc" id="L642">            detailImageUrl = detailImage.getUrl();</span>
+<span class="pc bpc" id="L643" title="1 of 4 branches missed.">        } else if (imageUrlRequestDto.detailImageUrl() != null &amp;&amp; !imageUrlRequestDto.detailImageUrl().isBlank()) {</span>
+<span class="fc" id="L644">            detailImageUrl = imageUrlRequestDto.detailImageUrl();</span>
+<span class="fc" id="L645">            removeExistingImages(book, &quot;상세&quot;);</span>
+<span class="fc" id="L646">            Image detailImage = imageRepository.save(new Image(detailImageUrl));</span>
+<span class="fc" id="L647">            bookImageRepository.save(new BookImage(book, detailImage, &quot;상세&quot;));</span>
+<span class="fc" id="L648">        } else {</span>
+<span class="fc" id="L649">            List&lt;BookImage&gt; existingDetails = bookImageRepository.findByBookAndImageType(book, &quot;상세&quot;);</span>
+<span class="fc bfc" id="L650" title="All 2 branches covered.">            if (!existingDetails.isEmpty()) {</span>
+<span class="fc" id="L651">                detailImageUrl = existingDetails.get(0).getImage().getUrl();</span>
+            }
+        }
+
+<span class="fc" id="L655">        return new BookUpdateResultResponseDto(</span>
+<span class="fc" id="L656">                book.getBookId(),</span>
+<span class="fc" id="L657">                book.getTitle(),</span>
+<span class="fc" id="L658">                book.getDescription(),</span>
+<span class="fc" id="L659">                book.getPublisher().getName(),</span>
+<span class="fc" id="L660">                book.getPublishedDate(),</span>
+<span class="fc" id="L661">                book.getIsbn(),</span>
+<span class="fc" id="L662">                book.getRetailPrice(),</span>
+<span class="fc" id="L663">                book.getSellingPrice(),</span>
+<span class="fc" id="L664">                book.isGiftWrappable(),</span>
+<span class="fc" id="L665">                book.isActive(),</span>
+<span class="fc" id="L666">                book.getRemainQuantity(),</span>
+                contributorResponseDtos,
+                categoryResponseDto,
+                tagResponseDtos,
+                thumbnailImageUrl,
+                detailImageUrl
+        );
+    }
+
+    /**
+     * 특정 도서에 연결된 기존 이미지를 제거하는 메서드
+     *
+     * @param book
+     * @param imageType 이미지 유형에 해당하는 도서의 기존 이미지를 모두 삭제합니다.
+     *                  이미지가 더 이상 다른 도서와 연결되어 있지 않을 경우 이미지 데이터를 완전히 삭제합니다.
+     */
+    public void removeExistingImages(Book book, String imageType) {
+<span class="fc" id="L683">        bookImageRepository.findByBookAndImageType(book, imageType)</span>
+<span class="fc" id="L684">                .forEach(existing -&gt; {</span>
+<span class="fc" id="L685">                    bookImageRepository.delete(existing);</span>
+<span class="fc bfc" id="L686" title="All 2 branches covered.">                    if (!bookImageRepository.existsByImage(existing.getImage())) {</span>
+<span class="fc" id="L687">                        imageRepository.delete(existing.getImage());</span>
+                    }
+<span class="fc" id="L689">                });</span>
+<span class="fc" id="L690">    }</span>
+
+    /*
+     * 특정 도서를 비활성화하는 메서드
+     * @param bookId
+     */
+    @Transactional
+    @Override
+    public void deactivateBook(Long bookId) {
+<span class="fc" id="L699">        Book book = bookRepository.findById(bookId)</span>
+<span class="fc" id="L700">                .orElseThrow(() -&gt; new BookNotFoundException(&quot;도서를 찾을 수 없습니다.&quot;));</span>
+<span class="fc" id="L701">        book.deactivate();</span>
+<span class="fc" id="L702">    }</span>
+
+    @Override
+    @Transactional(readOnly = true)
+    public int getBookRemainQuantity(Long bookId) {
+<span class="fc" id="L707">        return bookRepository.findRemainQuantityByBookId(bookId).orElseThrow(() -&gt; new BookNotFoundException(&quot;도서를 찾을 수 없습니다.&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

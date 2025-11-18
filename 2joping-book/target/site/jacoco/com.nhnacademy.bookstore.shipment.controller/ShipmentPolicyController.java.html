@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShipmentPolicyController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.shipment.controller</a> &gt; <span class="el_source">ShipmentPolicyController.java</span></div><h1>ShipmentPolicyController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.shipment.controller;
+
+import com.nhnacademy.bookstore.common.annotation.ValidPathVariable;
+import com.nhnacademy.bookstore.shipment.dto.request.ShipmentPolicyRequestDto;
+import com.nhnacademy.bookstore.shipment.dto.response.ShipmentPolicyResponseDto;
+import com.nhnacademy.bookstore.shipment.dto.response.ShippingFeeResponseDto;
+import com.nhnacademy.bookstore.shipment.service.ShipmentPolicyService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 배송 정책 관리 기능을 제공하는 ShipmentPolicyController 클래스.
+ * 새로운 배송 정책을 생성, 조회, 수정, 활성화 및 비활성화하는 기능을 제공합니다.
+ *
+ * &lt;p&gt;API 경로: /bookstore/shipment-policies&lt;/p&gt;
+ *
+ * @author 양준하
+ */
+@Tag(name = &quot;Shipment Policy&quot;, description = &quot;배송 정책 API&quot;)
+@RestController
+@RequestMapping(&quot;/api/v1/bookstore/shipment-policies&quot;)
+@RequiredArgsConstructor
+public class ShipmentPolicyController {
+
+    private final ShipmentPolicyService shipmentPolicyService;
+
+    /**
+     * 새로운 배송 정책을 생성하는 메서드.
+     *
+     * @param requestDto 생성할 배송 정책 정보를 담은 DTO
+     * @return 생성된 배송 정책 정보를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 정책 생성&quot;, description = &quot;새로운 배송 정책을 생성합니다.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;배송 정책 생성 성공&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;잘못된 요청 데이터&quot;)
+    @PostMapping
+    public ResponseEntity&lt;ShipmentPolicyResponseDto&gt; createShipmentPolicy(
+            @Valid @RequestBody ShipmentPolicyRequestDto requestDto) {
+<span class="fc" id="L50">        ShipmentPolicyResponseDto responseDto = shipmentPolicyService.createShipmentPolicy(requestDto);</span>
+<span class="fc" id="L51">        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);</span>
+    }
+
+    /**
+     * 모든 배송 정책을 조회하는 메서드.
+     *
+     * @return 모든 배송 정책 목록을 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 정책 전체 조회&quot;, description = &quot;모든 배송 정책을 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 정책 조회 성공&quot;)
+    @GetMapping(&quot;/pages&quot;)
+    public ResponseEntity&lt;Page&lt;ShipmentPolicyResponseDto&gt;&gt; getAllShipmentPolicies(@PageableDefault Pageable pageable) {
+<span class="fc" id="L63">        Page&lt;ShipmentPolicyResponseDto&gt; responseDtos = shipmentPolicyService.getAllShipmentPolicies(pageable);</span>
+<span class="fc" id="L64">        return ResponseEntity.ok(responseDtos);</span>
+    }
+
+    /**
+     * 모든 활성화된 배송 정책을 조회하는 메서드.
+     *
+     * @return 활성화된 모든 배송 정책 목록을 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;활성화된 배송 정책 전체 조회&quot;, description = &quot;모든 활성화된 배송 정책을 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 정책 조회 성공&quot;)
+    @GetMapping
+    public ResponseEntity&lt;List&lt;ShipmentPolicyResponseDto&gt;&gt; getAllIsActiveShipmentPolicies() {
+<span class="fc" id="L76">        List&lt;ShipmentPolicyResponseDto&gt; responseDtos = shipmentPolicyService.getAllIsActiveShipmentPolicies();</span>
+<span class="fc" id="L77">        return ResponseEntity.ok(responseDtos);</span>
+    }
+
+    /**
+     * 특정 배송 정책을 조회하는 메서드.
+     *
+     * @param shipmentPolicyId 조회할 배송 정책의 ID
+     * @return 조회된 배송 정책 정보를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 정책 조회&quot;, description = &quot;특정 배송 정책을 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 정책 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;배송 정책을 찾을 수 없음&quot;)
+    @GetMapping(&quot;/{shipmentPolicyId}&quot;)
+    public ResponseEntity&lt;ShipmentPolicyResponseDto&gt; getShipmentPolicy(@PathVariable @ValidPathVariable Long shipmentPolicyId) {
+<span class="fc" id="L91">        ShipmentPolicyResponseDto responseDto = shipmentPolicyService.getShipmentPolicy(shipmentPolicyId);</span>
+<span class="fc" id="L92">        return ResponseEntity.ok(responseDto);</span>
+    }
+
+    /**
+     * 특정 배송 정책을 수정하는 메서드.
+     *
+     * @param shipmentPolicyId 수정할 배송 정책의 ID
+     * @param requestDto       수정할 배송 정책 정보를 담은 DTO
+     * @return 수정된 배송 정책 정보를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 정책 수정&quot;, description = &quot;특정 배송 정책을 수정합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 정책 수정 성공&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;잘못된 요청 데이터&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;배송 정책을 찾을 수 없음&quot;)
+    @PutMapping(&quot;/{shipmentPolicyId}&quot;)
+    public ResponseEntity&lt;ShipmentPolicyResponseDto&gt; updateShipmentPolicy(
+            @PathVariable @ValidPathVariable Long shipmentPolicyId,
+            @Valid @RequestBody ShipmentPolicyRequestDto requestDto) {
+<span class="fc" id="L110">        ShipmentPolicyResponseDto responseDto = shipmentPolicyService.updateShipmentPolicy(shipmentPolicyId, requestDto);</span>
+<span class="fc" id="L111">        return ResponseEntity.ok(responseDto);</span>
+    }
+
+    /**
+     * 특정 배송 정책을 비활성화하는 메서드.
+     *
+     * @param shipmentPolicyId 비활성화할 배송 정책의 ID
+     * @return 비활성화 성공 상태를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 정책 비활성화&quot;, description = &quot;특정 배송 정책을 비활성화(약삭제)합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 정책 비활성화 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;배송 정책을 찾을 수 없음&quot;)
+    @PutMapping(&quot;/{shipmentPolicyId}/deactivate&quot;)
+    public ResponseEntity&lt;Void&gt; deactivateShipmentPolicy(@PathVariable @ValidPathVariable Long shipmentPolicyId) {
+<span class="fc" id="L125">        shipmentPolicyService.deactivateShipmentPolicy(shipmentPolicyId);</span>
+<span class="fc" id="L126">        return ResponseEntity.ok().build();</span>
+    }
+
+    /**
+     * 특정 배송 정책을 활성화하는 메서드.
+     *
+     * @param shipmentPolicyId 활성화할 배송 정책의 ID
+     * @return 활성화 성공 상태를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 정책 활성화&quot;, description = &quot;특정 배송 정책을 활성화 합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 정책 활성화 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;배송 정책을 찾을 수 없음&quot;)
+    @PutMapping(&quot;/{shipmentPolicyId}/activate&quot;)
+    public ResponseEntity&lt;Void&gt; activateShipmentPolicy(@PathVariable @ValidPathVariable Long shipmentPolicyId) {
+<span class="fc" id="L140">        shipmentPolicyService.activateShipmentPolicy(shipmentPolicyId);</span>
+<span class="fc" id="L141">        return ResponseEntity.ok().build();</span>
+    }
+
+    /**
+     * 모든 활성화된 배송 정책 중 회원, 비회원 여부에 따라 구분된 배송비를 조회하는 메서드.
+     *
+     * @return 활성화된 모든 배송 정책 중 회원 또는 비회원 배송비 목록을 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송비 조회&quot;, description = &quot;회원 여부에 따른 배송비 조회&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Shipping policies successfully retrieved&quot;)
+    @GetMapping(&quot;/shipping-fee&quot;)
+    public ResponseEntity&lt;List&lt;ShippingFeeResponseDto&gt;&gt; getShippingFee(@RequestParam(&quot;isLogin&quot;) Boolean isLogin) {
+<span class="fc" id="L153">        List&lt;ShippingFeeResponseDto&gt; responseDtos = shipmentPolicyService.getShippingFee(isLogin);</span>
+<span class="fc" id="L154">        return ResponseEntity.ok(responseDtos);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

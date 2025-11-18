@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberAddress.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.entity</a> &gt; <span class="el_source">MemberAddress.java</span></div><h1>MemberAddress.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.entity;
+
+import com.nhnacademy.bookstore.user.member.dto.request.AddressUpdateRequestDto;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberAddressRequestDto;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
+
+/**
+ * MemberAddress
+ * 이 클래스는 회원의 주소 정보를 나타내는 엔티티 클래스입니다. 회원이 소유할 수 있는 주소의 기본 정보를 포함하며,
+ * 여러 개의 주소를 관리하고, 기본 주소 여부를 설정할 수 있습니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@Entity
+@Table(name = &quot;member_address&quot;)
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@DynamicUpdate
+public class MemberAddress {
+
+    @Id
+    @Column(name = &quot;member_address_id&quot;)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = &quot;postal_code&quot;, columnDefinition = &quot;CHAR(5)&quot;)
+    private String postalCode;
+
+    private String roadAddress;
+
+    private String detailAddress;
+
+    private String addressAlias;
+
+    @Setter
+    @Column(name=&quot;is_default_address&quot;)
+    private boolean defaultAddress;
+
+    private String receiver;
+
+    @Setter
+    private boolean available;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = &quot;customer_id&quot;, nullable = false)
+    @Setter
+    private Member member;
+
+    /**
+     * MemberAddress 엔티티의 필드를 MemberAddressRequestDto를 통해 업데이트합니다.
+     *
+     * @param requestDto 요청에서 전달된 주소 정보 DTO
+     * @param member     주소를 소유한 회원 객체
+     */
+    public void toEntity(MemberAddressRequestDto requestDto, Member member){
+<span class="fc" id="L63">        this.postalCode = requestDto.postalCode();</span>
+<span class="fc" id="L64">        this.roadAddress = requestDto.roadAddress();</span>
+<span class="fc" id="L65">        this.detailAddress = requestDto.detailAddress();</span>
+<span class="fc" id="L66">        this.addressAlias = requestDto.addressAlias();</span>
+<span class="fc" id="L67">        this.defaultAddress = requestDto.defaultAddress();</span>
+<span class="fc" id="L68">        this.receiver = requestDto.receiver();</span>
+<span class="fc" id="L69">        this.member = member;</span>
+<span class="fc" id="L70">        this.available = true;</span>
+<span class="fc" id="L71">    }</span>
+    public void updateAddress(AddressUpdateRequestDto requestDto){
+<span class="fc" id="L73">        this.postalCode = requestDto.postalCode();</span>
+<span class="fc" id="L74">        this.roadAddress = requestDto.roadAddress();</span>
+<span class="fc" id="L75">        this.detailAddress = requestDto.detailAddress();</span>
+<span class="fc" id="L76">        this.addressAlias = requestDto.addressAlias();</span>
+<span class="fc" id="L77">        this.receiver = requestDto.receiver();</span>
+<span class="fc" id="L78">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

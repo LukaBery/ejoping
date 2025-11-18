@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberCouponRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.coupon.repository.member.impl</a> &gt; <span class="el_source">MemberCouponRepositoryImpl.java</span></div><h1>MemberCouponRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.coupon.repository.member.impl;
+
+import com.nhnacademy.bookstore.coupon.dto.response.CouponPolicyResponseDto;
+import com.nhnacademy.bookstore.coupon.dto.response.CouponResponseDto;
+import com.nhnacademy.bookstore.coupon.dto.response.MemberCouponResponseDto;
+import com.nhnacademy.bookstore.coupon.dto.response.OrderCouponResponse;
+import com.nhnacademy.bookstore.coupon.repository.member.MemberCouponQuerydslRespository;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static com.nhnacademy.bookstore.coupon.entity.QCoupon.coupon;
+import static com.nhnacademy.bookstore.coupon.entity.QCouponPolicy.couponPolicy;
+import static com.nhnacademy.bookstore.coupon.entity.member.QMemberCoupon.memberCoupon;
+
+/**
+ * MemberCouponRepositoryImpl
+ * 이 클래스는 Querydsl을 사용하여 특정 회원의 쿠폰 정보를 조회하는 커스텀 레포지토리 구현체입니다.
+ * 회원 ID를 기반으로 해당 회원이 보유한 쿠폰 목록을 조회하며, 쿠폰 및 쿠폰 정책에 대한 상세 정보도 함께 제공합니다.
+ * JPAQueryFactory를 사용하여 효율적으로 데이터베이스 접근을 수행합니다.
+ *
+ * @since 1.0
+ * @author Luha
+ */
+@Repository
+@RequiredArgsConstructor
+public class MemberCouponRepositoryImpl implements MemberCouponQuerydslRespository {
+
+    private final JPAQueryFactory queryFactory;
+
+    @Override
+    public List&lt;MemberCouponResponseDto&gt; getExpiredOrUsedMemberCoupons(Long customerId) {
+<span class="fc" id="L37">        return queryFactory.select(Projections.constructor(MemberCouponResponseDto.class,</span>
+                        memberCoupon.couponUsageId,
+                        memberCoupon.coupon.id,
+                        memberCoupon.receiveTime,
+                        memberCoupon.invalidTime,
+                        memberCoupon.isUsed,
+                        memberCoupon.usedDate,
+<span class="fc" id="L44">                        Projections.constructor(CouponResponseDto.class,</span>
+                                memberCoupon.coupon.id,
+                                memberCoupon.coupon.name,
+                                memberCoupon.coupon.createdAt,
+                                memberCoupon.coupon.expiredAt,
+                                memberCoupon.coupon.quantity,
+<span class="fc" id="L50">                                Projections.constructor(CouponPolicyResponseDto.class,</span>
+                                        memberCoupon.coupon.couponPolicy.couponPolicyId,
+                                        memberCoupon.coupon.couponPolicy.name,
+<span class="fc" id="L53">                                        memberCoupon.coupon.couponPolicy.discountType.stringValue(),</span>
+                                        memberCoupon.coupon.couponPolicy.discountValue,
+                                        memberCoupon.coupon.couponPolicy.usageLimit,
+                                        memberCoupon.coupon.couponPolicy.duration,
+                                        memberCoupon.coupon.couponPolicy.detail,
+                                        memberCoupon.coupon.couponPolicy.maxDiscount)
+                        )))
+<span class="fc" id="L60">                .from(memberCoupon)</span>
+<span class="fc" id="L61">                .leftJoin(memberCoupon.coupon, coupon)</span>
+<span class="fc" id="L62">                .leftJoin(memberCoupon.coupon.couponPolicy, couponPolicy)</span>
+<span class="fc" id="L63">                .where(</span>
+<span class="fc" id="L64">                        memberCoupon.member.id.eq(customerId) // 특정 회원 필터링</span>
+<span class="fc" id="L65">                                .and(memberCoupon.isUsed.eq(true) // 사용된 쿠폰</span>
+<span class="fc" id="L66">                                        .or(memberCoupon.invalidTime.before(LocalDateTime.now()))) // 기간 만료된 쿠폰</span>
+                )
+<span class="fc" id="L68">                .fetch();</span>
+    }
+
+    /**
+     * 특정 회원의 모든 쿠폰을 조회하여 MemberCouponResponseDto 목록으로 반환합니다.
+     * 쿠폰과 쿠폰 정책 정보가 포함된 상세 정보를 조회합니다.
+     *
+     * @param customerId 조회할 회원의 ID
+     * @return 해당 회원이 보유한 모든 쿠폰 정보를 담은 MemberCouponResponseDto 목록
+     */
+    @Override
+    public List&lt;MemberCouponResponseDto&gt; getAllMemberCoupons(Long customerId) {
+<span class="fc" id="L80">        return queryFactory.select(Projections.constructor(MemberCouponResponseDto.class,</span>
+                        memberCoupon.couponUsageId,
+                        memberCoupon.coupon.id,
+                        memberCoupon.receiveTime,
+                        memberCoupon.invalidTime,
+                        memberCoupon.isUsed,
+                        memberCoupon.usedDate,
+<span class="fc" id="L87">                        Projections.constructor(CouponResponseDto.class,</span>
+                                memberCoupon.coupon.id,
+                                memberCoupon.coupon.name,
+                                memberCoupon.coupon.createdAt,
+                                memberCoupon.coupon.expiredAt,
+                                memberCoupon.coupon.quantity,
+<span class="fc" id="L93">                                Projections.constructor(CouponPolicyResponseDto.class,</span>
+                                        memberCoupon.coupon.couponPolicy.couponPolicyId,
+                                        memberCoupon.coupon.couponPolicy.name,
+<span class="fc" id="L96">                                        memberCoupon.coupon.couponPolicy.discountType.stringValue(),</span>
+                                        memberCoupon.coupon.couponPolicy.discountValue,
+                                        memberCoupon.coupon.couponPolicy.usageLimit,
+                                        memberCoupon.coupon.couponPolicy.duration,
+                                        memberCoupon.coupon.couponPolicy.detail,
+                                        memberCoupon.coupon.couponPolicy.maxDiscount)
+                        )))
+<span class="fc" id="L103">                .from(memberCoupon)</span>
+<span class="fc" id="L104">                .leftJoin(memberCoupon.coupon, coupon)</span>
+<span class="fc" id="L105">                .leftJoin(memberCoupon.coupon.couponPolicy, couponPolicy)</span>
+<span class="fc" id="L106">                .where(</span>
+<span class="fc" id="L107">                        memberCoupon.member.id.eq(customerId), // customerId로 필터링</span>
+<span class="fc" id="L108">                        memberCoupon.invalidTime.isNull().or(memberCoupon.invalidTime.after(LocalDateTime.now())), // 유효하지 않은 시간 제외</span>
+<span class="fc" id="L109">                        memberCoupon.isUsed.eq(false) // 사용되지 않은 쿠폰만</span>
+                )
+<span class="fc" id="L111">                .fetch();</span>
+    }
+
+
+    @Override
+    public List&lt;OrderCouponResponse&gt; getAllMemberOrderCoupons(Long customerId) {
+<span class="fc" id="L117">        return queryFactory.select(Projections.constructor(OrderCouponResponse.class,</span>
+                        memberCoupon.couponUsageId,
+                        memberCoupon.coupon.name,
+                        memberCoupon.invalidTime,
+                        memberCoupon.coupon.couponPolicy.discountType,
+                        memberCoupon.coupon.couponPolicy.discountValue,
+                        memberCoupon.coupon.couponPolicy.usageLimit,
+                        memberCoupon.coupon.couponPolicy.detail,
+                        memberCoupon.coupon.couponPolicy.maxDiscount
+                ))
+<span class="fc" id="L127">                .from(memberCoupon)</span>
+<span class="fc" id="L128">                .leftJoin(memberCoupon.coupon, coupon)</span>
+<span class="fc" id="L129">                .leftJoin(memberCoupon.coupon.couponPolicy, couponPolicy)</span>
+<span class="fc" id="L130">                .where(</span>
+<span class="fc" id="L131">                        memberCoupon.member.id.eq(customerId), // customerId로 필터링</span>
+<span class="fc" id="L132">                        memberCoupon.invalidTime.isNull().or(memberCoupon.invalidTime.after(LocalDateTime.now())), // 유효하지 않은 시간 제외</span>
+<span class="fc" id="L133">                        memberCoupon.isUsed.eq(false) // 사용되지 않은 쿠폰만</span>
+                )
+<span class="fc" id="L135">                .fetch();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

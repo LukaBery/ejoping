@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShipmentPolicyServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.shipment.service.impl</a> &gt; <span class="el_source">ShipmentPolicyServiceImpl.java</span></div><h1>ShipmentPolicyServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.shipment.service.impl;
+
+import com.nhnacademy.bookstore.common.error.exception.shipment.ShipmentPolicyNotFoundException;
+import com.nhnacademy.bookstore.shipment.dto.request.ShipmentPolicyRequestDto;
+import com.nhnacademy.bookstore.shipment.dto.response.ShipmentPolicyResponseDto;
+import com.nhnacademy.bookstore.shipment.dto.response.ShippingFeeResponseDto;
+import com.nhnacademy.bookstore.shipment.entity.ShipmentPolicy;
+import com.nhnacademy.bookstore.shipment.mapper.ShipmentPolicyMapper;
+import com.nhnacademy.bookstore.shipment.repository.ShipmentPolicyRepository;
+import com.nhnacademy.bookstore.shipment.service.ShipmentPolicyService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * ShipmentPolicyService 구현체 클래스.
+ * 배송 정책의 생성, 조회, 수정, 활성화 및 비활성화 기능을 제공합니다.
+ *
+ * @author 양준하
+ */
+@Service
+@RequiredArgsConstructor
+public class ShipmentPolicyServiceImpl implements ShipmentPolicyService {
+
+    private final ShipmentPolicyRepository shipmentPolicyRepository;
+    private final ShipmentPolicyMapper shipmentPolicyMapper;
+
+    /**
+     * 새로운 배송 정책을 생성하는 메서드입니다.
+     *
+     * @param requestDto 생성할 배송 정책 정보를 담은 DTO
+     * @return 생성된 배송 정책의 정보를 포함한 ShipmentPolicyResponseDto
+     */
+    @Override
+    @Transactional
+    public ShipmentPolicyResponseDto createShipmentPolicy(ShipmentPolicyRequestDto requestDto) {
+<span class="fc" id="L42">        ShipmentPolicy shipmentPolicy = new ShipmentPolicy(</span>
+                null,
+<span class="fc" id="L44">                requestDto.name(),</span>
+<span class="fc" id="L45">                requestDto.minOrderAmount(),</span>
+<span class="fc" id="L46">                requestDto.isMemberOnly(),</span>
+<span class="fc" id="L47">                LocalDateTime.now(),</span>
+                null,
+<span class="fc" id="L49">                requestDto.shippingFee(),</span>
+<span class="fc" id="L50">                true</span>
+        );
+
+<span class="fc" id="L53">        ShipmentPolicy savedPolicy = shipmentPolicyRepository.save(shipmentPolicy);</span>
+<span class="fc" id="L54">        return shipmentPolicyMapper.toShipmentPolicyResponseDto(savedPolicy);</span>
+    }
+
+    /**
+     * 모든 배송 정책을 조회하는 메서드입니다.
+     *
+     * @return 배송 정책 목록을 포함한 ShipmentPolicyResponseDto 리스트
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page&lt;ShipmentPolicyResponseDto&gt; getAllShipmentPolicies(Pageable pageable) {
+<span class="fc" id="L65">        return shipmentPolicyRepository.findAll(pageable)</span>
+<span class="fc" id="L66">                .map(shipmentPolicyMapper::toShipmentPolicyResponseDto);</span>
+    }
+
+    /**
+     * 모든 활성화된 배송 정책을 조회하는 메서드입니다.
+     *
+     * @return 활성화된 배송 정책 목록을 포함한 ShipmentPolicyResponseDto 리스트
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;ShipmentPolicyResponseDto&gt; getAllIsActiveShipmentPolicies() {
+<span class="fc" id="L77">        return shipmentPolicyRepository.findActiveShipmentPolicies();</span>
+    }
+
+    /**
+     * 특정 ID의 배송 정책을 조회하는 메서드입니다.
+     *
+     * @param shipmentPolicyId 조회할 배송 정책의 ID
+     * @return 조회된 배송 정책의 정보를 포함한 ShipmentPolicyResponseDto
+     * @throws ShipmentPolicyNotFoundException 배송 정책을 찾을 수 없을 경우 발생
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ShipmentPolicyResponseDto getShipmentPolicy(Long shipmentPolicyId) {
+<span class="fc" id="L90">        ShipmentPolicy policy = shipmentPolicyRepository.findById(shipmentPolicyId)</span>
+<span class="fc" id="L91">                .orElseThrow(ShipmentPolicyNotFoundException::new);</span>
+<span class="fc" id="L92">        return shipmentPolicyMapper.toShipmentPolicyResponseDto(policy);</span>
+    }
+
+    /**
+     * 특정 ID의 배송 정책을 수정하는 메서드입니다.
+     *
+     * @param shipmentPolicyId 수정할 배송 정책의 ID
+     * @param requestDto 수정할 배송 정책 정보를 담은 DTO
+     * @return 수정된 배송 정책의 정보를 포함한 ShipmentPolicyResponseDto
+     * @throws ShipmentPolicyNotFoundException 배송 정책을 찾을 수 없을 경우 발생
+     */
+    @Override
+    @Transactional
+    public ShipmentPolicyResponseDto updateShipmentPolicy(Long shipmentPolicyId, ShipmentPolicyRequestDto requestDto) {
+<span class="fc" id="L106">        ShipmentPolicy policy = shipmentPolicyRepository.findById(shipmentPolicyId)</span>
+<span class="fc" id="L107">                .orElseThrow(ShipmentPolicyNotFoundException::new);</span>
+<span class="fc" id="L108">        policy.toEntity(requestDto);</span>
+<span class="fc" id="L109">        ShipmentPolicy updatedPolicy = shipmentPolicyRepository.save(policy);</span>
+<span class="fc" id="L110">        return shipmentPolicyMapper.toShipmentPolicyResponseDto(updatedPolicy);</span>
+    }
+
+    /**
+     * 특정 배송 정책을 비활성화하는 메서드입니다.
+     *
+     * @param shipmentPolicyId 비활성화할 배송 정책의 ID
+     * @throws ShipmentPolicyNotFoundException 배송 정책을 찾을 수 없을 경우 발생
+     */
+    @Override
+    @Transactional
+    public void deactivateShipmentPolicy(Long shipmentPolicyId) {
+<span class="fc" id="L122">        ShipmentPolicy policy = shipmentPolicyRepository.findById(shipmentPolicyId)</span>
+<span class="fc" id="L123">                .orElseThrow(ShipmentPolicyNotFoundException::new);</span>
+<span class="fc" id="L124">        policy.deactivate();</span>
+<span class="fc" id="L125">        shipmentPolicyRepository.save(policy);</span>
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * 특정 배송 정책을 활성화하는 메서드입니다.
+     *
+     * @param shipmentPolicyId 활성화할 배송 정책의 ID
+     * @throws ShipmentPolicyNotFoundException 배송 정책을 찾을 수 없을 경우 발생
+     */
+    @Override
+    @Transactional
+    public void activateShipmentPolicy(Long shipmentPolicyId) {
+<span class="fc" id="L137">        ShipmentPolicy policy = shipmentPolicyRepository.findById(shipmentPolicyId)</span>
+<span class="fc" id="L138">                .orElseThrow(ShipmentPolicyNotFoundException::new);</span>
+<span class="fc" id="L139">        policy.activate();</span>
+<span class="fc" id="L140">        shipmentPolicyRepository.save(policy);</span>
+<span class="fc" id="L141">    }</span>
+
+    /**
+     * 모든 활성화된 배송 정책을 조회하는 메서드입니다.
+     *
+     * @return 활성화된 배송 정책 목록을 포함한 ShipmentPolicyResponseDto 리스트
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;ShippingFeeResponseDto&gt; getShippingFee(Boolean isLogin) {
+<span class="fc" id="L151">        return shipmentPolicyRepository.findActiveShippingFee(isLogin);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

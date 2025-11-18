@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReviewController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.review.controller</a> &gt; <span class="el_source">ReviewController.java</span></div><h1>ReviewController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.review.controller;
+
+
+import com.nhnacademy.bookstore.review.dto.request.ReviewCreateRequestDto;
+import com.nhnacademy.bookstore.review.dto.request.ReviewModifyRequestDto;
+import com.nhnacademy.bookstore.review.dto.request.ReviewRequestDto;
+import com.nhnacademy.bookstore.review.dto.response.ReviewCreateResponseDto;
+import com.nhnacademy.bookstore.review.dto.response.ReviewModifyResponseDto;
+import com.nhnacademy.bookstore.review.dto.response.ReviewResponseDto;
+import com.nhnacademy.bookstore.review.dto.response.ReviewTotalResponseDto;
+import com.nhnacademy.bookstore.review.service.ReviewService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(&quot;api/v1/bookstore/reviews&quot;)
+@Tag(name = &quot;Review API&quot;, description = &quot;리뷰 관련 CRUD API&quot;)
+public class ReviewController {
+
+    private final ReviewService reviewService;
+
+    /**
+     * 리뷰 등록하는 컨트롤러
+     * @param reviewCreateRequestDto 리뷰 등록을 위한 dto
+     */
+    @Operation(summary = &quot;리뷰 등록&quot;, description = &quot;새로운 리뷰를 등록합니다.&quot;)
+    @PostMapping
+    public ResponseEntity&lt;ReviewCreateResponseDto&gt; registerReview(@RequestBody @Valid ReviewCreateRequestDto reviewCreateRequestDto, BindingResult bindingResult) {
+<span class="fc" id="L42">        ReviewCreateResponseDto responseDto = reviewService.registerReview(reviewCreateRequestDto);</span>
+<span class="fc" id="L43">        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);</span>
+    }
+    /**
+     * 리뷰 수정하는 컨트롤러
+     * @param reviewModifyRequestDto 리뷰 수정을 위한 dto
+     * @return 수정된 리뷰와 상태 코드를 담은 응답
+     */
+    @Operation(summary = &quot;리뷰 수정&quot;, description = &quot;등록된 리뷰를 수정합니다.&quot;)
+    @PutMapping(&quot;/{reviewId}&quot;)
+    public ResponseEntity&lt;ReviewModifyResponseDto&gt; modifyReview(@PathVariable Long reviewId,
+                                                                @RequestBody @Valid ReviewModifyRequestDto reviewModifyRequestDto,
+                                                                BindingResult bindingResult) {
+
+<span class="fc" id="L56">        ReviewModifyResponseDto modifyDto = reviewService.modifyReview(reviewModifyRequestDto);</span>
+<span class="fc" id="L57">        return ResponseEntity.status(HttpStatus.OK).body(modifyDto);</span>
+    }
+
+    /**
+     * 리뷰 하나를 조회하는 컨트롤러
+     * @param reviewId 리뷰 조회를 위한 reviewId
+     * @return 조회할 리뷰와 상태 코드를 담은 응답
+     */
+    @Operation(summary = &quot;리뷰 조회&quot;, description = &quot;등록된 리뷰를 조회합니다.&quot;)
+    @GetMapping(&quot;/{reviewId}&quot;)
+    public ResponseEntity&lt;Optional&lt;ReviewResponseDto&gt;&gt; getReview(@PathVariable Long reviewId) {
+<span class="fc" id="L68">        ReviewRequestDto reviewRequestDto = new ReviewRequestDto(reviewId);</span>
+<span class="fc" id="L69">        Optional&lt;ReviewResponseDto&gt; responseDto = reviewService.getReviews(reviewRequestDto);</span>
+<span class="fc" id="L70">        return ResponseEntity.ok(responseDto);</span>
+
+    }
+
+    /**
+     * 특정 도서에 달린 리뷰들을 조회하는 컨트롤러
+     * @param bookId 리뷰 조회를 위한 bookId
+     * @return 조회할 리뷰와 상태 코드를 담은 응답
+     */
+    @Operation(summary = &quot;도서별 리뷰 조회&quot;, description = &quot;특정 도서에 등록된 리뷰들을 조회합니다.&quot;)
+    @GetMapping(&quot;/book/{bookId}&quot;)
+    public ResponseEntity&lt;Page&lt;ReviewResponseDto&gt;&gt; getReviewsByBookId(@PathVariable Long bookId,
+                                                                      @PageableDefault(size = 10, sort = &quot;createdAt&quot;, direction = Sort.Direction.DESC) Pageable pageable) {
+<span class="fc" id="L83">        Page&lt;ReviewResponseDto&gt; responseDtoPage = reviewService.getReviewsByBookId(pageable,bookId);</span>
+<span class="fc" id="L84">        return ResponseEntity.ok(responseDtoPage);</span>
+
+    }
+
+    /**
+     * 회원이 작성한 리뷰들을 조회하는 컨트롤러
+     * @param customerId 리뷰 조회를 위한 customerId
+     * @return 조회할 리뷰와 상태 코드를 담은 응답
+     */
+    @Operation(summary = &quot;회원별 리뷰 조회&quot;, description = &quot;특정 회원이 등록한 리뷰들을 조회합니다.&quot;)
+    @GetMapping(&quot;/customer&quot;)
+    public ResponseEntity&lt;Page&lt;ReviewTotalResponseDto&gt;&gt; getReviewsByCustomerId(@RequestHeader(&quot;X-Customer-Id&quot;) String customerId,
+                                                                               @PageableDefault(size = 10, sort = &quot;createdAt&quot;, direction = Sort.Direction.DESC) Pageable pageable) {
+<span class="fc" id="L97">        Page&lt;ReviewTotalResponseDto&gt; responseDtoPage = reviewService.getReviewsByCustomerId(pageable, Long.valueOf(customerId));</span>
+<span class="fc" id="L98">        return ResponseEntity.ok(responseDtoPage);</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

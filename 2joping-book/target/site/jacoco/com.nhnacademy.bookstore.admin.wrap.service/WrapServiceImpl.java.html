@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WrapServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.admin.wrap.service</a> &gt; <span class="el_source">WrapServiceImpl.java</span></div><h1>WrapServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.admin.wrap.service;
+
+import com.nhnacademy.bookstore.admin.wrap.dto.request.*;
+import com.nhnacademy.bookstore.admin.wrap.dto.response.WrapCreateResponseDto;
+import com.nhnacademy.bookstore.admin.wrap.dto.response.WrapUpdateResponseDto;
+import com.nhnacademy.bookstore.admin.wrap.entity.Wrap;
+import com.nhnacademy.bookstore.admin.wrap.repository.WrapRepository;
+import com.nhnacademy.bookstore.common.error.exception.imageset.ImageNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.wrap.WrapAlreadyExistException;
+import com.nhnacademy.bookstore.common.error.exception.wrap.WrapImageNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.wrap.WrapNotFoundException;
+import com.nhnacademy.bookstore.imageset.entity.Image;
+import com.nhnacademy.bookstore.imageset.entity.WrapImage;
+import com.nhnacademy.bookstore.imageset.repository.ImageRepository;
+import com.nhnacademy.bookstore.imageset.repository.WrapImageRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+
+/**
+ * 포장 상품 서비스 구현
+ * 포장 상품 생성, 조회, 수정, 삭제 기능을 제공합니다.
+ * &lt;p&gt;
+ * 작성자: 박채연
+ * 작성일: 2024-11-06
+ */
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class WrapServiceImpl implements WrapService {
+    private final WrapRepository wrapRepository;
+    private final ImageRepository imageRepository;
+    private final WrapImageRepository wrapImageRepository;
+
+    /**
+     * 새로운 포장 상품을 생성합니다.
+     *
+     * @param requestDto 포장 상품 요청 DTO
+     * @throws WrapAlreadyExistException 동일한 이름의 포장 상품이 이미 존재하는 경우
+     */
+    @Override
+    @Transactional
+    public WrapCreateResponseDto createWrap(WrapRequestDto requestDto) {
+<span class="fc" id="L47">        WrapDetailRequestDto wrapDetailRequestDto = requestDto.wrapDetailRequestDto();</span>
+<span class="fc" id="L48">        WrapImageUrlRequestDto wrapImageUrlRequestDto = requestDto.imageUrlRequestDto();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (wrapRepository.findByName(wrapDetailRequestDto.name()).isPresent()) {</span>
+<span class="fc" id="L50">            throw new WrapAlreadyExistException();</span>
+        }
+<span class="fc" id="L52">        Wrap wrap = new Wrap(</span>
+<span class="fc" id="L53">                wrapDetailRequestDto.name(),</span>
+<span class="fc" id="L54">                wrapDetailRequestDto.wrapPrice(),</span>
+<span class="fc" id="L55">                wrapDetailRequestDto.isActive()</span>
+        );
+<span class="fc" id="L57">        String wrapImageUrl = wrapImageUrlRequestDto.wrapImageUrl();</span>
+<span class="fc" id="L58">        wrapRepository.save(wrap);</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (wrapImageUrlRequestDto.wrapImageUrl() != null) {</span>
+<span class="fc" id="L60">            Image image = imageRepository.save(new Image(wrapImageUrl));</span>
+<span class="fc" id="L61">            wrapImageRepository.save(new WrapImage(wrap, image));</span>
+        }
+<span class="fc" id="L63">        return new WrapCreateResponseDto(wrap.getWrapId(), wrap.getName(), wrap.getWrapPrice(), wrap.isActive(), wrapImageUrl);</span>
+    }
+
+    /**
+     * 포장 상품을 ID로 조회합니다.
+     *
+     * @param wrapId 포장 상품의 ID
+     * @return 포장 상품 응답 DTO
+     * @throws WrapNotFoundException 포장 상품을 찾을 수 없는 경우
+     */
+    @Override
+    public WrapUpdateResponseDto getWrap(Long wrapId) {
+<span class="fc" id="L75">        Wrap wrap = wrapRepository.findById(wrapId)</span>
+<span class="fc" id="L76">                .orElseThrow(WrapNotFoundException::new);</span>
+<span class="fc" id="L77">        WrapImage wrapImage = wrapImageRepository.findFirstByWrap_WrapId(wrap.getWrapId())</span>
+<span class="fc" id="L78">                .orElseThrow(() -&gt; new WrapImageNotFoundException(&quot;포장 이미지를 찾을 수 없습니다.&quot;));</span>
+<span class="fc" id="L79">        Image image = imageRepository.findById(wrapImage.getImage().getImageId())</span>
+<span class="pc" id="L80">                .orElseThrow(() -&gt; new ImageNotFoundException(&quot;이미지를 찾을 수 없습니다.&quot;));</span>
+<span class="fc" id="L81">        String wrapImageUrl = image.getUrl();</span>
+
+<span class="fc" id="L83">        return new WrapUpdateResponseDto(</span>
+<span class="fc" id="L84">                wrap.getWrapId(),</span>
+<span class="fc" id="L85">                wrap.getName(),</span>
+<span class="fc" id="L86">                wrap.getWrapPrice(),</span>
+<span class="fc" id="L87">                wrap.isActive(),</span>
+                wrapImageUrl);
+    }
+
+    /**
+     * 활성화 된 포장 상품을 조회합니다.
+     *
+     * @return 포장 상품 응답 DTO 리스트
+     */
+    @Override // query dsl 사용
+    public List&lt;WrapUpdateResponseDto&gt; findAllByIsActiveTrue() {
+<span class="fc" id="L98">        return wrapRepository.findAllWrapsWithImages();</span>
+    }
+
+    /**
+     * 포장 상품을 업데이트합니다.
+     *
+     * @param wrapUpdateRequestDto 업데이트할 포장 상품 데이터
+     * @return 업데이트된 포장 상품 응답 DTO
+     * @throws WrapNotFoundException 포장 상품을 찾을 수 없는 경우
+     */
+    @Override
+    @Transactional
+    public WrapUpdateResponseDto updateWrap(Long wrapId, WrapUpdateRequestDto wrapUpdateRequestDto) {
+<span class="fc" id="L111">        WrapUpdateDetailRequestDto wrapUpdateDetailRequestDto = wrapUpdateRequestDto.wrapUpdateDetailRequestDto();</span>
+<span class="fc" id="L112">        WrapImageUrlRequestDto wrapImageUrlRequestDto = wrapUpdateRequestDto.wrapImageUrlRequestDto();</span>
+
+<span class="fc" id="L114">        Wrap wrap = wrapRepository.findById(wrapId)</span>
+<span class="fc" id="L115">                .orElseThrow(WrapNotFoundException::new);</span>
+
+<span class="fc" id="L117">        wrap.updateWrap(</span>
+<span class="fc" id="L118">                wrapUpdateDetailRequestDto.name(),</span>
+<span class="fc" id="L119">                wrapUpdateDetailRequestDto.wrapPrice(),</span>
+<span class="fc" id="L120">                wrapUpdateDetailRequestDto.isActive()</span>
+        );
+<span class="fc" id="L122">        String updatedUrl = null;</span>
+<span class="fc" id="L123">        String defaultImageUrl = &quot;http://image.toast.com/aaaacko/ejoping/book/default/default-book-image.jpg&quot;;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (wrapUpdateRequestDto.deleteImage()) {</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">            if (wrapRepository.existsById(wrapId)) {</span>
+<span class="fc" id="L126">                wrapImageRepository.deleteByWrap_WrapId(wrapId);</span>
+<span class="fc" id="L127">                Image defaultImage = imageRepository.save(new Image(defaultImageUrl));</span>
+<span class="fc" id="L128">                wrapImageRepository.save(new WrapImage(wrap, defaultImage));</span>
+<span class="fc" id="L129">                updatedUrl = defaultImage.getUrl();</span>
+<span class="fc" id="L130">            }</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        } else if (wrapImageUrlRequestDto.wrapImageUrl() != null) {</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            if (wrapRepository.existsById(wrapId)) {</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">                if (wrapImageRepository.existsByWrap_WrapId(wrapId)) {</span>
+<span class="fc" id="L134">                    wrapImageRepository.deleteByWrap_WrapId(wrapId);</span>
+                }
+<span class="fc" id="L136">                Image newImage = imageRepository.save(new Image(wrapImageUrlRequestDto.wrapImageUrl()));</span>
+<span class="fc" id="L137">                updatedUrl = newImage.getUrl();</span>
+<span class="fc" id="L138">                wrapImageRepository.save(new WrapImage(wrap, newImage));</span>
+            }
+        }
+<span class="fc" id="L141">        wrapRepository.save(wrap);</span>
+<span class="fc" id="L142">        return new WrapUpdateResponseDto(wrap.getWrapId(), wrap.getName(), wrap.getWrapPrice(), wrap.isActive(), updatedUrl);</span>
+    }
+
+    /**
+     * 포장 상품을 ID로 삭제합니다.
+     *
+     * @param wrapId 삭제할 포장 상품의 ID
+     * @throws WrapNotFoundException 포장 상품을 찾을 수 없는 경우
+     */
+    @Override
+    public void deleteWrap(Long wrapId) {
+<span class="fc" id="L153">        wrapRepository.findById(wrapId)</span>
+<span class="fc" id="L154">                .orElseThrow(WrapNotFoundException::new);</span>
+<span class="fc" id="L155">        wrapRepository.deleteById(wrapId);</span>
+<span class="fc" id="L156">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

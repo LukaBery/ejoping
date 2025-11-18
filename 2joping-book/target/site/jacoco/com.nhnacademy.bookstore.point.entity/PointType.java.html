@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PointType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.point.entity</a> &gt; <span class="el_source">PointType.java</span></div><h1>PointType.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.point.entity;
+
+import com.nhnacademy.bookstore.point.enums.PointTypeEnum;
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = &quot;point_type&quot;)
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class PointType {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;point_type_id&quot;)
+    private Long pointTypeId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = &quot;type&quot;)
+    private PointTypeEnum type;
+
+    @Column(name = &quot;acc_val&quot;)
+    private Integer accVal;
+
+    @Column(name = &quot;name&quot;, unique = true)
+    private String name;
+
+<span class="nc" id="L30">    @Column(name = &quot;is_active&quot;)</span>
+    private boolean isActive = true;
+
+
+    @Builder
+<span class="nc" id="L35">    public PointType(PointTypeEnum type, Integer accVal, String name, Boolean isActive) {</span>
+<span class="nc" id="L36">        this.type = type;</span>
+<span class="nc" id="L37">        this.accVal = accVal;</span>
+<span class="nc" id="L38">        this.name = name;</span>
+<span class="nc" id="L39">        this.isActive = isActive;</span>
+<span class="nc" id="L40">    }</span>
+
+    public void updateAccVal(Integer accVal) {
+<span class="nc" id="L43">        this.accVal = accVal;</span>
+<span class="nc" id="L44">    }</span>
+
+    public void deactivate() {
+<span class="nc" id="L47">        this.isActive = false;</span>
+<span class="nc" id="L48">    }</span>
+
+    public void updatePointType(PointTypeEnum type, Integer accVal, String name, boolean isActive) {
+<span class="fc" id="L51">        this.type = type;</span>
+<span class="fc" id="L52">        this.accVal = accVal;</span>
+<span class="fc" id="L53">        this.name = name;</span>
+<span class="fc" id="L54">        this.isActive = isActive;</span>
+<span class="fc" id="L55">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

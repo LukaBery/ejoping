@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CouponPolicyServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.coupon.service.impl</a> &gt; <span class="el_source">CouponPolicyServiceImpl.java</span></div><h1>CouponPolicyServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.coupon.service.impl;
+
+
+import com.nhnacademy.bookstore.common.error.enums.RedirectType;
+import com.nhnacademy.bookstore.common.error.exception.coupon.CouponPolicyNotFoundException;
+import com.nhnacademy.bookstore.coupon.dto.request.CreateCouponPolicyRequest;
+import com.nhnacademy.bookstore.coupon.dto.request.UpdateCouponPolicyRequest;
+import com.nhnacademy.bookstore.coupon.dto.response.CouponPolicyResponseDto;
+import com.nhnacademy.bookstore.coupon.entity.CouponPolicy;
+import com.nhnacademy.bookstore.coupon.repository.policy.CouponPolicyRepository;
+import com.nhnacademy.bookstore.coupon.service.CouponPolicyService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+
+
+/**
+ * CouponPolicyServiceImpl
+ * 이 클래스는 쿠폰 정책에 대한 비즈니스 로직을 구현하는 서비스 클래스입니다.
+ * 활성화된 모든 쿠폰 정책을 조회하는 기능을 제공합니다.
+ *
+ * @since 1.0
+ * @author Luha
+ */
+@Service
+@RequiredArgsConstructor
+public class CouponPolicyServiceImpl implements CouponPolicyService {
+
+    private final CouponPolicyRepository couponPolicyRepository;
+
+    @Override
+    public Long createCouponPolicy(CreateCouponPolicyRequest request) {
+<span class="fc" id="L36">        CouponPolicy couponPolicy = CouponPolicy.builder()</span>
+<span class="fc" id="L37">                .name(request.name())</span>
+<span class="fc" id="L38">                .discountType(request.discountType())</span>
+<span class="fc" id="L39">                .discountValue(request.discountValue())</span>
+<span class="fc" id="L40">                .usageLimit(request.usageLimit())</span>
+<span class="fc" id="L41">                .duration(request.duration())</span>
+<span class="fc" id="L42">                .detail(request.detail())</span>
+<span class="fc" id="L43">                .maxDiscount(request.maxDiscount())</span>
+<span class="fc" id="L44">                .isActive(request.isActive())</span>
+<span class="fc" id="L45">                .build();</span>
+<span class="fc" id="L46">        return couponPolicyRepository.save(couponPolicy).getCouponPolicyId();</span>
+    }
+
+    @Override
+    public CouponPolicyResponseDto getCouponPolicy(Long couponPolicyId) {
+<span class="fc" id="L51">        CouponPolicy couponPolicy = couponPolicyRepository.findByCouponPolicyId(couponPolicyId)</span>
+<span class="fc" id="L52">                .orElseThrow(() -&gt; new CouponPolicyNotFoundException(</span>
+                        &quot;쿠폰 정책을 찾을 수 없습니다.&quot;,
+                        RedirectType.REDIRECT,
+                        &quot;/api/v1/coupon/policies&quot;
+                ));
+<span class="fc" id="L57">        return CouponPolicyResponseDto.from(couponPolicy);</span>
+    }
+
+    /**
+     * 활성화된 모든 쿠폰 정책을 조회하여 CouponPolicyResponseDto 목록으로 반환합니다.
+     * 조회 결과가 없을 경우 빈 리스트를 반환합니다.
+     *
+     * @return 활성 쿠폰 정책 정보를 담은 CouponPolicyResponseDto 목록
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;CouponPolicyResponseDto&gt; getAllCouponPolicies() {
+<span class="fc" id="L69">        List&lt;CouponPolicy&gt; responseDtos = couponPolicyRepository.findByIsActiveTrue();</span>
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (responseDtos.isEmpty()) {</span>
+<span class="fc" id="L72">            responseDtos = Collections.emptyList();</span>
+        }
+
+<span class="fc" id="L75">        return responseDtos.stream()</span>
+<span class="fc" id="L76">                .map(CouponPolicyResponseDto::from)</span>
+<span class="fc" id="L77">                .toList();</span>
+    }
+
+    @Override
+    public Long updateCouponPolicy(Long id, UpdateCouponPolicyRequest request) {
+<span class="fc" id="L82">        CouponPolicy couponPolicy = couponPolicyRepository.findByCouponPolicyId(id)</span>
+<span class="fc" id="L83">                .orElseThrow(() -&gt; new CouponPolicyNotFoundException(</span>
+                        &quot;쿠폰 정책을 찾을 수 없습니다.&quot;,
+                        RedirectType.REDIRECT,
+                        &quot;/api/v1/coupon/policies&quot;
+                ));
+
+<span class="fc" id="L89">        couponPolicy.updateName(request.name());</span>
+<span class="fc" id="L90">        couponPolicy.updateDiscountType(request.discountType());</span>
+<span class="fc" id="L91">        couponPolicy.updateDiscountValue(request.discountValue());</span>
+<span class="fc" id="L92">        couponPolicy.updateUsageLimit(request.usageLimit());</span>
+<span class="fc" id="L93">        couponPolicy.updateDuration(request.duration());</span>
+<span class="fc" id="L94">        couponPolicy.updateDetail(request.detail());</span>
+<span class="fc" id="L95">        couponPolicy.updateMaxDiscount(request.maxDiscount());</span>
+<span class="fc" id="L96">        couponPolicy.updateActive(request.isActive());</span>
+
+<span class="fc" id="L98">        return couponPolicyRepository.save(couponPolicy).getCouponPolicyId();</span>
+    }
+
+    @Override
+    public void deleteCouponPolicy(Long id) {
+<span class="fc" id="L103">        CouponPolicy couponPolicy = couponPolicyRepository.findByCouponPolicyId(id)</span>
+<span class="fc" id="L104">                .orElseThrow(() -&gt; new CouponPolicyNotFoundException(</span>
+                        &quot;쿠폰 정책을 찾을 수 없습니다.&quot;,
+                        RedirectType.REDIRECT,
+                        &quot;/api/v1/coupon/policies&quot;
+                ));
+
+<span class="fc" id="L110">        couponPolicy.deactivateCouponPolicy();</span>
+<span class="fc" id="L111">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

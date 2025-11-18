@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarrierMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.shipment.mapper</a> &gt; <span class="el_source">CarrierMapperImpl.java</span></div><h1>CarrierMapperImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.shipment.mapper;
+
+import com.nhnacademy.bookstore.shipment.dto.response.CarrierResponseDto;
+import com.nhnacademy.bookstore.shipment.entity.Carrier;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2025-11-18T17:46:31+0900&quot;,
+    comments = &quot;version: 1.5.2.Final, compiler: javac, environment: Java 21.0.9 (Amazon.com Inc.)&quot;
+)
+@Component
+<span class="nc" id="L14">public class CarrierMapperImpl implements CarrierMapper {</span>
+
+    @Override
+    public CarrierResponseDto toCarrierResponseDto(Carrier carrier) {
+<span class="nc bnc" id="L18" title="All 2 branches missed.">        if ( carrier == null ) {</span>
+<span class="nc" id="L19">            return null;</span>
+        }
+
+<span class="nc" id="L22">        Long carrierId = null;</span>
+<span class="nc" id="L23">        String name = null;</span>
+<span class="nc" id="L24">        String contactNumber = null;</span>
+<span class="nc" id="L25">        String contactEmail = null;</span>
+<span class="nc" id="L26">        String websiteUrl = null;</span>
+
+<span class="nc" id="L28">        carrierId = carrier.getCarrierId();</span>
+<span class="nc" id="L29">        name = carrier.getName();</span>
+<span class="nc" id="L30">        contactNumber = carrier.getContactNumber();</span>
+<span class="nc" id="L31">        contactEmail = carrier.getContactEmail();</span>
+<span class="nc" id="L32">        websiteUrl = carrier.getWebsiteUrl();</span>
+
+<span class="nc" id="L34">        CarrierResponseDto carrierResponseDto = new CarrierResponseDto( carrierId, name, contactNumber, contactEmail, websiteUrl );</span>
+
+<span class="nc" id="L36">        return carrierResponseDto;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CartMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.cart.mapper</a> &gt; <span class="el_source">CartMapperImpl.java</span></div><h1>CartMapperImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.cart.mapper;
+
+import com.nhnacademy.bookstore.bookset.book.entity.Book;
+import com.nhnacademy.bookstore.cart.dto.CartResponseDto;
+import com.nhnacademy.bookstore.cart.entity.Cart;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2025-11-18T17:46:31+0900&quot;,
+    comments = &quot;version: 1.5.2.Final, compiler: javac, environment: Java 21.0.9 (Amazon.com Inc.)&quot;
+)
+@Component
+<span class="nc" id="L17">public class CartMapperImpl implements CartMapper {</span>
+
+    @Override
+    public CartResponseDto toCartResponseDto(Cart cart) {
+<span class="nc bnc" id="L21" title="All 2 branches missed.">        if ( cart == null ) {</span>
+<span class="nc" id="L22">            return null;</span>
+        }
+
+<span class="nc" id="L25">        long bookId = 0L;</span>
+<span class="nc" id="L26">        String title = null;</span>
+<span class="nc" id="L27">        long sellingPrice = 0L;</span>
+<span class="nc" id="L28">        int quantity = 0;</span>
+
+<span class="nc" id="L30">        Long bookId1 = cartBookBookId( cart );</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        if ( bookId1 != null ) {</span>
+<span class="nc" id="L32">            bookId = bookId1;</span>
+        }
+<span class="nc" id="L34">        title = cartBookTitle( cart );</span>
+<span class="nc" id="L35">        sellingPrice = cartBookSellingPrice( cart );</span>
+<span class="nc" id="L36">        quantity = cart.getQuantity();</span>
+
+<span class="nc" id="L38">        CartResponseDto cartResponseDto = new CartResponseDto( bookId, title, sellingPrice, quantity );</span>
+
+<span class="nc" id="L40">        return cartResponseDto;</span>
+    }
+
+    @Override
+    public List&lt;CartResponseDto&gt; toCartResponseDtoList(List&lt;Cart&gt; cartList) {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if ( cartList == null ) {</span>
+<span class="nc" id="L46">            return null;</span>
+        }
+
+<span class="nc" id="L49">        List&lt;CartResponseDto&gt; list = new ArrayList&lt;CartResponseDto&gt;( cartList.size() );</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        for ( Cart cart : cartList ) {</span>
+<span class="nc" id="L51">            list.add( toCartResponseDto( cart ) );</span>
+<span class="nc" id="L52">        }</span>
+
+<span class="nc" id="L54">        return list;</span>
+    }
+
+    private Long cartBookBookId(Cart cart) {
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if ( cart == null ) {</span>
+<span class="nc" id="L59">            return null;</span>
+        }
+<span class="nc" id="L61">        Book book = cart.getBook();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if ( book == null ) {</span>
+<span class="nc" id="L63">            return null;</span>
+        }
+<span class="nc" id="L65">        Long bookId = book.getBookId();</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if ( bookId == null ) {</span>
+<span class="nc" id="L67">            return null;</span>
+        }
+<span class="nc" id="L69">        return bookId;</span>
+    }
+
+    private String cartBookTitle(Cart cart) {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if ( cart == null ) {</span>
+<span class="nc" id="L74">            return null;</span>
+        }
+<span class="nc" id="L76">        Book book = cart.getBook();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if ( book == null ) {</span>
+<span class="nc" id="L78">            return null;</span>
+        }
+<span class="nc" id="L80">        String title = book.getTitle();</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if ( title == null ) {</span>
+<span class="nc" id="L82">            return null;</span>
+        }
+<span class="nc" id="L84">        return title;</span>
+    }
+
+    private int cartBookSellingPrice(Cart cart) {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if ( cart == null ) {</span>
+<span class="nc" id="L89">            return 0;</span>
+        }
+<span class="nc" id="L91">        Book book = cart.getBook();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if ( book == null ) {</span>
+<span class="nc" id="L93">            return 0;</span>
+        }
+<span class="nc" id="L95">        int sellingPrice = book.getSellingPrice();</span>
+<span class="nc" id="L96">        return sellingPrice;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

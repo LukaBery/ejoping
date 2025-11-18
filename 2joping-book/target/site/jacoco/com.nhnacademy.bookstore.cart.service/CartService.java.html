@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CartService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.cart.service</a> &gt; <span class="el_source">CartService.java</span></div><h1>CartService.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.cart.service;
+
+import com.nhnacademy.bookstore.bookset.book.entity.Book;
+import com.nhnacademy.bookstore.bookset.book.repository.BookRepository;
+import com.nhnacademy.bookstore.cart.dto.CartRequestDto;
+import com.nhnacademy.bookstore.cart.dto.CartResponseDto;
+import com.nhnacademy.bookstore.cart.entity.Cart;
+import com.nhnacademy.bookstore.cart.entity.CartId;
+import com.nhnacademy.bookstore.cart.mapper.CartMapper;
+import com.nhnacademy.bookstore.cart.repository.CartRepository;
+import com.nhnacademy.bookstore.user.member.entity.Member;
+import com.nhnacademy.bookstore.user.member.repository.MemberRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class CartService {
+
+    private final CartRepository cartRepository;
+    private final BookRepository bookRepository;
+    private final MemberRepository memberRepository;
+
+    private final CartMapper cartMapper;
+
+    public List&lt;CartResponseDto&gt; getCartByCustomerId(long customerId) {
+<span class="fc" id="L31">        return cartMapper.toCartResponseDtoList(cartRepository.findCartsByCustomerId(customerId));</span>
+    }
+
+    public int addCart(CartRequestDto cartRequestDto, long customerId) {
+<span class="fc" id="L35">        Book book = bookRepository.findById(cartRequestDto.bookId()).orElseThrow(null);</span>
+<span class="fc" id="L36">        Member member = memberRepository.findById(customerId).orElseThrow(null);</span>
+
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (cartRepository.existsById(new CartId(cartRequestDto.bookId(), customerId))) {</span>
+<span class="fc" id="L39">            return -1;</span>
+        } else {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            if (book.getRemainQuantity() - cartRequestDto.quantity() &lt; 0) {</span>
+<span class="fc" id="L42">                return 0;</span>
+            }
+<span class="fc" id="L44">            cartRepository.save(new Cart(book, member, cartRequestDto.quantity()));</span>
+<span class="fc" id="L45">            return 1;</span>
+        }
+    }
+
+    public void removeCart(CartId cartId) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (cartRepository.existsById(cartId)) {</span>
+<span class="fc" id="L51">            cartRepository.deleteById(cartId);</span>
+        }
+<span class="fc" id="L53">    }</span>
+
+    public void updateCart(CartRequestDto cartRequestDto, long customerId) {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (cartRepository.existsById(new CartId(cartRequestDto.bookId(), customerId))) {</span>
+<span class="fc" id="L57">            cartRepository.updateQuantity(cartRequestDto.bookId(), cartRequestDto.quantity());</span>
+        }
+<span class="fc" id="L59">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

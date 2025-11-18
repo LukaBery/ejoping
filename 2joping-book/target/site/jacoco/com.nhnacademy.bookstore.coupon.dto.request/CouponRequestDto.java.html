@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CouponRequestDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.coupon.dto.request</a> &gt; <span class="el_source">CouponRequestDto.java</span></div><h1>CouponRequestDto.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.coupon.dto.request;
+
+
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
+
+/**
+ * CouponRequestDto
+ * 이 클래스는 쿠폰 생성 요청을 위한 데이터를 담고 있는 DTO입니다.
+ * 쿠폰 정책 ID, 쿠폰 이름, 만료일, 수량 정보를 포함하며, 수량은 선택적으로 설정할 수 있습니다.
+ * 기본 생성자는 수량을 생략할 수 있도록 오버로딩되어 있습니다.
+
+ * @author Luha
+ * @since 1.0
+ */
+<span class="fc" id="L17">public record CouponRequestDto(</span>
+
+        @NotNull(message = &quot;쿠폰 정책 ID는 필수입니다.&quot;)
+        Long couponPolicyId,
+
+        @NotBlank(message = &quot;쿠폰 이름은 필수입니다.&quot;)
+        @Size(max = 30, message = &quot;쿠폰 이름은 최대 30자까지 입력할 수 있습니다.&quot;)
+        String name,
+
+        @NotNull(message = &quot;쿠폰 만료일은 필수입니다.&quot;)
+        @Future(message = &quot;쿠폰 만료일은 오늘 이후여야 합니다.&quot;)
+        LocalDate expiredAt,
+
+        @Positive(message = &quot;쿠폰 수량은 양수여야 합니다.&quot;)
+        Integer quantity
+) {
+    public CouponRequestDto(Long couponPolicyId,
+                            String name,
+                            LocalDate expiredAt) {
+<span class="fc" id="L36">        this(couponPolicyId, name, expiredAt, null);</span>
+<span class="fc" id="L37">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

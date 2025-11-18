@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LikeServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.like.service</a> &gt; <span class="el_source">LikeServiceImpl.java</span></div><h1>LikeServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.like.service;
+
+import com.nhnacademy.bookstore.bookset.book.entity.Book;
+import com.nhnacademy.bookstore.bookset.book.repository.BookRepository;
+import com.nhnacademy.bookstore.common.error.exception.base.NotFoundException;
+import com.nhnacademy.bookstore.like.dto.LikeRequestDto;
+import com.nhnacademy.bookstore.like.dto.LikeResponseDto;
+import com.nhnacademy.bookstore.like.dto.response.MemberLikeResponseDto;
+import com.nhnacademy.bookstore.like.entity.Like;
+import com.nhnacademy.bookstore.like.repository.LikeRepository;
+import com.nhnacademy.bookstore.user.member.entity.Member;
+import com.nhnacademy.bookstore.user.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * tag service
+ *
+ * @author : 박채연
+ * @date : 2024-11-01
+ */
+
+@Service
+<span class="fc" id="L29">@Slf4j</span>
+@RequiredArgsConstructor
+@Transactional
+public class LikeServiceImpl implements LikeService{
+
+    private final LikeRepository likeRepository;
+    private final BookRepository bookRepository;
+    private final MemberRepository memberRepository;
+
+    /**
+     * 책에 좋아요를 설정하는 메서드
+     *
+     * @param request 책과 회원 정보가 아이디가 담긴 객체
+     * @return LikeResponseDto
+     */
+    public LikeResponseDto setBookLike(LikeRequestDto request,Long customerId) {
+<span class="fc" id="L45">        Member member = memberRepository.findById(customerId)</span>
+<span class="fc" id="L46">                .orElseThrow(() -&gt; new NotFoundException(&quot;존재하지 않은 회원입니다.&quot;));</span>
+<span class="fc" id="L47">        Book book = bookRepository.findById(request.bookId())</span>
+<span class="fc" id="L48">                .orElseThrow(() -&gt; new NotFoundException(&quot;책 정보가 없습니다.&quot;));</span>
+<span class="fc" id="L49">        Optional&lt;Like&gt; optionalBookLike =</span>
+
+<span class="fc" id="L51">                likeRepository.findBookLike(member.getId(), book.getBookId());</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (optionalBookLike.isEmpty()) {</span>
+<span class="fc" id="L53">            Like bookLike = new Like(member, book);</span>
+
+<span class="fc" id="L55">            Like savedBookLike = likeRepository.save(bookLike);</span>
+
+<span class="fc" id="L57">            book.setLikes(book.getLikes() + 1);</span>
+<span class="fc" id="L58">            bookRepository.save(book);</span>
+
+<span class="fc" id="L60">            return new LikeResponseDto(</span>
+<span class="fc" id="L61">                    savedBookLike.getLikeId(),</span>
+<span class="fc" id="L62">                    savedBookLike.getBook().getBookId(),</span>
+<span class="fc" id="L63">                    savedBookLike.getMember().getId(),</span>
+<span class="fc" id="L64">                    getLikeCount(book.getBookId())</span>
+            );
+        } else {
+<span class="fc" id="L67">            Like bookLike = optionalBookLike.get();</span>
+
+<span class="fc" id="L69">            book.setLikes(book.getLikes() - 1);</span>
+<span class="fc" id="L70">            bookRepository.save(book);</span>
+
+<span class="fc" id="L72">            likeRepository.deleteById(bookLike.getLikeId());</span>
+
+<span class="fc" id="L74">            return new LikeResponseDto(</span>
+                    null,
+<span class="fc" id="L76">                    request.bookId(),</span>
+                    customerId,
+<span class="fc" id="L78">                    getLikeCount(book.getBookId())</span>
+            );
+        }
+    }
+
+    /**
+     * 특정 책의 좋아요 개수를 조회하는 메서드
+     *
+     * @param bookId 책 ID
+     * @return Long 좋아요 개수
+     */
+    @Override
+    public Long getLikeCount(Long bookId) {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (!bookRepository.existsById(bookId)) {</span>
+<span class="fc" id="L92">            throw new NotFoundException(&quot;존재하지 않는 책입니다.&quot;);</span>
+        }
+
+<span class="fc" id="L95">        return likeRepository.getMemberLikesNum(bookId);</span>
+    }
+
+
+    /**
+     * 특정 사용자가 좋아요를 누른 책 목록을 조회하는 메서드
+     *
+     * @param customerId 사용자 ID
+     * @return List&lt;Book&gt; 좋아요를 누른 책 목록
+     */
+    @Override
+    public List&lt;MemberLikeResponseDto&gt; getBooksLikedByCustomer(Long customerId) {
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (!memberRepository.existsById(customerId)) {</span>
+<span class="fc" id="L108">            throw new NotFoundException(&quot;존재하지 않는 회원입니다.&quot;);</span>
+        }
+<span class="fc" id="L110">        return likeRepository.findLikesByMember(customerId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

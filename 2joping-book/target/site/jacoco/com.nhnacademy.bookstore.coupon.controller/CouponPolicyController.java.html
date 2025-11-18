@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CouponPolicyController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.coupon.controller</a> &gt; <span class="el_source">CouponPolicyController.java</span></div><h1>CouponPolicyController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.coupon.controller;
+
+
+import com.nhnacademy.bookstore.common.annotation.ValidPathVariable;
+import com.nhnacademy.bookstore.coupon.dto.request.CreateCouponPolicyRequest;
+import com.nhnacademy.bookstore.coupon.dto.request.UpdateCouponPolicyRequest;
+import com.nhnacademy.bookstore.coupon.dto.response.CouponPolicyResponseDto;
+import com.nhnacademy.bookstore.coupon.service.CouponPolicyService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+/**
+ * CouponPolicyController
+ * 이 컨트롤러 클래스는 쿠폰 정책을 관리하기 위한 API 엔드포인트를 정의합니다.
+ * 클라이언트는 이 API를 통해 모든 쿠폰 정책 목록을 조회할 수 있습니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(&quot;/api/v1/coupon&quot;)
+public class CouponPolicyController {
+
+    private final CouponPolicyService couponPolicyService;
+
+    @PostMapping(&quot;/policies&quot;)
+    public ResponseEntity&lt;Void&gt; createConcernPost(@Valid @RequestBody CreateCouponPolicyRequest request) {
+<span class="fc" id="L34">        Long couponPolicyId = couponPolicyService.createCouponPolicy(request);</span>
+<span class="fc" id="L35">        return ResponseEntity.created(URI.create(&quot;/&quot; + couponPolicyId)).build();</span>
+    }
+
+    @GetMapping(&quot;/policies/{coupon-policy-id}&quot;)
+    public ResponseEntity&lt;CouponPolicyResponseDto&gt; getCouponPolicy(
+            @ValidPathVariable @PathVariable(&quot;coupon-policy-id&quot;) Long couponPolicyId
+    ) {
+<span class="fc" id="L42">        CouponPolicyResponseDto response = couponPolicyService.getCouponPolicy(couponPolicyId);</span>
+<span class="fc" id="L43">        return ResponseEntity.ok(response);</span>
+    }
+
+    /**
+     * 모든 쿠폰 정책 조회 엔드포인트
+     * 저장된 모든 쿠폰 정책의 목록을 조회하여 반환합니다.
+     *
+     * @return 모든 쿠폰 정책 정보를 포함한 응답 DTO 목록을 포함한 ResponseEntity
+     */
+    @GetMapping(&quot;/policies/activated&quot;)
+    public ResponseEntity&lt;List&lt;CouponPolicyResponseDto&gt;&gt; getAllPolicies() {
+
+<span class="fc" id="L55">        List&lt;CouponPolicyResponseDto&gt; responseDtos = couponPolicyService.getAllCouponPolicies();</span>
+
+<span class="fc" id="L57">        return ResponseEntity.ok(responseDtos);</span>
+    }
+
+    @PutMapping(&quot;/policies/{coupon-policy-id}&quot;)
+    public ResponseEntity&lt;Long&gt; updateCouponPolicy(
+            @ValidPathVariable @PathVariable(&quot;coupon-policy-id&quot;) Long id,
+            @RequestBody UpdateCouponPolicyRequest request
+    ) {
+<span class="fc" id="L65">        Long updatedCouponPolicyId = couponPolicyService.updateCouponPolicy(id, request);</span>
+<span class="fc" id="L66">        return ResponseEntity.ok(updatedCouponPolicyId);</span>
+    }
+
+    @PutMapping(&quot;/policies/{coupon-policy-id}/deactivated&quot;)
+    public ResponseEntity&lt;Void&gt; deleteCouponPolicy(@ValidPathVariable @PathVariable(&quot;coupon-policy-id&quot;) Long id) {
+<span class="fc" id="L71">        couponPolicyService.deleteCouponPolicy(id);</span>
+<span class="fc" id="L72">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

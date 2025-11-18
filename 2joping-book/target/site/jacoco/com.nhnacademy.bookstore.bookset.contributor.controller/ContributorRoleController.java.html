@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ContributorRoleController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.bookset.contributor.controller</a> &gt; <span class="el_source">ContributorRoleController.java</span></div><h1>ContributorRoleController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.bookset.contributor.controller;
+
+import com.nhnacademy.bookstore.bookset.contributor.dto.request.ContributorRoleRequestDto;
+import com.nhnacademy.bookstore.bookset.contributor.dto.response.ContributorRoleResponseDto;
+import com.nhnacademy.bookstore.bookset.contributor.service.ContributorRoleService;
+import com.nhnacademy.bookstore.common.annotation.ValidPathVariable;
+import com.nhnacademy.bookstore.common.error.exception.bookset.contributor.ContributorRoleNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 도서 기여자 역할 Controller
+ *
+ * @author : 양준하
+ * @date : 2024-10-24
+ */
+
+@Tag(name = &quot;ContributorRole&quot;, description = &quot;도서 도서 기여자 역할 API&quot;)
+@Validated
+@RestController
+@RequestMapping(&quot;/api/v1/bookstore/contributors/role&quot;)
+@RequiredArgsConstructor
+public class ContributorRoleController {
+    private final ContributorRoleService contributorRoleService;
+
+    /**
+     * 새로운 도서 도서 기여자 역할을 생성합니다.
+     *
+     * @param dto 도서 기여자 역할 생성에 필요한 정보가 담긴 DTO
+     * @return 생성된 도서 기여자 역할의 정보를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;도서 기여자 역할 생성&quot;, description = &quot;새로운 도서 도서 기여자 역할을 등록합니다.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;도서 기여자 역할 생성 성공&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;잘못된 요청 데이터&quot;)
+    @PostMapping
+    public ResponseEntity&lt;ContributorRoleResponseDto&gt; createContributorRole(@RequestBody @Valid ContributorRoleRequestDto dto) {
+<span class="fc" id="L46">        ContributorRoleResponseDto createdRole = contributorRoleService.createContributorRole(dto);</span>
+<span class="fc" id="L47">        return ResponseEntity.status(HttpStatus.CREATED).body(createdRole);</span>
+    }
+
+    /**
+     * 특정 도서 기여자 역할을 조회합니다.
+     *
+     * @param contributorRoleId 조회할 도서 기여자 역할의 ID
+     * @return 조회된 도서 기여자 역할의 정보를 포함한 ResponseEntity
+     * @throws ContributorRoleNotFoundException 도서 기여자 역할을 찾을 수 없는 경우 응답 코드 404 NOT_FOUND 반환합니다.
+     */
+    @Operation(summary = &quot;도서 기여자 역할 조회&quot;, description = &quot;특정 도서 기여자 역할을 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;도서 기여자 역할 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;도서 기여자 역할을 찾을 수 없음&quot;)
+    @GetMapping(&quot;/{contributorRoleId}&quot;)
+    public ResponseEntity&lt;ContributorRoleResponseDto&gt; getContributorRole(@PathVariable @ValidPathVariable Long contributorRoleId) {
+<span class="fc" id="L62">        ContributorRoleResponseDto contributorRole = contributorRoleService.getContributorRole(contributorRoleId);</span>
+<span class="fc" id="L63">        return ResponseEntity.ok(contributorRole);</span>
+    }
+
+    /**
+     * 특정 도서 기여자 역할을 수정합니다.
+     *
+     * @param contributorRoleId 수정할 도서 기여자 역할의 ID
+     * @param dto 수정할 도서 기여자 역할 정보가 담긴 DTO
+     * @return 수정된 도서 기여자 역할의 정보를 포함한 ResponseEntity
+     * @throws ContributorRoleNotFoundException 도서 기여자 역할을 찾을 수 없는 경우 응답 코드 404 NOT_FOUND 반환합니다.
+     */
+    @Operation(summary = &quot;도서 기여자 역할 수정&quot;, description = &quot;특정 도서 기여자 역할을 수정합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;도서 기여자 역할 수정 성공&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;잘못된 요청 데이터&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;도서 기여자 역할을 찾을 수 없음&quot;)
+    @PutMapping(&quot;/{contributorRoleId}&quot;)
+    public ResponseEntity&lt;ContributorRoleResponseDto&gt; updateContributorRole(@PathVariable @ValidPathVariable Long contributorRoleId, @RequestBody @Valid ContributorRoleRequestDto dto) {
+<span class="fc" id="L80">        ContributorRoleResponseDto updatedRole = contributorRoleService.updateContributorRole(contributorRoleId, dto);</span>
+<span class="fc" id="L81">        return ResponseEntity.ok(updatedRole);</span>
+    }
+
+    /**
+     * 특정 도서 기여자 역할을 삭제합니다.
+     *
+     * @param contributorRoleId 삭제할 도서 기여자 역할의 ID
+     * @return HTTP 204 상태의 빈 ResponseEntity
+     * @throws ContributorRoleNotFoundException 도서 기여자 역할을 찾을 수 없는 경우 응답 코드 404 NOT_FOUND 반환합니다.
+     */
+    @Operation(summary = &quot;도서 기여자 역할 삭제&quot;, description = &quot;특정 도서 기여자 역할을 삭제합니다.&quot;)
+    @ApiResponse(responseCode = &quot;204&quot;, description = &quot;도서 기여자 역할 삭제 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;도서 기여자 역할을 찾을 수 없음&quot;)
+    @DeleteMapping(&quot;/{contributorRoleId}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteContributorRole(@PathVariable @ValidPathVariable Long contributorRoleId) {
+<span class="fc" id="L96">        contributorRoleService.deleteContributorRole(contributorRoleId);</span>
+<span class="fc" id="L97">        return ResponseEntity.noContent().build();</span>
+    }
+
+
+    /**
+     * 모든 도서 기여자 역할을 조회합니다.
+     *
+     * @return 모든 도서 기여자 역할의 리스트
+     */
+    @Operation(summary = &quot;전체 도서 기여자 역할 리스트&quot;, description = &quot;모든 도서 기여자 역할을 리스트로 반환합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;도서 기여자 역할 리스트 조회 성공&quot;)
+    @GetMapping
+    public ResponseEntity&lt;List&lt;ContributorRoleResponseDto&gt;&gt; getAllContributorRoles() {
+<span class="fc" id="L110">        List&lt;ContributorRoleResponseDto&gt; roles = contributorRoleService.getAllContributorRoles();</span>
+<span class="fc" id="L111">        return ResponseEntity.ok(roles);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

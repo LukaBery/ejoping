@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReviewRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.review.repository</a> &gt; <span class="el_source">ReviewRepositoryImpl.java</span></div><h1>ReviewRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.review.repository;
+
+import com.nhnacademy.bookstore.bookset.book.entity.QBook;
+import com.nhnacademy.bookstore.imageset.entity.QImage;
+import com.nhnacademy.bookstore.imageset.entity.QReviewImage;
+import com.nhnacademy.bookstore.orderset.order.entity.QOrder;
+import com.nhnacademy.bookstore.orderset.orderdetail.entity.QOrderDetail;
+import com.nhnacademy.bookstore.review.dto.response.ReviewResponseDto;
+import com.nhnacademy.bookstore.review.dto.response.ReviewTotalResponseDto;
+import com.nhnacademy.bookstore.review.entity.QReview;
+import com.nhnacademy.bookstore.review.entity.Review;
+
+import com.nhnacademy.bookstore.user.customer.entity.QCustomer;
+import com.nhnacademy.bookstore.user.member.entity.QMember;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+
+import java.util.List;
+import java.util.Optional;
+
+
+public class ReviewRepositoryImpl extends QuerydslRepositorySupport implements ReviewRepositoryCustom{
+
+    public ReviewRepositoryImpl() {
+<span class="fc" id="L30">        super(Review.class);</span>
+<span class="fc" id="L31">    }</span>
+
+<span class="fc" id="L33">    private final QReview qReview = QReview.review;</span>
+<span class="fc" id="L34">    private final QReviewImage qReviewImage = QReviewImage.reviewImage;</span>
+<span class="fc" id="L35">    private final QImage qImage = QImage.image;</span>
+<span class="fc" id="L36">    private final QOrderDetail qOrderDetail = QOrderDetail.orderDetail;</span>
+<span class="fc" id="L37">    private final QOrder qOrder = QOrder.order;</span>
+<span class="fc" id="L38">    private final QMember qMember = QMember.member;</span>
+<span class="fc" id="L39">    private final QCustomer qCustomer = QCustomer.customer;</span>
+<span class="fc" id="L40">    private final QBook qBook = QBook.book;</span>
+
+
+
+    @Override
+    public Page&lt;ReviewResponseDto&gt; getReviewsByBookId(Pageable pageable, Long bookId) {
+<span class="fc" id="L46">        List&lt;ReviewResponseDto&gt; content = from(qReview)</span>
+<span class="fc" id="L47">                .where(qReview.book.bookId.eq(bookId))</span>
+<span class="fc" id="L48">                .offset(pageable.getOffset())</span>
+<span class="fc" id="L49">                .limit(pageable.getPageSize())</span>
+<span class="fc" id="L50">                .select(Projections.constructor(</span>
+                        ReviewResponseDto.class,
+                        qReview.reviewId,
+                        qReview.orderDetail.orderDetailId,
+                        qReview.member.id,
+                        qReview.book.bookId,
+                        qReview.ratingValue,
+                        qReview.title,
+                        qReview.text,
+                        qReview.imageUrl,
+                        qReview.createdAt,
+                        qReview.updatedAt
+                ))
+<span class="fc" id="L63">                .fetch();</span>
+
+<span class="fc" id="L65">        long total = from(qReview)</span>
+<span class="fc" id="L66">                .where(qReview.book.bookId.eq(bookId))</span>
+<span class="fc" id="L67">                .fetchCount();</span>
+
+<span class="fc" id="L69">        return new PageImpl&lt;&gt;(content, pageable, total);</span>
+    }
+
+
+
+    @Override
+    public Page&lt;ReviewTotalResponseDto&gt; getReviewsByCustomerId(Pageable pageable, Long customerId) {
+<span class="fc" id="L76">        List&lt;ReviewTotalResponseDto&gt; content = from(qReview)</span>
+<span class="fc" id="L77">                .join(qReview.book, qBook) // book과 review를 JOIN</span>
+<span class="fc" id="L78">                .where(qReview.member.id.eq(customerId))</span>
+<span class="fc" id="L79">                .offset(pageable.getOffset())</span>
+<span class="fc" id="L80">                .limit(pageable.getPageSize())</span>
+<span class="fc" id="L81">                .select(Projections.constructor(</span>
+                        ReviewTotalResponseDto.class,
+                        qReview.reviewId,
+                        qReview.orderDetail.orderDetailId,
+                        qReview.member.id,
+                        qReview.book.bookId,
+                        qReview.ratingValue,
+                        qBook.title,
+                        qReview.title,
+                        qReview.text,
+                        qReview.imageUrl,
+                        qReview.createdAt,
+                        qReview.updatedAt
+                ))
+<span class="fc" id="L95">                .fetch();</span>
+
+<span class="fc" id="L97">        long total = from(qReview)</span>
+<span class="fc" id="L98">                .where(qReview.member.id.eq(customerId))</span>
+<span class="fc" id="L99">                .fetchCount();</span>
+
+<span class="fc" id="L101">        return new PageImpl&lt;&gt;(content, pageable, total);</span>
+    }
+
+    @Override
+    public Optional&lt;ReviewResponseDto&gt; getReviewByReviewId(Long reviewId) {
+<span class="fc" id="L106">        Tuple reviewTuple = from(qReview)</span>
+<span class="fc" id="L107">                .leftJoin(qReviewImage).on(qReview.reviewId.eq(qReviewImage.review.reviewId))</span>
+<span class="fc" id="L108">                .leftJoin(qImage).on(qReviewImage.image.imageId.eq(qImage.imageId))</span>
+<span class="fc" id="L109">                .where(qReview.reviewId.eq(reviewId))</span>
+<span class="fc" id="L110">                .orderBy(qReviewImage.reviewImageId.desc())</span>
+<span class="fc" id="L111">                .select(qReview, qImage.url)</span>
+<span class="fc" id="L112">                .fetchFirst();</span>
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (reviewTuple == null) {</span>
+<span class="fc" id="L115">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L118">        Review review = reviewTuple.get(qReview);</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        String imageUrl = reviewTuple.get(qImage.url) != null ? reviewTuple.get(qImage.url) : null;</span>
+
+<span class="fc" id="L121">        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(</span>
+<span class="fc" id="L122">                review.getReviewId(),</span>
+<span class="fc" id="L123">                review.getOrderDetail().getOrderDetailId(),</span>
+<span class="fc" id="L124">                review.getMember().getId(),</span>
+<span class="fc" id="L125">                review.getBook().getBookId(),</span>
+<span class="fc" id="L126">                review.getRatingValue(),</span>
+<span class="fc" id="L127">                review.getTitle(),</span>
+<span class="fc" id="L128">                review.getText(),</span>
+                imageUrl,
+<span class="fc" id="L130">                review.getCreatedAt(),</span>
+<span class="fc" id="L131">                review.getUpdatedAt()</span>
+        );
+
+<span class="fc" id="L134">        return Optional.of(reviewResponseDto);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

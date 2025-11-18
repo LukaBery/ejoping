@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PathvariableAspect.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.common.aop.pathvariable</a> &gt; <span class="el_source">PathvariableAspect.java</span></div><h1>PathvariableAspect.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.common.aop.pathvariable;
+
+
+import com.nhnacademy.bookstore.common.annotation.ValidPathVariable;
+import com.nhnacademy.bookstore.common.error.common.InvalidPathVariableException;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+
+/**
+ * PathvariableAspect는 경로 변수에 대한 유효성 검사를 수행하는 AOP 클래스입니다.
+ * 메서드에 선언된 @ValidPathVariable 어노테이션을 통해 경로 변수의 유효성을 검증합니다.
+ * 음수 값이 경로 변수로 사용될 경우, InvalidPathVariableException 예외를 발생시켜 잘못된 경로 변수를 처리합니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+
+@Aspect
+@Component
+<span class="fc" id="L27">public class PathvariableAspect {</span>
+
+    /**
+     * validPathVariableMethods()는 @ValidPathVariable 어노테이션이 적용된 모든 메서드의 포인트컷을 정의합니다.
+     */
+    @Pointcut(&quot;execution(* com.nhnacademy.bookstore..*(.., @com.nhnacademy.bookstore.common.annotation.ValidPathVariable (*), ..))&quot;)
+<span class="fc" id="L33">    public void validPathVariableMethods() {}</span>
+
+
+    /**
+     * checkPathVariable()는 validPathVariableMethods() 포인트컷에서 지정된 메서드가 성공적으로 실행된 후
+     * 경로 변수 값의 유효성을 검사하는 메서드입니다.
+     *
+     * @param joinPoint 실행된 메서드의 정보를 담고 있는 JoinPoint 객체
+     * @throws InvalidPathVariableException 경로 변수에 음수 값이 전달될 경우 발생하는 예외
+     */
+    @Before(&quot;validPathVariableMethods()&quot;)
+    public void checkPathVariable(JoinPoint joinPoint){
+
+<span class="fc" id="L46">        Object[] args = joinPoint.getArgs();</span>
+<span class="fc" id="L47">        MethodSignature signature = (MethodSignature) joinPoint.getSignature();</span>
+<span class="fc" id="L48">        Method method = signature.getMethod();</span>
+<span class="fc" id="L49">        Parameter[] parameters = method.getParameters();</span>
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        for (int i = 0; i &lt; parameters.length; i++) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            if (parameters[i].isAnnotationPresent(ValidPathVariable.class)) {</span>
+<span class="fc" id="L53">                checkValue(args[i]);</span>
+            }
+        }
+<span class="fc" id="L56">    }</span>
+
+    /**
+     * checkValue()는 주어진 경로 변수의 값이 유효한지 검사합니다.
+     * 값이 음수일 경우 InvalidPathVariableException을 발생시킵니다.
+     *
+     * @param value 경로 변수 값
+     * @param &lt;T&gt;   타입 매개변수
+     * @throws InvalidPathVariableException 음수 값이 전달될 경우 발생하는 예외
+     */
+    public &lt;T&gt; void checkValue(T value) {
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L69">            throw new InvalidPathVariableException(&quot;값이 null입니다.&quot;);</span>
+        }
+
+<span class="fc" id="L72">        Class&lt;?&gt; valueType = value.getClass();</span>
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (valueType == Long.class) {</span>
+<span class="fc" id="L75">            long pathVarValue = (Long) value;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">            if (pathVarValue &lt;= 0) {</span>
+<span class="fc" id="L77">                throw new InvalidPathVariableException(&quot;0 또는 음수 값은 허용되지 않습니다.&quot;);</span>
+            }
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        } else if (valueType == Integer.class) {</span>
+<span class="fc" id="L80">            int pathVarValue = (Integer) value;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">            if (pathVarValue &lt;= 0) {</span>
+<span class="fc" id="L82">                throw new InvalidPathVariableException(&quot;0 또는 음수 값은 허용되지 않습니다.&quot;);</span>
+            }
+        }
+<span class="fc" id="L85">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

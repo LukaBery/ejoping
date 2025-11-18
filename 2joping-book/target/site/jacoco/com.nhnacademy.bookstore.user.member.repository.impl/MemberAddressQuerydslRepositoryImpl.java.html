@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberAddressQuerydslRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.repository.impl</a> &gt; <span class="el_source">MemberAddressQuerydslRepositoryImpl.java</span></div><h1>MemberAddressQuerydslRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.repository.impl;
+
+import com.nhnacademy.bookstore.user.member.dto.response.address.MemberAddressResponseDto;
+import com.nhnacademy.bookstore.user.member.repository.MemberAddressQuerydslRepository;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+import static com.nhnacademy.bookstore.user.member.entity.QMemberAddress.memberAddress;
+
+@Repository
+@RequiredArgsConstructor
+public class MemberAddressQuerydslRepositoryImpl implements MemberAddressQuerydslRepository {
+
+    private final JPAQueryFactory queryFactory;
+
+    @Override
+    public List&lt;MemberAddressResponseDto&gt; findAddressesByMemberId(long memberId) {
+<span class="fc" id="L22">        return queryFactory</span>
+<span class="fc" id="L23">                .select(Projections.constructor(MemberAddressResponseDto.class,</span>
+                        memberAddress.id,
+                        memberAddress.postalCode,
+                        memberAddress.roadAddress,
+                        memberAddress.detailAddress,
+                        memberAddress.addressAlias,
+                        memberAddress.defaultAddress,
+                        memberAddress.receiver
+                ))
+<span class="fc" id="L32">                .from(memberAddress)</span>
+<span class="fc" id="L33">                .where(</span>
+<span class="fc" id="L34">                        memberAddress.member.id.eq(memberId) // memberId 조건</span>
+<span class="fc" id="L35">                                .and(memberAddress.available.isTrue()) // available 필드가 true인 조건 추가</span>
+                )
+<span class="fc" id="L37">                .orderBy(</span>
+<span class="fc" id="L38">                        memberAddress.defaultAddress.desc(), // isDefaultAddress가 true인 항목 먼저</span>
+<span class="fc" id="L39">                        memberAddress.id.desc()              // 가장 마지막에 등록된 순서대로</span>
+                )
+<span class="fc" id="L41">                .fetch();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

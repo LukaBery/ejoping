@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CouponController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.coupon.controller</a> &gt; <span class="el_source">CouponController.java</span></div><h1>CouponController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.coupon.controller;
+
+
+import com.nhnacademy.bookstore.coupon.dto.request.CouponRequestDto;
+import com.nhnacademy.bookstore.coupon.dto.response.CouponResponseDto;
+import com.nhnacademy.bookstore.coupon.service.CouponService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+
+/**
+ * CouponController
+ * 이 컨트롤러 클래스는 쿠폰 생성 및 조회 기능을 제공하는 API 엔드포인트를 정의합니다.
+ * 클라이언트는 이 API를 통해 쿠폰을 생성하거나 모든 쿠폰 목록을 조회할 수 있습니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(&quot;/api/v1&quot;)
+public class CouponController {
+
+    private final CouponService couponService;
+
+    /**
+     * 쿠폰 생성 엔드포인트
+     * 주어진 쿠폰 요청 데이터를 기반으로 새로운 쿠폰을 생성하고, 생성된 쿠폰 정보를 반환합니다.
+     *
+     * @param couponRequestDto 생성할 쿠폰의 정보가 담긴 DTO
+     * @return 생성된 쿠폰의 정보가 담긴 응답 DTO를 포함한 ResponseEntity
+     */
+    @PostMapping(&quot;/coupons&quot;)
+    public ResponseEntity&lt;CouponResponseDto&gt; createCoupon(@Valid @RequestBody CouponRequestDto couponRequestDto) {
+<span class="nc" id="L39">        CouponResponseDto requestDto = couponService.create(couponRequestDto);</span>
+
+<span class="nc" id="L41">        return ResponseEntity.ok(requestDto);</span>
+    }
+
+    /**
+     * 모든 쿠폰 조회 엔드포인트
+     * 저장된 모든 쿠폰의 목록을 조회하여 반환합니다.
+     *
+     * @return 모든 쿠폰 정보를 포함한 응답 DTO 목록을 포함한 ResponseEntity
+     */
+    @GetMapping(&quot;/coupons&quot;)
+    public ResponseEntity&lt;List&lt;CouponResponseDto&gt;&gt; getAllCoupons() {
+<span class="fc" id="L52">        List&lt;CouponResponseDto&gt; responseDtos = couponService.getAllCouponse();</span>
+
+<span class="fc" id="L54">        return ResponseEntity.ok(responseDtos);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

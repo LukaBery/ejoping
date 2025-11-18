@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BookRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.bookset.book.repository</a> &gt; <span class="el_source">BookRepositoryImpl.java</span></div><h1>BookRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.bookset.book.repository;
+
+import com.nhnacademy.bookstore.bookset.book.dto.response.*;
+import com.nhnacademy.bookstore.bookset.book.entity.Book;
+import com.nhnacademy.bookstore.bookset.book.entity.QBook;
+import com.nhnacademy.bookstore.bookset.book.entity.QBookCategory;
+import com.nhnacademy.bookstore.bookset.book.entity.QBookContributor;
+import com.nhnacademy.bookstore.bookset.category.entity.QCategory;
+import com.nhnacademy.bookstore.bookset.contributor.entity.QContributor;
+import com.nhnacademy.bookstore.bookset.contributor.entity.QContributorRole;
+import com.nhnacademy.bookstore.bookset.tag.entity.QBookTag;
+import com.nhnacademy.bookstore.bookset.tag.entity.QTag;
+import com.nhnacademy.bookstore.common.error.exception.bookset.category.CategoryIdNullException;
+import com.nhnacademy.bookstore.imageset.entity.QBookImage;
+import com.nhnacademy.bookstore.imageset.entity.QImage;
+import com.nhnacademy.bookstore.review.dto.response.ReviewResponseDto;
+import com.nhnacademy.bookstore.review.entity.QReview;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+
+import java.util.*;
+
+
+<span class="fc" id="L29">@Slf4j</span>
+public class BookRepositoryImpl extends QuerydslRepositorySupport implements BookRepositoryCustom {
+
+    public BookRepositoryImpl() {
+<span class="fc" id="L33">        super(Book.class);</span>
+<span class="fc" id="L34">    }</span>
+
+<span class="fc" id="L36">    private final QBook qBook = QBook.book;</span>
+<span class="fc" id="L37">    private final QBookContributor qBookContributor = QBookContributor.bookContributor;</span>
+<span class="fc" id="L38">    private final QContributor qContributor = QContributor.contributor;</span>
+<span class="fc" id="L39">    private final QBookCategory qBookCategory = QBookCategory.bookCategory;</span>
+<span class="fc" id="L40">    private final QCategory qCategory = QCategory.category;</span>
+<span class="fc" id="L41">    private final QContributorRole qContributorRole = QContributorRole.contributorRole;</span>
+<span class="fc" id="L42">    private final QBookTag qBookTag = QBookTag.bookTag;</span>
+<span class="fc" id="L43">    private final QTag qTag = QTag.tag;</span>
+<span class="fc" id="L44">    private final QBookImage qBookImage = QBookImage.bookImage;</span>
+<span class="fc" id="L45">    private final QImage qImage = QImage.image;</span>
+<span class="fc" id="L46">    private final QReview qReview = QReview.review;</span>
+
+<span class="fc" id="L48">    QBookImage qBookImageThumbnail = new QBookImage(&quot;thumbnail&quot;);</span>
+<span class="fc" id="L49">    QBookImage qBookImageDetail = new QBookImage(&quot;detail&quot;);</span>
+<span class="fc" id="L50">    QImage qImageThumbnail = new QImage(&quot;thumbnailImage&quot;);</span>
+<span class="fc" id="L51">    QImage qImageDetail = new QImage(&quot;detailImage&quot;);</span>
+
+    /**
+     * 전체 도서를 페이지 단위로 조회
+     *
+     * @param pageable 페이징 정보를 담고 있는 객체
+     * @return 전체 도서 목록과 페이징 정보를 담은 Page 객체
+     */
+    @Override
+    public Page&lt;BookSimpleResponseDto&gt; findAllBooks(Pageable pageable) {
+
+        // 1. Book 엔티티를 페이징하여 가져오고 BookImage 및 Image를 조인합니다.
+<span class="fc" id="L63">        List&lt;Tuple&gt; results = from(qBook)</span>
+<span class="fc" id="L64">                .leftJoin(qBookImage).on(qBook.bookId.eq(qBookImage.book.bookId).and(qBookImage.imageType.eq(&quot;썸네일&quot;)))</span>
+<span class="fc" id="L65">                .leftJoin(qImage).on(qBookImage.image.imageId.eq(qImage.imageId))</span>
+<span class="fc" id="L66">                .offset(pageable.getOffset())</span>
+<span class="fc" id="L67">                .limit(pageable.getPageSize())</span>
+<span class="fc" id="L68">                .select(qBook, qImage.url)  // Book과 썸네일 URL을 가져옵니다.</span>
+<span class="fc" id="L69">                .fetch();</span>
+
+        // 2. 필요한 데이터를 매핑하면서 DTO로 변환합니다.
+<span class="fc" id="L72">        List&lt;BookSimpleResponseDto&gt; booksDto = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (Tuple tuple : results) {</span>
+<span class="fc" id="L74">            Book book = tuple.get(qBook);</span>
+<span class="fc" id="L75">            String thumbnailUrl = tuple.get(qImage.url);</span>
+
+            // 각 Book에 대한 BookSimpleResponseDto 생성
+<span class="fc" id="L78">            BookSimpleResponseDto dto = new BookSimpleResponseDto(</span>
+<span class="fc" id="L79">                    book.getBookId(),</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">                    thumbnailUrl != null ? thumbnailUrl : &quot;&quot;, // 썸네일 URL이 없으면 기본값 사용</span>
+<span class="fc" id="L81">                    book.getTitle(),</span>
+<span class="fc" id="L82">                    book.getSellingPrice(),</span>
+<span class="fc" id="L83">                    book.getPublisher().getName(),</span>
+<span class="fc" id="L84">                    book.getRetailPrice(),</span>
+<span class="fc" id="L85">                    book.isActive(),</span>
+                    new ArrayList&lt;&gt;(), // 기여자 리스트 초기화
+                    new ArrayList&lt;&gt;()  // 카테고리 리스트 빈 리스트로 초기화
+            );
+
+            // 2-1. 각 Book에 대해 contributor와 contributor role 조회 및 추가
+<span class="fc" id="L91">            List&lt;BookContributorResponseDto&gt; contributors = from(qBookContributor)</span>
+<span class="fc" id="L92">                    .leftJoin(qContributor).on(qBookContributor.contributor.contributorId.eq(qContributor.contributorId))</span>
+<span class="fc" id="L93">                    .leftJoin(qContributorRole).on(qContributor.contributorRole.contributorRoleId.eq(qContributorRole.contributorRoleId))</span>
+<span class="fc" id="L94">                    .where(qBookContributor.book.bookId.eq(book.getBookId()))</span>
+<span class="fc" id="L95">                    .select(Projections.constructor(BookContributorResponseDto.class,</span>
+                            qContributor.contributorId,
+                            qContributor.name,
+                            qContributorRole.contributorRoleId,
+                            qContributorRole.name))
+<span class="fc" id="L100">                    .fetch();</span>
+
+<span class="fc" id="L102">            dto.contributorList().addAll(contributors);</span>
+
+            // 2-2. 각 Book에 대해 category 조회 및 추가
+<span class="fc" id="L105">            List&lt;String&gt; categories = from(qBookCategory)</span>
+<span class="fc" id="L106">                    .leftJoin(qCategory).on(qBookCategory.category.categoryId.eq(qCategory.categoryId))</span>
+<span class="fc" id="L107">                    .where(qBookCategory.book.bookId.eq(book.getBookId()))</span>
+<span class="fc" id="L108">                    .select(qCategory.category.name)</span>
+<span class="fc" id="L109">                    .fetch();</span>
+
+<span class="fc" id="L111">            dto.categoryList().addAll(categories);</span>
+
+<span class="fc" id="L113">            booksDto.add(dto);</span>
+<span class="fc" id="L114">        }</span>
+
+        // 3. 총 개수 계산
+<span class="fc" id="L117">        long total = from(qBook).fetchCount();</span>
+
+        // 4. Page 객체 반환
+<span class="fc" id="L120">        return new PageImpl&lt;&gt;(booksDto, pageable, total);</span>
+    }
+
+
+    /**
+     * 특정 기여자가 참여한 도서를 페이지 단위로 조회
+     *
+     * @param pageable      페이징 정보를 담고 있는 객체
+     * @param contributorId 조회할 기여자의 ID
+     * @return 기여자가 참여한 도서 목록과 페이징 정보를 담은 Page 객체
+     */
+    @Override
+    public Page&lt;BookSimpleResponseDto&gt; findBooksByContributorId(Pageable pageable, Long contributorId) {
+
+        // 1. 특정 기여자가 참여한 도서를 Book 기준으로 페이징하여 가져오고 썸네일 URL을 조인하여 가져옵니다.
+<span class="fc" id="L135">        List&lt;Tuple&gt; results = from(qBookContributor)</span>
+<span class="fc" id="L136">                .join(qBookContributor.book, qBook)</span>
+<span class="fc" id="L137">                .leftJoin(qBookImage).on(qBook.bookId.eq(qBookImage.book.bookId).and(qBookImage.imageType.eq(&quot;썸네일&quot;)))</span>
+<span class="fc" id="L138">                .leftJoin(qImage).on(qBookImage.image.imageId.eq(qImage.imageId))</span>
+<span class="fc" id="L139">                .where(qBookContributor.contributor.contributorId.eq(contributorId))</span>
+<span class="fc" id="L140">                .offset(pageable.getOffset())</span>
+<span class="fc" id="L141">                .limit(pageable.getPageSize())</span>
+<span class="fc" id="L142">                .select(qBook, qImage.url)</span>
+<span class="fc" id="L143">                .fetch();</span>
+
+        // 2. DTO 변환 및 매핑
+<span class="fc" id="L146">        List&lt;BookSimpleResponseDto&gt; booksDto = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        for (Tuple tuple : results) {</span>
+<span class="fc" id="L148">            Book book = tuple.get(qBook);</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">            String thumbnailUrl = tuple.get(qImage.url) != null ? tuple.get(qImage.url) : &quot;default-thumbnail.jpg&quot;;</span>
+
+<span class="fc" id="L151">            BookSimpleResponseDto dto = new BookSimpleResponseDto(</span>
+<span class="fc" id="L152">                    book.getBookId(),</span>
+                    thumbnailUrl,
+<span class="fc" id="L154">                    book.getTitle(),</span>
+<span class="fc" id="L155">                    book.getSellingPrice(),</span>
+<span class="fc" id="L156">                    book.getPublisher().getName(),</span>
+<span class="fc" id="L157">                    book.getRetailPrice(),</span>
+<span class="fc" id="L158">                    book.isActive(),</span>
+                    new ArrayList&lt;&gt;(), // 기여자 리스트 초기화
+                    new ArrayList&lt;&gt;() // 카테고리 리스트 빈 리스트로 초기화
+            );
+
+            // 추가 정보 매핑 (기여자, 카테고리)
+<span class="fc" id="L164">            dto.contributorList().addAll(getContributorsByBook(book.getBookId()));</span>
+<span class="fc" id="L165">            dto.categoryList().addAll(getCategoriesByBook(book.getBookId()));</span>
+
+<span class="fc" id="L167">            booksDto.add(dto);</span>
+<span class="fc" id="L168">        }</span>
+
+<span class="fc" id="L170">        long total = from(qBookContributor)</span>
+<span class="fc" id="L171">                .where(qBookContributor.contributor.contributorId.eq(contributorId))</span>
+<span class="fc" id="L172">                .fetchCount();</span>
+
+<span class="fc" id="L174">        return new PageImpl&lt;&gt;(booksDto, pageable, total);</span>
+    }
+
+    /**
+     * 특정 카테고리에 속하는 도서를 페이지 단위로 조회
+     *
+     * @param pageable   페이징 정보를 담고 있는 객체
+     * @param categoryId 조회할 카테고리의 ID
+     * @return 카테고리별 도서 목록과 페이징 정보를 담은 Page 객체
+     */
+    @Override
+    public Page&lt;BookSimpleResponseDto&gt; findBooksByCategoryId(Pageable pageable, Long categoryId) {
+
+<span class="fc" id="L187">        List&lt;Tuple&gt; results = from(qBookCategory)</span>
+<span class="fc" id="L188">                .join(qBookCategory.book, qBook)</span>
+<span class="fc" id="L189">                .leftJoin(qBookImage).on(qBook.bookId.eq(qBookImage.book.bookId).and(qBookImage.imageType.eq(&quot;썸네일&quot;)))</span>
+<span class="fc" id="L190">                .leftJoin(qImage).on(qBookImage.image.imageId.eq(qImage.imageId))</span>
+<span class="fc" id="L191">                .where(qBookCategory.category.categoryId.eq(categoryId))</span>
+<span class="fc" id="L192">                .offset(pageable.getOffset())</span>
+<span class="fc" id="L193">                .limit(pageable.getPageSize())</span>
+<span class="fc" id="L194">                .select(qBook, qImage.url)</span>
+<span class="fc" id="L195">                .fetch();</span>
+
+<span class="fc" id="L197">        List&lt;BookSimpleResponseDto&gt; booksDto = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        for (Tuple tuple : results) {</span>
+<span class="fc" id="L199">            Book book = tuple.get(qBook);</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">            String thumbnailUrl = tuple.get(qImage.url) != null ? tuple.get(qImage.url) : &quot;default-thumbnail.jpg&quot;;</span>
+
+<span class="fc" id="L202">            BookSimpleResponseDto dto = new BookSimpleResponseDto(</span>
+<span class="fc" id="L203">                    book.getBookId(),</span>
+                    thumbnailUrl,
+<span class="fc" id="L205">                    book.getTitle(),</span>
+<span class="fc" id="L206">                    book.getSellingPrice(),</span>
+<span class="fc" id="L207">                    book.getPublisher().getName(),</span>
+<span class="fc" id="L208">                    book.getRetailPrice(),</span>
+<span class="fc" id="L209">                    book.isActive(),</span>
+                    new ArrayList&lt;&gt;(), // 기여자 리스트 초기화
+                    new ArrayList&lt;&gt;() // 카테고리 리스트 빈 리스트로 초기화
+            );
+
+<span class="fc" id="L214">            dto.contributorList().addAll(getContributorsByBook(book.getBookId()));</span>
+<span class="fc" id="L215">            dto.categoryList().addAll(getCategoriesByBook(book.getBookId()));</span>
+
+<span class="fc" id="L217">            booksDto.add(dto);</span>
+<span class="fc" id="L218">        }</span>
+
+<span class="fc" id="L220">        long total = from(qBookCategory)</span>
+<span class="fc" id="L221">                .where(qBookCategory.category.categoryId.eq(categoryId))</span>
+<span class="fc" id="L222">                .fetchCount();</span>
+
+<span class="fc" id="L224">        return new PageImpl&lt;&gt;(booksDto, pageable, total);</span>
+    }
+
+
+    /**
+     * 특정 도서의 상세 정보를 조회합니다.
+     *
+     * @param bookId 조회할 도서의 ID
+     * @return 도서의 상세 정보를 담은 BookResponseDto 객체
+     */
+    @Override
+    public Optional&lt;BookResponseDto&gt; findBookByBookId(Long bookId) {
+
+<span class="fc" id="L237">        Tuple bookTuple = from(qBook)</span>
+<span class="fc" id="L238">                .leftJoin(qBookImage).on(qBook.bookId.eq(qBookImage.book.bookId).and(qBookImage.imageType.eq(&quot;썸네일&quot;)))</span>
+<span class="fc" id="L239">                .leftJoin(qImage).on(qBookImage.image.imageId.eq(qImage.imageId))</span>
+<span class="fc" id="L240">                .where(qBook.bookId.eq(bookId))</span>
+<span class="fc" id="L241">                .select(qBook, qImage.url)</span>
+<span class="fc" id="L242">                .fetchOne();</span>
+
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        if (bookTuple == null) {</span>
+<span class="fc" id="L245">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L248">        Book book = bookTuple.get(qBook);</span>
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">        String thumbnailUrl = bookTuple.get(qImage.url) != null ? bookTuple.get(qImage.url) : &quot;default-thumbnail.jpg&quot;;</span>
+
+        // BookResponseDto 생성
+<span class="fc" id="L252">        BookResponseDto bookResponseDto = new BookResponseDto(</span>
+<span class="fc" id="L253">                book.getBookId(),</span>
+<span class="fc" id="L254">                book.getPublisher().getName(),</span>
+<span class="fc" id="L255">                book.getTitle(),</span>
+<span class="fc" id="L256">                book.getDescription(),</span>
+<span class="fc" id="L257">                book.getPublishedDate(),</span>
+<span class="fc" id="L258">                book.getIsbn(),</span>
+<span class="fc" id="L259">                book.getRetailPrice(),</span>
+<span class="fc" id="L260">                book.getSellingPrice(),</span>
+<span class="fc" id="L261">                book.isGiftWrappable(),</span>
+<span class="fc" id="L262">                book.isActive(),</span>
+<span class="fc" id="L263">                book.getRemainQuantity(),</span>
+<span class="fc" id="L264">                book.getViews(),</span>
+<span class="fc" id="L265">                book.getLikes(),</span>
+<span class="fc" id="L266">                getContributorsByBook(book.getBookId()), // 기여자 리스트</span>
+<span class="fc" id="L267">                getCategoriesByBook(book.getBookId()), // 카테고리 리스트</span>
+<span class="fc" id="L268">                getTagsByBook(book.getBookId()), // 태그 리스트</span>
+                thumbnailUrl,
+<span class="fc" id="L270">                getReviewsByBook(book.getBookId()) // 리뷰 리스트 추가</span>
+        );
+
+<span class="fc" id="L273">        return Optional.of(bookResponseDto);</span>
+    }
+
+    /**
+     * 특정 도서의 기여자 정보를 조회하여 반환
+     */
+    public List&lt;BookContributorResponseDto&gt; getContributorsByBook(Long bookId) {
+<span class="fc" id="L280">        return from(qBookContributor)</span>
+<span class="fc" id="L281">                .leftJoin(qContributor).on(qBookContributor.contributor.contributorId.eq(qContributor.contributorId))</span>
+<span class="fc" id="L282">                .leftJoin(qContributorRole).on(qContributor.contributorRole.contributorRoleId.eq(qContributorRole.contributorRoleId))</span>
+<span class="fc" id="L283">                .where(qBookContributor.book.bookId.eq(bookId))</span>
+<span class="fc" id="L284">                .select(Projections.constructor(BookContributorResponseDto.class,</span>
+                        qContributor.contributorId,
+                        qContributor.name,
+                        qContributorRole.contributorRoleId,
+                        qContributorRole.name))
+<span class="fc" id="L289">                .fetch();</span>
+    }
+
+    /**
+     * 특정 도서의 카테고리 정보를 조회하여 반환
+     */
+    public List&lt;String&gt; getCategoriesByBook(Long bookId) {
+<span class="fc" id="L296">        return from(qBookCategory)</span>
+<span class="fc" id="L297">                .leftJoin(qCategory).on(qBookCategory.category.categoryId.eq(qCategory.categoryId))</span>
+<span class="fc" id="L298">                .where(qBookCategory.book.bookId.eq(bookId))</span>
+<span class="fc" id="L299">                .select(qCategory.category.name)</span>
+<span class="fc" id="L300">                .fetch();</span>
+    }
+
+    /**
+     * 특정 도서의 태그 정보를 조회하여 반환
+     */
+    public List&lt;BookTagResponseDto&gt; getTagsByBook(Long bookId) {
+<span class="fc" id="L307">        return from(qBookTag)</span>
+<span class="fc" id="L308">                .leftJoin(qTag).on(qBookTag.tag.tagId.eq(qTag.tagId))</span>
+<span class="fc" id="L309">                .where(qBookTag.book.bookId.eq(bookId))</span>
+<span class="fc" id="L310">                .select(Projections.constructor(BookTagResponseDto.class,</span>
+                        qTag.tagId,
+                        qTag.name))
+<span class="fc" id="L313">                .fetch();</span>
+    }
+
+    /**
+     * 최하위 카테고리 Id 기반으로 top, middle, bottom 카테고리 가져오기
+     *
+     * @param lowestCategoryId
+     * @return topCategoryId, middleCategoryId, bottomCategoryId 맵
+     */
+    public Map&lt;String, Long&gt; getCategoryHierarchy(Long lowestCategoryId) {
+<span class="fc bfc" id="L323" title="All 2 branches covered.">        if (lowestCategoryId == null) {</span>
+<span class="fc" id="L324">            throw new CategoryIdNullException();</span>
+        }
+
+<span class="fc" id="L327">        Long bottomCategoryId = null;</span>
+<span class="fc" id="L328">        Long middleCategoryId = null;</span>
+<span class="fc" id="L329">        Long topCategoryId = null;</span>
+
+<span class="fc" id="L331">        Long currentCategoryId = lowestCategoryId;</span>
+<span class="fc" id="L332">        QCategory qParentCategory = new QCategory(&quot;parentCategoryAlias&quot;);</span>
+
+<span class="fc bfc" id="L334" title="All 2 branches covered.">        while (currentCategoryId != null) {</span>
+<span class="fc" id="L335">            Tuple categoryTuple = from(qCategory)</span>
+<span class="fc" id="L336">                    .leftJoin(qCategory.parentCategory, qParentCategory)</span>
+<span class="fc" id="L337">                    .where(qCategory.categoryId.eq(currentCategoryId))</span>
+<span class="fc" id="L338">                    .select(qCategory.categoryId, qParentCategory.categoryId)</span>
+<span class="fc" id="L339">                    .fetchOne();</span>
+
+<span class="fc bfc" id="L341" title="All 2 branches covered.">            if (categoryTuple == null) {</span>
+<span class="fc" id="L342">                break;</span>
+            }
+
+<span class="fc bfc" id="L345" title="All 2 branches covered.">            if (bottomCategoryId == null) {</span>
+<span class="fc" id="L346">                bottomCategoryId = categoryTuple.get(qCategory.categoryId);</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">            } else if (middleCategoryId == null) {</span>
+<span class="fc" id="L348">                middleCategoryId = categoryTuple.get(qCategory.categoryId);</span>
+            } else {
+<span class="fc" id="L350">                topCategoryId = categoryTuple.get(qCategory.categoryId);</span>
+<span class="fc" id="L351">                break;</span>
+            }
+
+<span class="fc" id="L354">            currentCategoryId = categoryTuple.get(qParentCategory.categoryId);</span>
+<span class="fc" id="L355">        }</span>
+
+<span class="fc bfc" id="L357" title="All 4 branches covered.">        if (middleCategoryId == null &amp;&amp; bottomCategoryId != null) {</span>
+<span class="fc" id="L358">            middleCategoryId = bottomCategoryId;</span>
+<span class="fc" id="L359">            bottomCategoryId = null;</span>
+        }
+
+<span class="fc bfc" id="L362" title="All 4 branches covered.">        if (topCategoryId == null &amp;&amp; middleCategoryId != null) {</span>
+<span class="fc" id="L363">            topCategoryId = middleCategoryId;</span>
+<span class="fc" id="L364">            middleCategoryId = null;</span>
+        }
+
+<span class="fc" id="L367">        Map&lt;String, Long&gt; categoryHierarchy = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L368">        categoryHierarchy.put(&quot;topCategoryId&quot;, topCategoryId);</span>
+<span class="fc" id="L369">        categoryHierarchy.put(&quot;middleCategoryId&quot;, middleCategoryId);</span>
+<span class="fc" id="L370">        categoryHierarchy.put(&quot;bottomCategoryId&quot;, bottomCategoryId);</span>
+
+<span class="fc" id="L372">        return categoryHierarchy;</span>
+    }
+
+    /**
+     * 업데이트를 위해 특정 도서의 상세 정보를 조회
+     *
+     * @param bookId
+     * @return 도서의 상세 정보를 담은 BookResponseDto 객체
+     */
+    @Override
+    public Optional&lt;BookUpdateResponseDto&gt; findUpdateBookByBookId(Long bookId) {
+<span class="fc" id="L383">        Tuple bookTuple = from(qBook)</span>
+<span class="fc" id="L384">                .leftJoin(qBookImageThumbnail).on(</span>
+<span class="fc" id="L385">                        qBook.bookId.eq(qBookImageThumbnail.book.bookId)</span>
+<span class="fc" id="L386">                                .and(qBookImageThumbnail.imageType.eq(&quot;썸네일&quot;))</span>
+                )
+<span class="fc" id="L388">                .leftJoin(qImageThumbnail).on(</span>
+<span class="fc" id="L389">                        qBookImageThumbnail.image.imageId.eq(qImageThumbnail.imageId)</span>
+                )
+<span class="fc" id="L391">                .leftJoin(qBookImageDetail).on(</span>
+<span class="fc" id="L392">                        qBook.bookId.eq(qBookImageDetail.book.bookId)</span>
+<span class="fc" id="L393">                                .and(qBookImageDetail.imageType.eq(&quot;상세&quot;))</span>
+                )
+<span class="fc" id="L395">                .leftJoin(qImageDetail).on(</span>
+<span class="fc" id="L396">                        qBookImageDetail.image.imageId.eq(qImageDetail.imageId)</span>
+                )
+<span class="fc" id="L398">                .where(qBook.bookId.eq(bookId))</span>
+<span class="fc" id="L399">                .select(qBook, qImageThumbnail.url, qImageDetail.url)</span>
+<span class="fc" id="L400">                .fetchOne();</span>
+
+<span class="fc bfc" id="L402" title="All 2 branches covered.">        if (bookTuple == null) {</span>
+<span class="fc" id="L403">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L406">        Book book = bookTuple.get(qBook);</span>
+<span class="pc bpc" id="L407" title="1 of 2 branches missed.">        String thumbnailUrl = bookTuple.get(qImageThumbnail.url) != null ? bookTuple.get(qImageThumbnail.url) : &quot;default-thumbnail.jpg&quot;;</span>
+<span class="pc bpc" id="L408" title="1 of 2 branches missed.">        String detailUrl = bookTuple.get(qImageDetail.url) != null ? bookTuple.get(qImageDetail.url) : &quot;default-detail.jpg&quot;;</span>
+
+<span class="fc" id="L410">        List&lt;Long&gt; categoryIds = from(qBookCategory)</span>
+<span class="fc" id="L411">                .join(qBookCategory.category, qCategory)</span>
+<span class="fc" id="L412">                .where(qBookCategory.book.bookId.eq(bookId))</span>
+<span class="fc" id="L413">                .select(qCategory.categoryId)</span>
+<span class="fc" id="L414">                .fetch();</span>
+
+<span class="pc bpc" id="L416" title="1 of 2 branches missed.">        Long bottomCategoryId = categoryIds.isEmpty() ? null : categoryIds.get(0);</span>
+
+<span class="fc" id="L418">        Map&lt;String, Long&gt; categoryHierarchy = getCategoryHierarchy(bottomCategoryId);</span>
+
+<span class="fc" id="L420">        BookUpdateResponseDto bookUpdateResponseDto = new BookUpdateResponseDto(</span>
+<span class="fc" id="L421">                book.getBookId(),</span>
+<span class="fc" id="L422">                book.getTitle(),</span>
+<span class="fc" id="L423">                book.getDescription(),</span>
+<span class="fc" id="L424">                book.getPublisher().getName(),</span>
+<span class="fc" id="L425">                book.getPublishedDate(),</span>
+<span class="fc" id="L426">                book.getIsbn(),</span>
+<span class="fc" id="L427">                book.getRetailPrice(),</span>
+<span class="fc" id="L428">                book.getSellingPrice(),</span>
+<span class="fc" id="L429">                book.isGiftWrappable(),</span>
+<span class="fc" id="L430">                book.isActive(),</span>
+<span class="fc" id="L431">                book.getRemainQuantity(),</span>
+<span class="fc" id="L432">                getContributorsByBook(book.getBookId()),</span>
+<span class="fc" id="L433">                categoryHierarchy.get(&quot;topCategoryId&quot;),</span>
+<span class="fc" id="L434">                categoryHierarchy.get(&quot;middleCategoryId&quot;),</span>
+<span class="fc" id="L435">                categoryHierarchy.get(&quot;bottomCategoryId&quot;),</span>
+<span class="fc" id="L436">                getTagsByBook(book.getBookId()),</span>
+                thumbnailUrl,
+                detailUrl,
+                false,
+                false
+        );
+
+<span class="fc" id="L443">        return Optional.of(bookUpdateResponseDto);</span>
+    }
+
+    /**
+     * 특정 도서의 리뷰 정보를 조회하여 반환
+     */
+    private List&lt;ReviewResponseDto&gt; getReviewsByBook(Long bookId) {
+<span class="fc" id="L450">        return from(qReview)</span>
+<span class="fc" id="L451">                .where(qReview.book.bookId.eq(bookId))</span>
+<span class="fc" id="L452">                .select(Projections.constructor(ReviewResponseDto.class,</span>
+                        qReview.reviewId,
+                        qReview.orderDetail.orderDetailId,
+                        qReview.member.id,
+                        qReview.book.bookId,
+                        qReview.ratingValue,
+                        qReview.title,
+                        qReview.text,
+                        qReview.imageUrl,
+                        qReview.createdAt,
+                        qReview.updatedAt
+                ))
+<span class="fc" id="L464">                .fetch();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CategoryServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.bookset.category.service.impl</a> &gt; <span class="el_source">CategoryServiceImpl.java</span></div><h1>CategoryServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.bookset.category.service.impl;
+
+import com.nhnacademy.bookstore.bookset.category.dto.request.CategoryRequestDto;
+import com.nhnacademy.bookstore.bookset.category.dto.response.CategoryIsActiveResponseDto;
+import com.nhnacademy.bookstore.bookset.category.dto.response.CategoryResponseDto;
+import com.nhnacademy.bookstore.bookset.category.entity.Category;
+import com.nhnacademy.bookstore.bookset.category.mapper.CategoryMapper;
+import com.nhnacademy.bookstore.bookset.category.repository.CategoryRepository;
+import com.nhnacademy.bookstore.bookset.category.service.CategoryService;
+import com.nhnacademy.bookstore.common.error.exception.bookset.category.CannotDeactivateCategoryException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.category.CategoryNotFoundException;
+import com.nhnacademy.bookstore.common.error.exception.bookset.category.DuplicateCategoryNameException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * 카테고리 서비스 구현 클래스
+ *
+ * @author : 정세희
+ * @date : 2024-11-07
+ */
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class CategoryServiceImpl implements CategoryService {
+
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
+
+    @Transactional
+    @Override
+    public CategoryResponseDto createCategory(CategoryRequestDto request) {
+        // 중복 이름 확인
+<span class="fc" id="L40">        categoryRepository.findByName(request.categoryName()).ifPresent(existing -&gt; {</span>
+<span class="fc" id="L41">            throw new DuplicateCategoryNameException();</span>
+        });
+
+<span class="fc" id="L44">        Category parentCategory = null;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (request.parentCategoryId() != null) {</span>
+<span class="fc" id="L46">            parentCategory = categoryRepository.findById(request.parentCategoryId())</span>
+<span class="nc" id="L47">                    .orElseThrow(CategoryNotFoundException::new);</span>
+        }
+<span class="fc" id="L49">        Category category = new Category(null, parentCategory, request.categoryName(), true);</span>
+<span class="fc" id="L50">        Category savedCategory = categoryRepository.save(category);</span>
+<span class="fc" id="L51">        return categoryMapper.toCategoryResponseDto(savedCategory);</span>
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CategoryResponseDto getCategory(Long categoryId) {
+<span class="fc" id="L57">        Category category = categoryRepository.findById(categoryId)</span>
+<span class="fc" id="L58">                .orElseThrow(CategoryNotFoundException::new);</span>
+<span class="fc" id="L59">        return  categoryMapper.toCategoryResponseDto(category);</span>
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CategoryResponseDto getParentCategory(Long categoryId) {
+<span class="fc" id="L65">        Category category = categoryRepository.findById(categoryId)</span>
+<span class="fc" id="L66">                .orElseThrow(CategoryNotFoundException::new);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (category.getParentCategory() == null) {</span>
+<span class="fc" id="L68">            throw new CategoryNotFoundException();</span>
+        }
+<span class="fc" id="L70">        return categoryMapper.toCategoryResponseDto(category.getParentCategory());</span>
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CategoryResponseDto getGrandparentCategory(Long categoryId) {
+<span class="fc" id="L76">        Category category = categoryRepository.findById(categoryId)</span>
+<span class="fc" id="L77">                .orElseThrow(CategoryNotFoundException::new);</span>
+<span class="fc" id="L78">        Category parentCategory = category.getParentCategory();</span>
+<span class="fc bfc" id="L79" title="All 4 branches covered.">        if (parentCategory == null || parentCategory.getParentCategory() == null) {</span>
+<span class="fc" id="L80">            throw new CategoryNotFoundException();</span>
+        }
+<span class="fc" id="L82">        return categoryMapper.toCategoryResponseDto(parentCategory.getParentCategory());</span>
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List&lt;CategoryResponseDto&gt; getChildCategories(Long categoryId) {
+<span class="fc" id="L88">        List&lt;Category&gt; childCategories = categoryRepository.findAllByParentCategory_CategoryId(categoryId);</span>
+<span class="fc" id="L89">        return childCategories.stream()</span>
+<span class="fc" id="L90">                .map(categoryMapper::toCategoryResponseDto)</span>
+<span class="fc" id="L91">                .collect(Collectors.toList());</span>
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List&lt;CategoryResponseDto&gt; getAllActiveCategories() {
+<span class="fc" id="L97">        List&lt;Category&gt; categoryList = categoryRepository.findAllByIsActiveTrue();</span>
+<span class="fc" id="L98">        return categoryList.stream()</span>
+<span class="fc" id="L99">                .map(categoryMapper::toCategoryResponseDto)</span>
+<span class="fc" id="L100">                .collect(Collectors.toList());</span>
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page&lt;CategoryIsActiveResponseDto&gt; getAllCategoriesPage(Pageable pageable) {
+<span class="fc" id="L106">        return categoryRepository.findAll(pageable)</span>
+<span class="fc" id="L107">                .map(categoryMapper::toCategoryIsActiveResponseDto);</span>
+    }
+
+    @Override
+    public List&lt;CategoryResponseDto&gt; getTopCategories() {
+<span class="fc" id="L112">        List&lt;Category&gt; topCategoryList = categoryRepository.findTopCategories();</span>
+<span class="fc" id="L113">        return topCategoryList.stream()</span>
+<span class="fc" id="L114">                .map(categoryMapper::toCategoryResponseDto)</span>
+<span class="fc" id="L115">                .collect(Collectors.toList());</span>
+    }
+
+    @Transactional
+    @Override
+    public CategoryResponseDto updateCategory(Long categoryId, CategoryRequestDto request) {
+<span class="fc" id="L121">        Category category = categoryRepository.findById(categoryId)</span>
+<span class="fc" id="L122">                .orElseThrow(CategoryNotFoundException::new);</span>
+
+        // 이름 중복 확인 (현재 카테고리를 제외하고)
+<span class="fc" id="L125">        categoryRepository.findByName(request.categoryName()).ifPresent(existing -&gt; {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">            if (!existing.getCategoryId().equals(categoryId)) {</span>
+<span class="fc" id="L127">                throw new DuplicateCategoryNameException();</span>
+            }
+<span class="fc" id="L129">        });</span>
+
+<span class="fc" id="L131">        Category parentCategory = null;</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (request.parentCategoryId() != null) {</span>
+<span class="fc" id="L133">            parentCategory = categoryRepository.findById(request.parentCategoryId())</span>
+<span class="nc" id="L134">                    .orElseThrow(CategoryNotFoundException::new);</span>
+        }
+<span class="fc" id="L136">        category.updateName(request.categoryName());</span>
+<span class="fc" id="L137">        category.updateParentCategory(parentCategory);</span>
+<span class="fc" id="L138">        return categoryMapper.toCategoryResponseDto(category);</span>
+    }
+
+    @Transactional
+    @Override
+    public Long deactivateCategory(Long categoryId) {
+
+        // 하위 카테고리가 있는지 확인
+<span class="fc" id="L146">        boolean hasChildCategories = categoryRepository.existsByParentCategory_CategoryId(categoryId);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        if (hasChildCategories) {</span>
+<span class="fc" id="L148">            throw new CannotDeactivateCategoryException();</span>
+        }
+
+<span class="fc" id="L151">        Category category = categoryRepository.findById(categoryId)</span>
+<span class="fc" id="L152">                .orElseThrow(CategoryNotFoundException::new);</span>
+<span class="fc" id="L153">        category.deactivate();</span>
+<span class="fc" id="L154">        return category.getCategoryId();</span>
+    }
+
+    @Transactional
+    @Override
+    public Long activateCategory(Long categoryId) {
+<span class="fc" id="L160">        Category category = categoryRepository.findById(categoryId)</span>
+<span class="fc" id="L161">                .orElseThrow(CategoryNotFoundException::new);</span>
+<span class="fc" id="L162">        category.activate();</span>
+<span class="fc" id="L163">        return category.getCategoryId();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PublisherRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.bookset.publisher.repository</a> &gt; <span class="el_source">PublisherRepositoryImpl.java</span></div><h1>PublisherRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.bookset.publisher.repository;
+
+import com.nhnacademy.bookstore.bookset.publisher.dto.response.PublisherResponseDto;
+import com.nhnacademy.bookstore.bookset.publisher.entity.Publisher;
+import com.nhnacademy.bookstore.bookset.publisher.entity.QPublisher;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+
+import java.util.List;
+
+
+public class PublisherRepositoryImpl extends QuerydslRepositorySupport implements PublisherRepositoryCustom {
+
+    private final EntityManager entityManager;
+<span class="fc" id="L21">    private final QPublisher publisher = QPublisher.publisher;</span>
+
+    @Autowired
+    public PublisherRepositoryImpl(EntityManager entityManager) {
+<span class="fc" id="L25">        super(Publisher.class);</span>
+<span class="fc" id="L26">        this.entityManager = entityManager;</span>
+<span class="fc" id="L27">    }</span>
+
+    @Override
+    public Page&lt;PublisherResponseDto&gt; findAllBy(Pageable pageable) {
+        // PublisherResponseDto 리스트를 조회하는 쿼리
+<span class="fc" id="L32">        JPAQuery&lt;PublisherResponseDto&gt; query = new JPAQuery&lt;&gt;(entityManager);</span>
+
+        // 정렬 조건 추가
+<span class="fc" id="L35">        query.select(Projections.constructor(PublisherResponseDto.class,</span>
+                        publisher.publisherId,
+                        publisher.name
+                ))
+<span class="fc" id="L39">                .from(publisher)</span>
+<span class="fc" id="L40">                .orderBy(publisher.publisherId.asc())  // 정렬 조건 추가</span>
+<span class="fc" id="L41">                .offset(pageable.getOffset())</span>
+<span class="fc" id="L42">                .limit(pageable.getPageSize());</span>
+
+<span class="fc" id="L44">        List&lt;PublisherResponseDto&gt; results = query.fetch();</span>
+
+        // 전체 개수를 조회하는 쿼리
+<span class="fc" id="L47">        long total = query.fetchCount();</span>
+
+<span class="fc" id="L49">        return new PageImpl&lt;&gt;(results, pageable, total);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

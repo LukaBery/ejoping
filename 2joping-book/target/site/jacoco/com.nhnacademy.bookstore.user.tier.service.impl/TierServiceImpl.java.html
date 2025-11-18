@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TierServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.tier.service.impl</a> &gt; <span class="el_source">TierServiceImpl.java</span></div><h1>TierServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.tier.service.impl;
+
+import com.nhnacademy.bookstore.common.error.enums.RedirectType;
+import com.nhnacademy.bookstore.common.error.exception.user.member.MemberNotFoundException;
+import com.nhnacademy.bookstore.user.member.entity.Member;
+import com.nhnacademy.bookstore.user.member.repository.MemberRepository;
+import com.nhnacademy.bookstore.user.tier.dto.response.MemberTierResponse;
+import com.nhnacademy.bookstore.user.tier.entity.MemberTier;
+import com.nhnacademy.bookstore.user.tier.service.TierService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * TierServiceImpl
+ * 회원의 등급 정보를 처리하는 서비스 구현체.
+ * TierService 인터페이스를 구현하며, 회원 등급 조회 로직을 제공합니다.
+ * @author Luha
+ * @since 1.0
+ */
+@Service
+@RequiredArgsConstructor
+public class TierServiceImpl implements TierService {
+
+    private final MemberRepository memberRepository;
+
+    @Transactional(readOnly = true)
+    @Override
+    public MemberTierResponse getMemberTier(long customerId) {
+<span class="fc" id="L30">        Member member = memberRepository.findById(customerId)</span>
+<span class="fc" id="L31">                .orElseThrow(() -&gt; new MemberNotFoundException(&quot;해당 멤버가 존재하지 않습니다.&quot; + customerId, RedirectType.REDIRECT, &quot;/mypage/mypage&quot;));</span>
+
+<span class="fc" id="L33">        MemberTier tier = member.getTier();</span>
+<span class="fc" id="L34">        int usage = member.getAccPurchase();</span>
+<span class="fc" id="L35">        int promotion = tier.getMaxPromotion();</span>
+<span class="fc" id="L36">        int remaining = promotion - usage;</span>
+
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if(remaining &lt;= 0) {</span>
+<span class="fc" id="L39">            remaining = 0;</span>
+        }
+<span class="fc" id="L41">        return new MemberTierResponse(usage, tier.getName(), remaining, tier.getAccRate());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

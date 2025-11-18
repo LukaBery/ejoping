@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GetAllMembersResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.dto.response</a> &gt; <span class="el_source">GetAllMembersResponse.java</span></div><h1>GetAllMembersResponse.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.dto.response;
+
+import com.nhnacademy.bookstore.user.member.entity.Member;
+import com.nhnacademy.bookstore.user.memberstatus.entity.MemberStatus;
+import com.nhnacademy.bookstore.user.tier.enums.Tier;
+
+import java.time.LocalDate;
+
+<span class="fc" id="L9">public record GetAllMembersResponse(</span>
+
+        // TODO: 전체 회원 조회
+        Long id,
+        String name,
+        String loginId,
+        String email,
+        String phone,
+        String nickname,
+        LocalDate birthday,
+        LocalDate joinDate,
+        LocalDate recentLoginDate,
+        int point,
+        int accPurchase,
+        MemberStatus statusName,
+        Tier tierName
+) {
+    public static GetAllMembersResponse from(Member member) {
+<span class="fc" id="L27">        return new GetAllMembersResponse(</span>
+<span class="fc" id="L28">                member.getId(),</span>
+<span class="fc" id="L29">                member.getName(),</span>
+<span class="fc" id="L30">                member.getLoginId(),</span>
+<span class="fc" id="L31">                member.getEmail(),</span>
+<span class="fc" id="L32">                member.getPhone(),</span>
+<span class="fc" id="L33">                member.getNickname(),</span>
+<span class="fc" id="L34">                member.getBirthday(),</span>
+<span class="fc" id="L35">                member.getJoinDate(),</span>
+<span class="fc" id="L36">                member.getRecentLoginDate(),</span>
+<span class="fc" id="L37">                member.getPoint(),</span>
+<span class="fc" id="L38">                member.getAccPurchase(),</span>
+<span class="fc" id="L39">                member.getStatus(),</span>
+<span class="fc" id="L40">                member.getTier().getName()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TagController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.bookset.tag.controller</a> &gt; <span class="el_source">TagController.java</span></div><h1>TagController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.bookset.tag.controller;
+
+import com.nhnacademy.bookstore.bookset.tag.dto.TagRequestDto;
+import com.nhnacademy.bookstore.bookset.tag.dto.TagResponseDto;
+import com.nhnacademy.bookstore.bookset.tag.service.TagService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 태그 Controller
+ *
+ * @author : 박채연
+ * @date : 2024-10-28
+ */
+@Tag(name = &quot;Tag&quot;, description = &quot;태그 API&quot;)
+@Validated
+@RestController
+@RequiredArgsConstructor
+
+public class TagController {
+    private final TagService tagService;
+
+    /**
+     * 새로운 태그를 생성하는 컨트롤러입니다.
+     *
+     * @param dto 태그 요청 데이터
+     * @return 생성 성공 상태
+     */
+    @Operation(summary = &quot;create a new tag&quot;, description = &quot;새로운 태그를 등록합니다.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;태그 생성 성공&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;잘못된 요청 데이터&quot;)
+    @PostMapping(&quot;api/v1/tags&quot;)
+    public ResponseEntity&lt;Void&gt; createTag(@RequestBody @Valid TagRequestDto dto) {
+<span class="fc" id="L44">        tagService.createTag(dto);</span>
+<span class="fc" id="L45">        return ResponseEntity.status(HttpStatus.CREATED).build();</span>
+    }
+
+    /**
+     * 특정 책에 태그를 할당하는 컨트롤러입니다.
+     *
+     * @param tagId 태그 ID
+     * @param bookId 도서 ID
+     * @return 할당된 태그 정보
+     */
+
+
+    @Operation(summary = &quot;Assign a tag to a book&quot;, description = &quot;특정 책에 태그를 할당합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;태그 할당 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;도서나 태그를 찾을 수 없음&quot;)
+    @ApiResponse(responseCode = &quot;409&quot;, description = &quot;태그가 이미 도서에 할당됨&quot;)
+    @PostMapping(&quot;api/v1/book/{book-id}/tags&quot;)
+    public ResponseEntity&lt;TagResponseDto&gt; assignTagToBook(
+            @PathVariable(&quot;book-id&quot;) @Positive Long bookId,
+            @RequestParam @Positive Long tagId) {
+<span class="fc" id="L65">        TagResponseDto assignedTag = tagService.assignedTagToBook(tagId, bookId);</span>
+<span class="fc" id="L66">        return ResponseEntity.ok(assignedTag);</span>
+    }
+
+    /**
+     * 특정 태그를 조회하는 컨트롤러입니다.
+     *
+     * @param tagId 태그 ID
+     * @return 태그 정보
+     */
+    @Operation(summary = &quot;get a tag&quot;, description = &quot;특정 태그를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;태그 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;태그를 찾을 수 없음&quot;)
+    @GetMapping(&quot;api/v1/tags/{tag-id}&quot;)
+    public ResponseEntity&lt;TagResponseDto&gt; getTag(@PathVariable(&quot;tag-id&quot;) @Positive Long tagId) {
+<span class="fc" id="L80">        TagResponseDto tag = tagService.getTag(tagId);</span>
+<span class="fc" id="L81">        return ResponseEntity.ok(tag);</span>
+    }
+
+    /**
+     * 모든 태그를 조회하는 컨트롤러입니다.
+     *
+     * @return 모든 태그 정보
+     */
+    @Operation(summary = &quot;get all tags&quot;, description = &quot;모든 태그를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;모든 태그 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;서버 내부 오류&quot;)
+    @GetMapping(&quot;api/v1/tags&quot;)
+    public ResponseEntity&lt;List&lt;TagResponseDto&gt;&gt; getAllTags() {
+<span class="fc" id="L94">        List&lt;TagResponseDto&gt; allTags = tagService.getAllTags();</span>
+
+<span class="fc" id="L96">        return ResponseEntity.ok(allTags);</span>
+    }
+
+    /**
+     * 특정 태그를 수정하는 컨트롤러입니다.
+     *
+     * @param tagId 태그 ID
+     * @param dto 수정할 태그 데이터
+     * @return 수정된 태그 정보
+     */
+
+    @Operation(summary = &quot;Update a tag&quot;, description = &quot;특정 태그의 정보를 수정합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;태그 수정 성공&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;잘못된 요청 데이터&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;태그를 찾을 수 없음&quot;)
+    @PutMapping(&quot;api/v1/tags/{tag-id}&quot;)
+    public ResponseEntity&lt;TagResponseDto&gt; updateTag(@PathVariable (&quot;tag-id&quot;) @Positive Long tagId, @RequestBody @Valid TagRequestDto dto) {
+<span class="fc" id="L113">        TagResponseDto updatedTag = tagService.updateTag(tagId, dto);</span>
+<span class="fc" id="L114">        return ResponseEntity.ok(updatedTag);</span>
+    }
+
+    /**
+     * 특정 태그를 삭제하는 컨트롤러입니다.
+     *
+     * @param tagId 태그 ID
+     * @return 삭제 성공 상태
+     */
+    @Operation(summary = &quot;Delete a tag&quot;, description = &quot;태그를 삭제합니다.&quot;)
+    @ApiResponse(responseCode = &quot;204&quot;, description = &quot;태그 삭제 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;태그를 찾을 수 없음&quot;)
+    @DeleteMapping(&quot;api/v1/tags/{tag-id}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteTag(@PathVariable (&quot;tag-id&quot;) @Positive Long tagId) {
+<span class="fc" id="L128">        tagService.deleteById(tagId);</span>
+<span class="fc" id="L129">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

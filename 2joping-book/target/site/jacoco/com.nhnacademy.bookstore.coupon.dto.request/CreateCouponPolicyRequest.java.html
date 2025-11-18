@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreateCouponPolicyRequest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.coupon.dto.request</a> &gt; <span class="el_source">CreateCouponPolicyRequest.java</span></div><h1>CreateCouponPolicyRequest.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.coupon.dto.request;
+
+import com.nhnacademy.bookstore.coupon.enums.DiscountType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+<span class="fc" id="L10">public record CreateCouponPolicyRequest(</span>
+
+        @NotBlank(message = &quot;정책 이름이 존재하지 않습니다.&quot;)
+        String name,
+
+        @Enumerated(EnumType.STRING)
+        @NotNull(message = &quot;할인 타입이 존재하지 않습니다.&quot;)
+        DiscountType discountType,
+
+        @NotNull(message = &quot;할인 값이 존재하지 않습니다.&quot;)
+        @Positive(message = &quot;할인 값은 0보다 커야 합니다.&quot;)
+        Integer discountValue,
+
+        @NotNull(message = &quot;사용 기한이 존재하지 않습니다.&quot;)
+        @Positive(message = &quot;사용 기한은 0보다 커야 합니다.&quot;)
+        Integer usageLimit,
+
+        @NotNull(message = &quot;기간이 존재하지 않습니다.&quot;)
+        @Positive(message = &quot;기간은 0보다 커야 합니다.&quot;)
+        Integer duration,
+
+        @NotBlank(message = &quot;정책 상세가 존재하지 않습니다.&quot;)
+        String detail,
+
+        @NotNull(message = &quot;최대 할인 금액이 존재하지 않습니다.&quot;)
+        @Positive(message = &quot;최대 할인 금액은 0보다 커야 합니다.&quot;)
+        Integer maxDiscount,
+
+        Boolean isActive
+) {
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

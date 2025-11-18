@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.controller</a> &gt; <span class="el_source">MemberController.java</span></div><h1>MemberController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.controller;
+
+
+
+import com.nhnacademy.bookstore.user.member.dto.request.MemberCreateRequestDto;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberUpdateRequesteDto;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberWithdrawRequesteDto;
+import com.nhnacademy.bookstore.user.member.dto.response.*;
+import com.nhnacademy.bookstore.user.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 회원 정보 Crud 컨트롤러
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@Tag(name = &quot;회원 관리 API&quot;, description = &quot;회원 정보 생성 및 관리 API&quot;)
+@RestController
+@RequiredArgsConstructor
+<span class="fc" id="L31">@Slf4j</span>
+@RequestMapping(&quot;/api/v1/members&quot;)
+public class MemberController {
+
+    private final MemberService memberService;
+
+    /**
+     * 신규 회원 생성
+     *
+     * @param requestDto 회원 가입 정보
+     * @return 생성된 회원 정보 (닉네임, 회원 가입 축하 메세지)
+     */
+    @Operation(summary = &quot;신규 회원 생성&quot;, description = &quot;새로운 회원을 등록합니다.&quot;)
+    @PostMapping
+    public ResponseEntity&lt;MemberCreateSuccessResponseDto&gt; addMember(
+            @Parameter(description = &quot;회원 가입 정보&quot;, required = true) @Valid @RequestBody MemberCreateRequestDto requestDto) {
+
+
+<span class="fc" id="L49">        MemberCreateSuccessResponseDto response = memberService.registerNewMember(requestDto);</span>
+
+
+<span class="fc" id="L52">        return ResponseEntity.ok(response);</span>
+
+    }
+
+    /**
+     * 회원 정보 수정
+     *
+     * @param customerId 요청 헤더에서 전달받은 회원 고유 ID
+     * @param requestDto 수정할 회원 정보 데이터
+     * @return 수정된 회원 정보
+     */
+    @Operation(
+            summary = &quot;회원 정보 수정&quot;,
+            description = &quot;기존 회원의 정보를 업데이트합니다. 수정할 데이터는 JSON 형식으로 요청 본문에 포함되어야 합니다.&quot;
+    )
+    @PutMapping(&quot;/update&quot;)
+    public ResponseEntity&lt;MemberUpdateResponseDto&gt; updateMember(
+            @RequestHeader(&quot;X-Customer-Id&quot;) String customerId,
+            @Valid @RequestBody MemberUpdateRequesteDto requestDto) {
+
+<span class="fc" id="L72">        MemberUpdateResponseDto responseDto = memberService.updateMember(Long.parseLong(customerId), requestDto);</span>
+
+<span class="fc" id="L74">        return ResponseEntity.ok(responseDto);</span>
+
+    }
+
+    /**
+     * 회원 정보 조회
+     *
+     * @param customerId 요청 헤더에서 전달받은 회원 고유 ID
+     * @return 회원 정보 (이름, 성별, 생년월일, 연락처, 이메일, 닉네임 등)
+     */
+    @Operation(
+            summary = &quot;회원 정보 조회&quot;,
+            description = &quot;회원의 기본 정보를 조회합니다. 요청 헤더에 'X-Customer-Id'로 회원 ID를 전달해야 합니다.&quot;
+    )
+    @GetMapping
+    public ResponseEntity&lt;MemberUpdateResponseDto&gt; memberInfo(
+            @RequestHeader(&quot;X-Customer-Id&quot;) String customerId) {
+
+<span class="fc" id="L92">        MemberUpdateResponseDto responseDto = memberService.getMemberInfo(Long.parseLong(customerId));</span>
+
+<span class="fc" id="L94">        return ResponseEntity.ok(responseDto);</span>
+
+    }
+
+    @PutMapping(&quot;/withdraw&quot;)
+    public ResponseEntity&lt;MemberWithdrawResponseDto&gt; withdrawMember(
+            @RequestHeader(&quot;X-Customer-Id&quot;) String customerId,
+            @Valid @RequestBody MemberWithdrawRequesteDto requestDto) {
+
+<span class="fc" id="L103">        MemberWithdrawResponseDto responseDto = memberService.withdrawMember(Long.parseLong(customerId), requestDto);</span>
+
+<span class="fc" id="L105">        return ResponseEntity.ok(responseDto);</span>
+
+    }
+
+    @GetMapping(&quot;/details&quot;)
+    public ResponseEntity&lt;List&lt;GetAllMembersResponse&gt;&gt; getAllMembers(
+            @RequestParam(name = &quot;page&quot;, defaultValue = &quot;0&quot;) @PositiveOrZero final int page
+    ) {
+<span class="fc" id="L113">        List&lt;GetAllMembersResponse&gt; responses = memberService.getAllMembers(page);</span>
+<span class="fc" id="L114">        return ResponseEntity.ok(responses);</span>
+    }
+
+    /**
+     * 회원의 포인트 조회
+     *
+     * @author 이승준
+     * @param customerId 회원 아이디
+     * @return 회원이 가진 포인트
+     */
+    @Operation(
+            summary = &quot;회원이 가진 포인트를 조회&quot;,
+            description = &quot;회원이 가진 포인트를 조회한다. 활용시 X-Customer-Id 헤더 추가 필요&quot;
+    )
+    @GetMapping(&quot;/points&quot;)
+    public ResponseEntity&lt;MemberPointResponse&gt; getPoint(@RequestHeader(&quot;X-Customer-Id&quot;) Long customerId) {
+<span class="fc" id="L130">        MemberPointResponse response = memberService.getPointsOfMember(customerId);</span>
+<span class="fc" id="L131">        return ResponseEntity.ok(response);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

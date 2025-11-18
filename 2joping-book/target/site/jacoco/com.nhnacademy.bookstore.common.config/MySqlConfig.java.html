@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MySqlConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.common.config</a> &gt; <span class="el_source">MySqlConfig.java</span></div><h1>MySqlConfig.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.common.config;
+
+
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import javax.sql.DataSource;
+import java.time.Duration;
+
+@Configuration
+@RequiredArgsConstructor
+public class MySqlConfig {
+
+<span class="nc" id="L17">    private static final int CORE_COUNT = Runtime.getRuntime().availableProcessors();</span>
+    private static final int MAX_THREADS = 200;
+
+    // `application.properties`에서 MySQL 연결 정보 가져오기
+    @Value(&quot;${spring.datasource.url}&quot;)
+    private String mysqlUrl;
+
+    @Value(&quot;${spring.datasource.username}&quot;)
+    private String mysqlUsername;
+
+    @Value(&quot;${spring.datasource.password}&quot;)
+    private String mysqlPassword;
+
+    @Bean
+    public DataSource dataSource() {
+<span class="nc" id="L32">        BasicDataSource dataSource = new BasicDataSource();</span>
+
+        // MySQL 연결 정보 설정
+<span class="nc" id="L35">        dataSource.setDriverClassName(&quot;com.mysql.cj.jdbc.Driver&quot;);</span>
+<span class="nc" id="L36">        dataSource.setUrl(mysqlUrl);</span>
+<span class="nc" id="L37">        dataSource.setUsername(mysqlUsername);</span>
+<span class="nc" id="L38">        dataSource.setPassword(mysqlPassword);</span>
+
+        // DBCP2 커넥션 풀 설정
+<span class="nc" id="L41">        configureConnectionPool(dataSource);</span>
+<span class="nc" id="L42">        configureConnectionValidation(dataSource);</span>
+<span class="nc" id="L43">        configureConnectionManagement(dataSource);</span>
+
+<span class="nc" id="L45">        return dataSource;</span>
+    }
+
+
+    private void configureConnectionPool(BasicDataSource dataSource) {
+<span class="nc" id="L50">        dataSource.setInitialSize(CORE_COUNT * 2);</span>
+<span class="nc" id="L51">        dataSource.setMaxTotal(MAX_THREADS);</span>
+<span class="nc" id="L52">        dataSource.setMaxIdle(MAX_THREADS);</span>
+<span class="nc" id="L53">        dataSource.setMinIdle(MAX_THREADS / 10);</span>
+<span class="nc" id="L54">    }</span>
+
+    private void configureConnectionValidation(BasicDataSource dataSource) {
+<span class="nc" id="L57">        dataSource.setTestOnBorrow(true);</span>
+<span class="nc" id="L58">        dataSource.setTestOnReturn(true);</span>
+<span class="nc" id="L59">        dataSource.setTestWhileIdle(true);</span>
+
+<span class="nc" id="L61">        dataSource.setValidationQuery(&quot;SELECT 1&quot;);</span>
+<span class="nc" id="L62">        dataSource.setValidationQueryTimeout(Duration.ofSeconds(3));</span>
+<span class="nc" id="L63">    }</span>
+
+    private void configureConnectionManagement(BasicDataSource dataSource) {
+<span class="nc" id="L66">        dataSource.setMaxWait(Duration.ofSeconds(10));</span>
+<span class="nc" id="L67">        dataSource.setRemoveAbandonedTimeout(Duration.ofSeconds(30));</span>
+<span class="nc" id="L68">        dataSource.setRemoveAbandonedOnBorrow(true);</span>
+
+<span class="nc" id="L70">        dataSource.setTimeBetweenEvictionRunsMillis(300000); // 5분</span>
+<span class="nc" id="L71">        dataSource.setMinEvictableIdle(Duration.ofMinutes(10));</span>
+<span class="nc" id="L72">    }</span>
+
+    private int calculateOptimalMaxConnections() {
+<span class="nc" id="L75">        int baseConnections = (CORE_COUNT * 4) + 1;</span>
+<span class="nc" id="L76">        return Math.min(baseConnections + 2, 100);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

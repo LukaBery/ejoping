@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberCouponServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.coupon.service.impl</a> &gt; <span class="el_source">MemberCouponServiceImpl.java</span></div><h1>MemberCouponServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.coupon.service.impl;
+
+import com.nhnacademy.bookstore.coupon.dto.response.MemberCouponResponseDto;
+import com.nhnacademy.bookstore.coupon.dto.response.OrderCouponResponse;
+import com.nhnacademy.bookstore.coupon.entity.Coupon;
+import com.nhnacademy.bookstore.coupon.entity.member.MemberCoupon;
+import com.nhnacademy.bookstore.coupon.repository.coupon.CouponRepository;
+import com.nhnacademy.bookstore.coupon.repository.member.MemberCouponRepository;
+import com.nhnacademy.bookstore.coupon.service.MemberCouponService;
+import com.nhnacademy.bookstore.user.member.entity.Member;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * MemberCouponServiceImpl
+ * 이 클래스는 회원이 보유한 쿠폰을 조회하는 비즈니스 로직을 구현하는 서비스 클래스입니다.
+ * 특정 회원의 모든 쿠폰을 조회하는 기능을 제공합니다.
+ *
+ * @since 1.0
+ * @author Luha
+ */
+@Service
+@RequiredArgsConstructor
+public class MemberCouponServiceImpl implements MemberCouponService {
+
+    private final MemberCouponRepository memberCouponRepository;
+    private final CouponRepository couponRepository;
+
+    /**
+     * 특정 회원이 보유한 모든 쿠폰을 조회하여 MemberCouponResponseDto 목록으로 반환합니다.
+     *
+     * @param customerId 조회할 회원의 ID
+     * @return 회원이 보유한 쿠폰 정보를 담은 MemberCouponResponseDto 목록
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List&lt;MemberCouponResponseDto&gt; getAllMemberCoupons(long customerId) {
+
+<span class="fc" id="L44">        return memberCouponRepository.getAllMemberCoupons(customerId);</span>
+    }
+
+    @Override
+    public List&lt;MemberCouponResponseDto&gt; getAllMemberUsedCoupons(long customerId) {
+
+<span class="fc" id="L50">        return memberCouponRepository.getExpiredOrUsedMemberCoupons(customerId);</span>
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List&lt;OrderCouponResponse&gt; getAllMemberOrderCoupons(long customerId) {
+
+<span class="fc" id="L57">        return memberCouponRepository.getAllMemberOrderCoupons(customerId);</span>
+    }
+
+    @Override
+    public boolean saveWelcomeCoupon(Member member) {
+
+<span class="fc" id="L63">        Coupon welcomeCoupon = couponRepository.findByName(&quot;WELCOME 쿠폰&quot;);</span>
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (welcomeCoupon == null) {</span>
+<span class="fc" id="L66">            throw new IllegalArgumentException(&quot;WELCOME 쿠폰이 존재하지 않습니다.&quot;);</span>
+        }
+
+<span class="fc" id="L69">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="fc" id="L70">        LocalDateTime duration = now.plusDays(welcomeCoupon.getCouponPolicy().getDuration());</span>
+
+
+<span class="fc" id="L73">        MemberCoupon memberCoupon = MemberCoupon.saveMemberCoupon(welcomeCoupon, member, now, duration);</span>
+
+<span class="fc" id="L75">        memberCouponRepository.save(memberCoupon);</span>
+
+<span class="fc" id="L77">        return true;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

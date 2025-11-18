@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberAddressRequestDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.dto.request</a> &gt; <span class="el_source">MemberAddressRequestDto.java</span></div><h1>MemberAddressRequestDto.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.dto.request;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+
+import java.io.Serializable;
+
+
+<span class="fc" id="L12">public record MemberAddressRequestDto(</span>
+
+        @NotBlank(message = &quot;우편번호는 필수 입력사항입니다.&quot;)
+        @Pattern(regexp = &quot;\\d{5}&quot;, message = &quot;우편번호는 5자리 숫자여야 합니다.&quot;)
+        String postalCode,
+
+        @NotBlank(message = &quot;도로명 주소는 필수 입력사항입니다.&quot;)
+        @Size(max = 100, message = &quot;도로명 주소는 최대 100자까지 입력 가능합니다.&quot;)
+        String roadAddress,
+
+        @Size(max = 100, message = &quot;상세 주소는 최대 100자까지 입력 가능합니다.&quot;)
+        String detailAddress,
+
+        @Size(max = 50, message = &quot;주소 별칭은 최대 50자까지 입력 가능합니다.&quot;)
+        String addressAlias,
+
+        @NotNull(message = &quot;기본 주소 설정 여부는 필수 입력사항입니다.&quot;)
+        boolean defaultAddress,
+
+        @NotBlank(message = &quot;수신인 정보는 필수 입력사항입니다.&quot;)
+        @Size(max = 20, message = &quot;수신인 이름은 최대 20자까지 입력 가능합니다.&quot;)
+        String receiver
+) implements Serializable {}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

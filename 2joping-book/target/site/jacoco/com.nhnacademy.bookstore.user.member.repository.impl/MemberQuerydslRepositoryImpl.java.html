@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberQuerydslRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.user.member.repository.impl</a> &gt; <span class="el_source">MemberQuerydslRepositoryImpl.java</span></div><h1>MemberQuerydslRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.user.member.repository.impl;
+
+import com.nhnacademy.bookstore.common.error.enums.RedirectType;
+import com.nhnacademy.bookstore.common.error.exception.user.member.status.MemberNothingToUpdateException;
+import com.nhnacademy.bookstore.user.member.dto.request.MemberUpdateRequesteDto;
+import com.nhnacademy.bookstore.user.member.dto.response.MemberUpdateResponseDto;
+import com.nhnacademy.bookstore.user.member.entity.QMember;
+import com.nhnacademy.bookstore.user.member.repository.MemberQuerydslRepository;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+/**
+ * 회원 관련 QueryDSL 기반의 커스텀 Repository 구현체입니다.
+ * &lt;p&gt;회원 정보 업데이트 및 조회 기능을 제공합니다.&lt;/p&gt;
+ *
+ * @author Luha
+ * @since 1.0
+ */
+@Repository
+@RequiredArgsConstructor
+public class MemberQuerydslRepositoryImpl implements MemberQuerydslRepository {
+
+    private final JPAQueryFactory queryFactory;
+    private final EntityManager entityManager;
+
+    /**
+     * 회원 정보를 업데이트합니다.
+     * &lt;p&gt;전화번호, 이메일, 닉네임 중 하나라도 변경 사항이 있어야 업데이트를 실행합니다.&lt;/p&gt;
+     *
+     * @param dto 수정할 회원 정보 데이터
+     * @param customerId 수정할 회원의 고유 ID
+     * @return 업데이트된 회원 정보를 담은 DTO
+     * @throws MemberNothingToUpdateException 업데이트할 데이터가 없는 경우 발생
+     */
+    @Transactional
+    @Override
+    public MemberUpdateResponseDto updateMemberDetails(MemberUpdateRequesteDto dto, long customerId) {
+<span class="fc" id="L43">        JPAUpdateClause updateClause = new JPAUpdateClause(entityManager, QMember.member);</span>
+
+<span class="fc" id="L45">        boolean isUpdated = false;</span>
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (dto.phone() != null) {</span>
+<span class="fc" id="L48">            updateClause.set(QMember.member.phone, dto.phone());</span>
+<span class="fc" id="L49">            isUpdated = true;</span>
+        }
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        if (dto.email() != null) {</span>
+<span class="fc" id="L52">            updateClause.set(QMember.member.email, dto.email());</span>
+<span class="fc" id="L53">            isUpdated = true;</span>
+        }
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (dto.nickName() != null) {</span>
+<span class="fc" id="L56">            updateClause.set(QMember.member.nickname, dto.nickName());</span>
+<span class="fc" id="L57">            isUpdated = true;</span>
+        }
+
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (!isUpdated) {</span>
+<span class="fc" id="L61">            throw new MemberNothingToUpdateException(&quot;업데이트할 데이터가 없습니다.&quot;, RedirectType.REDIRECT, &quot;/mypage/edit-profile&quot;);</span>
+        }
+
+<span class="fc" id="L64">        updateClause.where(QMember.member.id.eq(customerId)).execute();</span>
+
+        // Fetch updated data
+<span class="fc" id="L67">        return queryFactory</span>
+<span class="fc" id="L68">                .select(Projections.constructor(MemberUpdateResponseDto.class,</span>
+                        QMember.member.name,
+                        QMember.member.gender,
+                        QMember.member.birthday,
+                        QMember.member.phone,
+                        QMember.member.email,
+                        QMember.member.nickname
+                ))
+<span class="fc" id="L76">                .from(QMember.member)</span>
+<span class="fc" id="L77">                .where(QMember.member.id.eq(customerId))</span>
+<span class="fc" id="L78">                .fetchOne();</span>
+    }
+
+    /**
+     * 회원 정보를 조회합니다.
+     *
+     * @param customerId 조회할 회원의 고유 ID
+     * @return 회원 정보를 담은 DTO
+     */
+    @Override
+    public MemberUpdateResponseDto getMemberInfo(long customerId) {
+<span class="fc" id="L89">        return queryFactory</span>
+<span class="fc" id="L90">                .select(Projections.constructor(MemberUpdateResponseDto.class,</span>
+                        QMember.member.name,
+                        QMember.member.gender,
+                        QMember.member.birthday,
+                        QMember.member.phone,
+                        QMember.member.email,
+                        QMember.member.nickname
+                ))
+<span class="fc" id="L98">                .from(QMember.member)</span>
+<span class="fc" id="L99">                .where(QMember.member.id.eq(customerId))</span>
+<span class="fc" id="L100">                .fetchOne();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

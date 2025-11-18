@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarrierServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.shipment.service.impl</a> &gt; <span class="el_source">CarrierServiceImpl.java</span></div><h1>CarrierServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.shipment.service.impl;
+
+import com.nhnacademy.bookstore.common.error.exception.shipment.CarrierNotFoundException;
+import com.nhnacademy.bookstore.shipment.dto.request.CarrierRequestDto;
+import com.nhnacademy.bookstore.shipment.dto.response.CarrierResponseDto;
+import com.nhnacademy.bookstore.shipment.entity.Carrier;
+import com.nhnacademy.bookstore.shipment.mapper.CarrierMapper;
+import com.nhnacademy.bookstore.shipment.repository.CarrierRepository;
+import com.nhnacademy.bookstore.shipment.service.CarrierService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * CarrierService 구현체 클래스.
+ * 배송 업체의 생성, 조회, 수정 및 삭제 기능을 제공합니다.
+ *
+ * @author 양준하
+ */
+@Service
+@RequiredArgsConstructor
+public class CarrierServiceImpl implements CarrierService {
+
+    private final CarrierRepository carrierRepository;
+    private final CarrierMapper carrierMapper;
+
+    /**
+     * 새로운 배송 업체를 생성하는 메서드입니다.
+     *
+     * @param requestDto 생성할 배송 업체 정보를 담은 DTO
+     * @return 생성된 배송 업체의 정보를 포함한 CarrierResponseDto
+     */
+    @Override
+    @Transactional
+    public CarrierResponseDto createCarrier(CarrierRequestDto requestDto) {
+<span class="fc" id="L39">        Carrier carrier = new Carrier(</span>
+                null,
+<span class="fc" id="L41">                requestDto.name(),</span>
+<span class="fc" id="L42">                requestDto.contactNumber(),</span>
+<span class="fc" id="L43">                requestDto.contactEmail(),</span>
+<span class="fc" id="L44">                requestDto.websiteUrl()</span>
+        );
+
+<span class="fc" id="L47">        Carrier savedCarrier = carrierRepository.save(carrier);</span>
+<span class="fc" id="L48">        return carrierMapper.toCarrierResponseDto(savedCarrier);</span>
+    }
+
+    /**
+     * 특정 배송 업체를 ID로 조회하는 메서드입니다.
+     *
+     * @param carrierId 조회할 배송 업체의 ID
+     * @return 조회된 배송 업체의 정보를 포함한 CarrierResponseDto
+     * @throws CarrierNotFoundException 배송 업체를 찾을 수 없을 경우 발생
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public CarrierResponseDto getCarrier(Long carrierId) {
+<span class="fc" id="L61">        Carrier carrier = carrierRepository.findById(carrierId)</span>
+<span class="fc" id="L62">                .orElseThrow(CarrierNotFoundException::new);</span>
+<span class="fc" id="L63">        return carrierMapper.toCarrierResponseDto(carrier);</span>
+    }
+
+    /**
+     * 모든 배송 업체를 조회하는 메서드입니다.
+     *
+     * @return 모든 배송 업체 목록을 포함한 CarrierResponseDto 리스트
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;CarrierResponseDto&gt; getAllCarriers() {
+<span class="fc" id="L74">        List&lt;Carrier&gt; carriers = carrierRepository.findAll();</span>
+<span class="fc" id="L75">        return carriers.stream()</span>
+<span class="fc" id="L76">                .map(carrierMapper::toCarrierResponseDto)</span>
+<span class="fc" id="L77">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * 특정 배송 업체를 수정하는 메서드입니다.
+     *
+     * @param carrierId  수정할 배송 업체의 ID
+     * @param requestDto 수정할 배송 업체 정보를 담은 DTO
+     * @return 수정된 배송 업체의 정보를 포함한 CarrierResponseDto
+     * @throws CarrierNotFoundException 배송 업체를 찾을 수 없을 경우 발생
+     */
+    @Override
+    @Transactional
+    public CarrierResponseDto updateCarrier(Long carrierId, CarrierRequestDto requestDto) {
+<span class="fc" id="L91">        Carrier carrier = carrierRepository.findById(carrierId)</span>
+<span class="fc" id="L92">                .orElseThrow(CarrierNotFoundException::new);</span>
+<span class="fc" id="L93">        carrier.toEntity(requestDto);</span>
+<span class="fc" id="L94">        Carrier updatedCarrier = carrierRepository.save(carrier);</span>
+<span class="fc" id="L95">        return carrierMapper.toCarrierResponseDto(updatedCarrier);</span>
+    }
+
+    /**
+     * 특정 배송 업체를 삭제하는 메서드입니다.
+     *
+     * @param carrierId 삭제할 배송 업체의 ID
+     * @throws CarrierNotFoundException 배송 업체를 찾을 수 없을 경우 발생
+     */
+    @Override
+    @Transactional
+    public void deleteCarrier(Long carrierId) {
+<span class="fc" id="L107">        Carrier carrier = carrierRepository.findById(carrierId)</span>
+<span class="fc" id="L108">                .orElseThrow(CarrierNotFoundException::new);</span>
+<span class="fc" id="L109">        carrierRepository.delete(carrier);</span>
+<span class="fc" id="L110">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

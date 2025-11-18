@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarrierController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.shipment.controller</a> &gt; <span class="el_source">CarrierController.java</span></div><h1>CarrierController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.shipment.controller;
+
+import com.nhnacademy.bookstore.common.annotation.ValidPathVariable;
+import com.nhnacademy.bookstore.shipment.dto.request.CarrierRequestDto;
+import com.nhnacademy.bookstore.shipment.dto.response.CarrierResponseDto;
+import com.nhnacademy.bookstore.shipment.service.CarrierService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 배송 업체 관리 기능을 제공하는 CarrierController 클래스.
+ * 새로운 배송 업체를 생성, 조회, 수정 및 삭제하는 기능을 제공합니다.
+ *
+ * &lt;p&gt;API 경로: /bookstore/carriers&lt;/p&gt;
+ *
+ * @author 양준하
+ */
+@Tag(name = &quot;Carrier&quot;, description = &quot;배송 업체 API&quot;)
+@RestController
+@RequestMapping(&quot;/api/v1/bookstore/carriers&quot;)
+@RequiredArgsConstructor
+public class CarrierController {
+
+    private final CarrierService carrierService;
+
+    /**
+     * 새로운 배송 업체를 생성하는 메서드.
+     *
+     * @param requestDto 생성할 배송 업체 정보를 담은 DTO
+     * @return 생성된 배송 업체 정보를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 업체 생성&quot;, description = &quot;새로운 배송 업체를 생성합니다.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;배송 업체 생성 성공&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;잘못된 요청 데이터&quot;)
+    @PostMapping
+    public ResponseEntity&lt;CarrierResponseDto&gt; createCarrier(@Valid @RequestBody CarrierRequestDto requestDto) {
+<span class="fc" id="L45">        CarrierResponseDto responseDto = carrierService.createCarrier(requestDto);</span>
+<span class="fc" id="L46">        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);</span>
+    }
+
+    /**
+     * 모든 배송 업체를 조회하는 메서드.
+     *
+     * @return 모든 배송 업체 목록을 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;모든 배송 업체 조회&quot;, description = &quot;모든 배송 업체를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 업체 조회 성공&quot;)
+    @GetMapping
+    public ResponseEntity&lt;List&lt;CarrierResponseDto&gt;&gt; getAllCarriers() {
+<span class="fc" id="L58">        List&lt;CarrierResponseDto&gt; responseDtos = carrierService.getAllCarriers();</span>
+<span class="fc" id="L59">        return ResponseEntity.ok(responseDtos);</span>
+    }
+
+    /**
+     * 특정 배송 업체를 조회하는 메서드.
+     *
+     * @param carrierId 조회할 배송 업체의 ID
+     * @return 조회된 배송 업체 정보를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 업체 조회&quot;, description = &quot;특정 배송 업체를 조회합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 업체 조회 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;배송 업체를 찾을 수 없음&quot;)
+    @GetMapping(&quot;/{carrierId}&quot;)
+    public ResponseEntity&lt;CarrierResponseDto&gt; getCarrier(@PathVariable @ValidPathVariable Long carrierId) {
+<span class="fc" id="L73">        CarrierResponseDto responseDto = carrierService.getCarrier(carrierId);</span>
+<span class="fc" id="L74">        return ResponseEntity.ok(responseDto);</span>
+    }
+
+    /**
+     * 특정 배송 업체를 수정하는 메서드.
+     *
+     * @param carrierId 수정할 배송 업체의 ID
+     * @param requestDto 수정할 배송 업체 정보를 담은 DTO
+     * @return 수정된 배송 업체 정보를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 업체 수정&quot;, description = &quot;특정 배송 업체를 수정합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 업체 수정 성공&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;잘못된 요청 데이터&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;배송 업체를 찾을 수 없음&quot;)
+    @PutMapping(&quot;/{carrierId}&quot;)
+    public ResponseEntity&lt;CarrierResponseDto&gt; updateCarrier(
+            @PathVariable @ValidPathVariable Long carrierId,
+            @Valid @RequestBody CarrierRequestDto requestDto) {
+<span class="fc" id="L92">        CarrierResponseDto responseDto = carrierService.updateCarrier(carrierId, requestDto);</span>
+<span class="fc" id="L93">        return ResponseEntity.ok(responseDto);</span>
+    }
+
+    /**
+     * 특정 배송 업체를 삭제하는 메서드.
+     *
+     * @param carrierId 삭제할 배송 업체의 ID
+     * @return 삭제 성공 상태를 포함한 ResponseEntity
+     */
+    @Operation(summary = &quot;배송 업체 삭제&quot;, description = &quot;특정 배송 업체를 삭제합니다.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;배송 업체 삭제 성공&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;배송 업체를 찾을 수 없음&quot;)
+    @DeleteMapping(&quot;/{carrierId}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteCarrier(@PathVariable @ValidPathVariable Long carrierId) {
+<span class="fc" id="L107">        carrierService.deleteCarrier(carrierId);</span>
+<span class="fc" id="L108">        return ResponseEntity.ok().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

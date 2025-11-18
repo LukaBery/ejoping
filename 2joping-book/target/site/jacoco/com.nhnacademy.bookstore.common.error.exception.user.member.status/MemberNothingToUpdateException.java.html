@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberNothingToUpdateException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookstore</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.bookstore.common.error.exception.user.member.status</a> &gt; <span class="el_source">MemberNothingToUpdateException.java</span></div><h1>MemberNothingToUpdateException.java</h1><pre class="source lang-java linenums">package com.nhnacademy.bookstore.common.error.exception.user.member.status;
+
+import com.nhnacademy.bookstore.common.error.enums.RedirectType;
+import com.nhnacademy.bookstore.common.error.exception.base.NotFoundException;
+/**
+ * 회원 정보 수정 시 변경할 내용이 없는 경우 발생하는 예외 클래스입니다.
+ * 이 예외는 클라이언트가 회원 정보를 수정 요청했으나, 실제로 업데이트할 내용이 없는 경우에 발생합니다.
+ *
+ * @author Luha
+ * @since 1.0
+ */
+public class MemberNothingToUpdateException extends NotFoundException {
+    public MemberNothingToUpdateException(String message, RedirectType redirectType, String url) {
+<span class="fc" id="L14">        super(message, redirectType, url);</span>
+<span class="fc" id="L15">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

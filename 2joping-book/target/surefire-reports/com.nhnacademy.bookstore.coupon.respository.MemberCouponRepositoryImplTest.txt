@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.nhnacademy.bookstore.coupon.respository.MemberCouponRepositoryImplTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.434 s -- in com.nhnacademy.bookstore.coupon.respository.MemberCouponRepositoryImplTest
