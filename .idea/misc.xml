@@ -5,6 +5,11 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/2joping-book/pom.xml" />
+        <option value="$PROJECT_DIR$/2joping-batch/pom.xml" />
+        <option value="$PROJECT_DIR$/2joping-front/pom.xml" />
+        <option value="$PROJECT_DIR$/2joping-eureka/pom.xml" />
+        <option value="$PROJECT_DIR$/2joping-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/2joping-user-auth/pom.xml" />
       </list>
     </option>
   </component>
